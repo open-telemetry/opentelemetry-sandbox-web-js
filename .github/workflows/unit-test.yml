@@ -24,57 +24,11 @@ jobs:
 
       - name: Bootstrap
         run: |
-          npm install --ignore-scripts
+          npm install
 
       - name: Build 🔧
         run: |
           npm run rebuild
 
       - name: Unit tests
-        run: npm run test:node
-
-  browser-tests:
-    runs-on: ubuntu-latest
-    container:
-      image: circleci/node:16-browsers
-    env:
-      NPM_CONFIG_UNSAFE_PERM: true
-    steps:
-      - name: Permission Setup
-        run: sudo chmod -R 777 /github /__w
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Bootstrap
-        run: |
-          npm install --ignore-scripts
-
-      - name: Build 🔧
-        run: |
-          npm run rebuild
-
-      - name: Unit tests
-        run: npm run test:browser
-
-  webworker-tests:
-    runs-on: ubuntu-latest
-    container:
-      image: circleci/node:16-browsers
-    env:
-      NPM_CONFIG_UNSAFE_PERM: true
-    steps:
-      - name: Permission Setup
-        run: sudo chmod -R 777 /github /__w
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Bootstrap
-        run: |
-          npm install --ignore-scripts
-
-      - name: Build 🔧
-        run: |
-          npm run rebuild
-
-      - name: Unit tests
-        run: npm run test:webworker
+        run: npm run test
