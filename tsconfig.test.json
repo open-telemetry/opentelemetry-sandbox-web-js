@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "moduleResolution": "node",
+        "noEmitHelpers": false,
+        "alwaysStrict": true,
+        "outDir": "./test-esm",
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
+        "forceConsistentCasingInFileNames": true,
+        "incremental": true,
+        "inlineSources": true,
+        "module": "commonjs",
+        "noEmitOnError": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "pretty": true,
+        "sourceMap": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "target": "es5",
+        "useUnknownInCatchVariables": false
+    },
+    "exclude": [
+        "**/node_modules/**",
+        "**/config/karma**",
+        "**/platform/node/**",
+        "**/node/**"
+    ]
+}

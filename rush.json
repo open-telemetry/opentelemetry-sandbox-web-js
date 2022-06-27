@@ -1,0 +1,59 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/rush/v5/rush.schema.json",
+
+  "npmVersion": "8.13.1",
+  "rushVersion": "5.70.0",
+  "projectFolderMaxDepth": 4,
+  "projects": [
+    {
+      "packageName": "@opentelemetry/sandbox-api",
+      "projectFolder": "pkgs/api",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-core",
+      "projectFolder": "pkgs/core",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-resources",
+      "projectFolder": "pkgs/resources",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-semantic-conventions",
+      "projectFolder": "pkgs/semantic-conventions",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-sdk-trace-base",
+      "projectFolder": "pkgs/sdk/trace-base",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-sdk-trace-web",
+      "projectFolder": "pkgs/sdk/trace-web",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-propagator-b3",
+      "projectFolder": "pkgs/propagators/b3",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-context-zone",
+      "projectFolder": "pkgs/context/zone",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-context-async-hooks",
+      "projectFolder": "pkgs/context/async-hooks",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-context-zone-peer-dep",
+      "projectFolder": "pkgs/context/zone-peer-dep",
+      "shouldPublish": true
+    }
+  ]
+}

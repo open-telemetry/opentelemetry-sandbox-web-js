@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "typedocOptions": {
+    "entryPointStrategy": "packages",
+    "entryPoints": [
+      "pkgs/core",
+      "pkgs/propagators/b3",
+      "pkgs/resources",
+      "pkgs/semantic-conventions"
+    ],
+    "out": "docs",
+    "exclude": [
+      "**/dist/**",
+      "**/build/**",
+      "**/node_modules/**",
+      "**/*.spec.ts"
+    ],
+    "name": "OpenTelemetry SDK",
+    "excludePrivate": true
+  }
+}

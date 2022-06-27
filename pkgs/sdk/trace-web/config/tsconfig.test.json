@@ -1,0 +1,12 @@
+{
+    "extends": "../../../tsconfig.test.json",
+    "include": [
+      "../src/**/*.ts",
+      "../test/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules/**",
+        "config/karma**"
+    ]
+  }
+  
