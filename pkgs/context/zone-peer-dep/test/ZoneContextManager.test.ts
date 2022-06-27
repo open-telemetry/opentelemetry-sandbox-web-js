@@ -296,7 +296,7 @@ describe('ZoneContextManager', () => {
       fn();
     });
 
-      if (typeof document != "undefined") {
+      if (typeof document != 'undefined') {
           it('should bind the the certain context to the target "addEventListener" function', done => {
               const ctx1 = ROOT_CONTEXT.setValue(key1, 1);
               const element = document.createElement('div');

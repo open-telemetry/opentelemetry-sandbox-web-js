@@ -1,4 +1,5 @@
-#  OpenTelemetry Sandbox Web JS (opentelemetry-sandbox-web-js)
+# OpenTelemetry Sandbox Web JS (opentelemetry-sandbox-web-js)
+
 non-production level experimental Web JS packages
 
 [![NPM Published Version][npm-img]][npm-url]
