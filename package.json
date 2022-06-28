@@ -1,0 +1,23 @@
+{
+    "name": "opentelemetry-sandbox-web-js",
+    "version": "0.1.0",
+    "description": "OpenTelemetry non-production level experimental Web JS packages.",
+    "keywords": [
+        "opentelemetry",
+        "browser",
+        "profiling",
+        "metrics",
+        "stats"
+      ],
+      "author": "OpenTelemetry Authors",
+      "license": "Apache-2.0",
+      "scripts": {
+        "do-sandbox-repo-merge": "cd sandbox-tools/merge-repos && npm install && cd ../.. && npm run do-repo-merge --prefix sandbox-tools/merge-repos"
+    },
+    "repository": "open-telemetry/opentelemetry-sandbox-web-js",
+    "homepage": "https://github.com/open-telemetry/opentelemetry-sandbox-web-js#readme",
+    "devDependencies": {
+      "simple-git": "^3.10.0",
+      "typescript": "^4.7.4"
+    }
+}
