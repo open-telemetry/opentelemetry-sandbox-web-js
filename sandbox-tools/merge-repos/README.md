@@ -6,6 +6,10 @@ The main Scripts created by TypeScript are
 
 ## repoSyncMerge
 
+This script merges the official repository branches into a staging branch so that the complete history from the original repositories is included in this repository.
+
+![Branches](./imgs/Merge_Script_Branches.png)
+
 This script performs the following
 
 - Clone the `opentelemetry/opentelemetry-sandbox-web-js` staging branch `auto-merge/repo-staging` (must exist) into a local temporary folder (removing any previous local folder first)
@@ -29,3 +33,4 @@ This script performs the following
 - Perform any final cleanup requested
 - Finally perform a `git push -f` to the cloned staging branch to the bot owner(s) fork `opentelemetrybot/auto-merge-repo-staging`
 - With the remote branch now on GitHub, it creates a PR to merge the fork branch `opentelemetrybot/auto-merge-repo-staging` into the sandbox `opentelemetry/opentelemetry-sandbox-web-js` repository `auto-merge/repo-staging` branch.
+
