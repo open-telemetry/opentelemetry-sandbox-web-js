@@ -16,11 +16,11 @@
 
 import * as fs from "fs";
 import { ResetMode, SimpleGit } from "simple-git";
-import { fail } from "./abort";
+import { fail } from "../support/abort";
 import { createGit } from "./createGit";
 import { addRemoteAndFetch, getRemoteList } from "./remotes";
 import { setUser, UserDetails } from "./userDetails";
-import { log } from "./utils";
+import { log } from "../support/utils";
 
 /**
  * Create a new local git instance in the `forkDest` folder

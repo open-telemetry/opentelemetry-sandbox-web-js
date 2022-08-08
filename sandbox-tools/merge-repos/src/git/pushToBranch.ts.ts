@@ -16,8 +16,8 @@
 
 import { fail } from "assert";
 import { SimpleGit} from "simple-git";
-import { getRemoteList } from "./remotes";
-import { log } from "./utils";
+import { getRemoteList } from "../git/remotes";
+import { log } from "../support/utils";
 
 /**
  * Push the current branch to the origin repository

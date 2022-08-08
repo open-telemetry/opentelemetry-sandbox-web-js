@@ -11,6 +11,7 @@
     ],
     "author": "OpenTelemetry Authors",
     "license": "Apache-2.0",
+    "private": true,
     "scripts": {
         "build": "tsc",
         "do-repo-merge": "npm run build && node ./build/syncReposToStaging.js"

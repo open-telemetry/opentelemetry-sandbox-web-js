@@ -15,8 +15,8 @@
  */
 
 import { SimpleGit } from "simple-git";
-import { IRepoDetails, IRepoSyncDetails } from "./types";
-import { log } from "./utils";
+import { IRepoDetails, IRepoSyncDetails } from "../support/types";
+import { log } from "../support/utils";
 
 /**
  * Regular expression to split the git remotes

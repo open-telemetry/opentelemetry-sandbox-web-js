@@ -18,7 +18,7 @@ import * as fs from "fs";
 import * as child_process from "child_process";
 import * as util from "util";
 import { SimpleGit} from "simple-git";
-import { log } from "./utils";
+import { log } from "../support/utils";
 import path = require("path");
 
 const execFile = util.promisify(child_process.execFile);

@@ -16,7 +16,7 @@
 
 import { SimpleGit } from "simple-git";
 import { getRemoteList } from "./remotes";
-import { log } from "./utils";
+import { log } from "../support/utils";
 
 /**
  * The User details identified and to use when setting

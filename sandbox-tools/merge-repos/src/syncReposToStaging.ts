@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-import { CleanOptions, FileStatusResult, SimpleGit, StatusResult, TagResult } from "simple-git";
+import { CleanOptions, FileStatusResult, SimpleGit, StatusResult} from "simple-git";
 import * as fs from "fs";
 import * as path from "path";
-import { IRepoDetails, IRepoSyncDetails } from "./types";
-import { findCurrentRepoRoot, formatIndentLines, log } from "./utils";
+import { commitChanges, ICommitDetails } from "./git/commit";
+import { createGit } from "./git/createGit";
+import { createLocalBranch } from "./git/createLocalBranch";
+import { pushToBranch } from "./git/pushToBranch.ts";
+import { renameTags } from "./git/renameTags";
+import { addRemoteAndFetch, removeTemporaryRemotes } from "./git/remotes";
+import { getUser } from "./git/userDetails";
+import { checkPrExists } from "./github/checkPrExists";
+import { createPullRequest, gitHubCreateForkRepo } from "./github/github";
+import { abort, fail, terminate } from "./support/abort";
+import { addCleanupCallback, doCleanup } from "./support/clean";
+import { isIgnoreFolder } from "./support/isIgnoreFolder";
+import { parseArgs, ParsedOptions, SwitchBase } from "./support/parseArgs";
+import { processRepos } from "./support/processRepos";
+import { IRepoDetails, IRepoSyncDetails } from "./support/types";
+import { findCurrentRepoRoot, formatIndentLines, log } from "./support/utils";
 import { applyRepoDefaults, MERGE_CLONE_LOCATION, reposToSyncAndMerge, MERGE_ORIGIN_REPO, MERGE_ORIGIN_STAGING_BRANCH } from "./config";
-import { addCleanupCallback, doCleanup } from "./clean";
-import { abort, fail, terminate } from "./abort";
-import { createGit } from "./createGit";
-import { commitChanges, ICommitDetails } from "./commit";
-import { processRepos } from "./processRepos";
-import { addRemoteAndFetch, removeRemote, removeTemporaryRemotes } from "./remotes";
-import { isIgnoreFolder } from "./isIgnoreFolder";
-import { renameTags } from "./renameTags";
-import { pushToBranch } from "./pushToBranch.ts";
-import { createLocalBranch } from "./createLocalBranch";
-import { createPullRequest, gitHubCreateForkRepo } from "./github";
-import { checkPrExists } from "./checkPrExists";
-import { parseArgs, ParsedOptions, SwitchBase } from "./parseArgs";
-import { getUser } from "./userDetails";
 
 /**
  * The command line options for this script

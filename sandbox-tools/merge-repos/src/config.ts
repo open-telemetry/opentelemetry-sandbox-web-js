@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IRepoSyncDetails } from "./types";
+import { IRepoSyncDetails } from "./support/types";
 
 /**
  * This identifies both the initial source and the final destination for the merge.

@@ -15,8 +15,8 @@
  */
 
 import { SimpleGit } from "simple-git";
-import { IRepoSyncDetails } from "./types";
-import { log } from "./utils";
+import { IRepoSyncDetails } from "../support/types";
+import { log } from "../support/utils";
 
 /**
  * Get all of the tag prefixes that will be used

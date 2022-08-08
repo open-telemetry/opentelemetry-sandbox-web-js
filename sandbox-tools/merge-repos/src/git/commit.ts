@@ -15,9 +15,9 @@
  */
 
 import { SimpleGit, StatusResult } from "simple-git";
-import { abort, fail } from "./abort";
-import { COMMIT_PREFIX } from "./config";
-import { formatIndentLines, log } from "./utils";
+import { abort, fail } from "../support/abort";
+import { formatIndentLines, log } from "../support/utils";
+import { COMMIT_PREFIX } from "../config";
 
 /**
  * Holds details about the commit that has or should be used

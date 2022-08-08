@@ -15,7 +15,7 @@
  */
 
 import simpleGit, { SimpleGit, SimpleGitOptions } from "simple-git";
-import { log } from "./utils";
+import { log } from "../support/utils";
 
 /**
  * Create a SimpleGit instance using the base (root) directory and the provided progressPrefix
