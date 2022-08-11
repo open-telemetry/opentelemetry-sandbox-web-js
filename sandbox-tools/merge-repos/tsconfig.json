@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+      "sourceMap": false,
+      "module": "commonjs",
+      "moduleResolution": "Node",
+      "target": "es2015",
+      "importHelpers": false,
+      "noEmitHelpers": false,
+      "declaration": false,
+      "outDir": "build/"
+    },
+    "include": [
+      "./src/**/*.ts"
+    ],
+    "exclude": [
+      "**/node_modules/**"
+    ]
+  }
+  
