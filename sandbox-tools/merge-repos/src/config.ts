@@ -20,7 +20,7 @@ import { IRepoSyncDetails } from "./support/types";
  * This identifies both the initial source and the final destination for the merge.
  * ie. The created PR will be created to merge back into this repo
  */
-export const MERGE_ORIGIN_REPO = "opentelemetry/opentelemetry-sandbox-web-js";
+export const MERGE_ORIGIN_REPO = "open-telemetry/opentelemetry-sandbox-web-js";
 
 /**
  * Identifies both the initial source and final destination branch for the merge
@@ -37,7 +37,7 @@ export const MERGE_ORIGIN_STAGING_BRANCH = "auto-merge/repo-staging";
 /**
  * Identifies the working repo to use as the destination fork
  */
-export const MERGE_FORK_REPO = "opentelemetry/opentelemetry-sandbox-web-js";
+export const MERGE_FORK_REPO = "open-telemetry/opentelemetry-sandbox-web-js";
 
 /**
  * The local relative location to generate the local fork and merge repos

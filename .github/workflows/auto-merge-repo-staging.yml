@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: opentelemetry/opentelemetry-sandbox-web-js
+          repository: open-telemetry/opentelemetry-sandbox-web-js
           token: ${{ secrets.BOT_TOKEN }}
 
       - name: Use CLA approved github bot
