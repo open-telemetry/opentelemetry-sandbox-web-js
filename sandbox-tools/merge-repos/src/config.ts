@@ -65,18 +65,17 @@ export const COMMIT_PREFIX = "[AutoMerge]";
  * The contrib repo if needed to be merged, just needs to be added here
  */
 export const reposToSyncAndMerge: IRepoSyncDetails = {
-    "otel-js-api": {
-        url: "https://github.com/open-telemetry/opentelemetry-js-api",
-        branch: "main",
-        //mergeStartPoint: "HEAD",   // Used for local testing to validate periodic execution
-        destFolder: MERGE_DEST_BASE_FOLDER + "/api",
-        // mergeBranchName: BRANCH_PREFIX + "/js-api"
-    },
     "otel-js": {
         url: "https://github.com/open-telemetry/opentelemetry-js",
         branch: "main",
         //mergeStartPoint: "HEAD",    // Used for local testing to validate periodic execution
         destFolder: MERGE_DEST_BASE_FOLDER + "/js"
+    },
+    "otel-js-contrib": {
+        url: "https://github.com/open-telemetry/opentelemetry-js-contrib",
+        branch: "main",
+        //mergeStartPoint: "HEAD",    // Used for local testing to validate periodic execution
+        destFolder: MERGE_DEST_BASE_FOLDER + "/contrib"
     }
 };
 
