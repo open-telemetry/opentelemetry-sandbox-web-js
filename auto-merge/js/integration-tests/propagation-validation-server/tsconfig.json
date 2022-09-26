@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "build"
+  },
+  "include": [],
+  "references": [
+    {
+      "path": "../../packages/opentelemetry-context-async-hooks"
+    },
+    {
+      "path": "../../packages/opentelemetry-core"
+    },
+    {
+      "path": "../../packages/opentelemetry-sdk-trace-base"
+    }
+  ]
+}
