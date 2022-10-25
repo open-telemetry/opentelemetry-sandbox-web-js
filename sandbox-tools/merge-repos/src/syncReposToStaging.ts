@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CleanOptions, FileStatusResult, SimpleGit, StatusResult} from "simple-git";
+import { CleanOptions, FileStatusResult, ResetMode, SimpleGit, StatusResult} from "simple-git";
 import * as fs from "fs";
 import * as path from "path";
 import { commitChanges, ICommitDetails } from "./git/commit";
@@ -22,7 +22,7 @@ import { createGit } from "./git/createGit";
 import { createLocalBranch } from "./git/createLocalBranch";
 import { pushToBranch } from "./git/pushToBranch.ts";
 import { renameTags } from "./git/renameTags";
-import { addRemoteAndFetch, removeTemporaryRemotes } from "./git/remotes";
+import { addRemoteAndFetch, removeRemote, removeTemporaryRemotes } from "./git/remotes";
 import { getUser } from "./git/userDetails";
 import { checkPrExists } from "./github/checkPrExists";
 import { createPullRequest, gitHubCreateForkRepo } from "./github/github";
@@ -32,8 +32,15 @@ import { isIgnoreFolder } from "./support/isIgnoreFolder";
 import { parseArgs, ParsedOptions, SwitchBase } from "./support/parseArgs";
 import { processRepos } from "./support/processRepos";
 import { IRepoDetails, IRepoSyncDetails } from "./support/types";
-import { findCurrentRepoRoot, formatIndentLines, log } from "./support/utils";
-import { applyRepoDefaults, MERGE_CLONE_LOCATION, reposToSyncAndMerge, MERGE_ORIGIN_REPO, MERGE_ORIGIN_STAGING_BRANCH } from "./config";
+import { dumpObj, findCurrentRepoRoot, formatIndentLines, log } from "./support/utils";
+import { applyRepoDefaults, MERGE_CLONE_LOCATION, reposToSyncAndMerge, MERGE_ORIGIN_REPO, MERGE_ORIGIN_STAGING_BRANCH, MERGE_DEST_BASE_FOLDER } from "./config";
+import { moveRepoTo } from "./support/moveTo";
+
+interface ISourceRepoDetails {
+    path: string,
+    branch: string,
+    message: string
+}
 
 /**
  * The command line options for this script
@@ -42,6 +49,17 @@ interface SyncRepoToStagingOptions extends SwitchBase {
     cloneTo: string;
     originRepo: string;
     originBranch: string;
+
+    /**
+     * Run the script but don't create the final PR and move the destination folder up one level
+     * ie. prefix "../" to the cloneTo location
+     */
+    test: boolean;
+
+    /**
+     * Don't create the PR
+     */
+    noPr: boolean;
 }
 
 // The current git repo root
@@ -60,9 +78,11 @@ let _theArgs: ParsedOptions<SyncRepoToStagingOptions> = {
     failed: false,
     values: [],
     switches: {
-        "cloneTo": MERGE_CLONE_LOCATION,
-        "originBranch": MERGE_ORIGIN_STAGING_BRANCH,
-        "originRepo": MERGE_ORIGIN_REPO
+        cloneTo: MERGE_CLONE_LOCATION,
+        originBranch: MERGE_ORIGIN_STAGING_BRANCH,
+        originRepo: MERGE_ORIGIN_REPO,
+        test: false,
+        noPr: false
     }
 };
 
@@ -177,84 +197,6 @@ async function removePotentialMergeConflicts(git: SimpleGit, theRepos: IRepoSync
     return null;
 }
 
-/**
- * Merge the remote original master source repo (opentelemetry-js; opentelemetry-js-api) into the
- * current branch of the provided git instance. This is how the history from the original master
- * repo's are "moved" into the sandbox repo
- * @param git - The SimpleGit instance to use for the local merge repo
- * @param name - The configured name of the original master repo that is represented by the `details`
- * @param details - The details of the original master repo that we want to merge into this branch
- */
-async function mergeRemoteIntoBranch(git: SimpleGit, name: string, details: IRepoDetails): Promise<ICommitDetails> {
-
-    let checkoutArgs = [
-        "--progress",
-        "-B", details.mergeBranchName
-    ];
-
-    if (details.mergeStartPoint) {
-        // Used for testing the the consistent "merging" over time based on using the configured
-        // tags (startPoints) from the original master repo.
-        checkoutArgs.push(details.mergeStartPoint);
-    } else {
-        checkoutArgs.push(name + "/" + details.branch)
-    }
-
-    // Create the a local branch of the original master remote repository to be merged into
-    log(`Creating new local branch ${details.mergeBranchName} from ${name}/${details.branch}`);
-    await git.checkout(checkoutArgs);
-
-    // Reset the local branch to the requested HEAD (or mergeStartPoint -- used for testing)
-    log("Resetting...");
-    await git.reset(["--hard"]).catch(abort(git, "Failed to hard reset"));
-
-    // Remove any untracked files in this local branch
-    log("Cleaning...");
-    // The excludes where for local development / branch purposes to ensure local changes where not lost
-    await git.clean([CleanOptions.RECURSIVE, CleanOptions.FORCE, CleanOptions.EXCLUDING], ["sandbox-tools/**", "-e", "/.vs"]).catch(abort(git, "Failed during clean"));
-
-    // Merge changes from the remote repo to this branch
-    log(`Merging branch ${details.mergeBranchName}`);
-
-    let mergeArgs = [
-        "--allow-unrelated-histories",
-        "--no-commit",
-        "-X", "theirs",
-        "--progress",
-        "--no-edit",
-        details.mergeBranchName
-    ];
-
-    let remoteHead = await git.listRemote([
-        name,
-        details.mergeStartPoint ? details.mergeStartPoint : "HEAD"
-    ]).catch(abort(git, `Failed listing remote ${name} HEAD`)) as string;
-    let commitHash = /([^\s]*)/.exec(remoteHead)[1];
-    let hashDetails = await git.show(["-s", commitHash]).catch(abort(git, `Failed getting hash details ${commitHash}`));
-    let commitDetails: ICommitDetails = {
-        committed: false,
-        message: `Merging ${name} @ [${commitHash.substring(0, 7)}...](${details.url}/commit/${commitHash})\n${hashDetails}`
-    };
-
-    await git.merge(mergeArgs).catch(async (reason) => {
-        // Resolve any unexpected conflicts (Generally there should not be any) as this local branch is "new" (this was primarily for testing merging scenarios)
-        commitDetails.committed = await resolveConflictsToTheirs(git, commitDetails, false);
-    });
-
-    // Commit changes to local branch
-    commitDetails.committed = await commitChanges(git, commitDetails);
-
-    let ignoreTags: string[] = [];
-    Object.keys(reposToSyncAndMerge).forEach((value) => {
-        ignoreTags.push(reposToSyncAndMerge[value].tagPrefix + "/");
-    });
-
-    // rename the tags from the original repos so they have a prefix and remove the original
-    await renameTags(git, reposToSyncAndMerge, details.tagPrefix + "/", ignoreTags);
-
-    return commitDetails;
-}
-
 function getFileStatus(status: StatusResult, name: string): FileStatusResult {
     for (let lp = 0; lp < status.files.length; lp++) {
         if (status.files[lp].path === name) {
@@ -263,6 +205,31 @@ function getFileStatus(status: StatusResult, name: string): FileStatusResult {
     }
 
     return null;
+}
+
+function logAppendMessage(commitMessage: string, fileStatus :FileStatusResult, message: string) {
+    let logMessage: string;
+    let thePath = fileStatus ? fileStatus.path : "";
+    if (thePath.startsWith(_mergeGitRoot)) {
+        thePath = thePath.substring(_mergeGitRoot.length);
+    }
+
+    if (fileStatus && thePath && fileStatus.index && fileStatus.working_dir) {
+        logMessage = ` - (${fileStatus.index.padEnd(1)}${fileStatus.working_dir.padEnd(1)}) ${thePath} - ${message}`;
+    } else if (fileStatus && thePath) {
+        logMessage = ` - ${thePath} - ${message}`;
+    } else {
+        logMessage = ` - ${message}`;
+    }
+
+    log(logMessage);
+    if (commitMessage.length + logMessage.length < 2048) {
+        commitMessage += `\n${logMessage}`;
+    } else if (commitMessage.indexOf("...truncated...") === -1) {
+        commitMessage += "\n...truncated...";
+    }
+
+    return commitMessage;
 }
 
 /**
@@ -308,18 +275,6 @@ function getFileStatus(status: StatusResult, name: string): FileStatusResult {
  */
 async function resolveConflictsToTheirs(git: SimpleGit, commitDetails: ICommitDetails, performCommit: boolean): Promise<boolean> {
 
-    function logAppendMessage(commitMessage: string, fileStatus :FileStatusResult, message: string) {
-        let logMessage = ` - (${fileStatus.index.padEnd(1)}${fileStatus.working_dir.padEnd(1)}) ${fileStatus.path} - ${message}`;
-        log(logMessage);
-        if (commitMessage.length + logMessage.length < 2048) {
-            commitMessage += `\n${logMessage}`;
-        } else if (commitMessage.indexOf("...truncated...") === -1) {
-            commitMessage += "\n...truncated...";
-        }
-
-        return commitMessage;
-    }
-
     function describeStatus(status: string) {
         switch(status) {
             case "_":
@@ -362,22 +317,38 @@ async function resolveConflictsToTheirs(git: SimpleGit, commitDetails: ICommitDe
         let conflicted = status.conflicted[lp];
         let fileStatus = getFileStatus(status, conflicted);
         let fileState = `${fileStatus.index.padEnd(1)}${fileStatus.working_dir.padEnd(1)}`.replace(/\s/g, "_");
+
         commitSummary[fileState] = (commitSummary[fileState] + 1 || 1);
+
         if (fileStatus.index === "D") {
             // index      workingDir     Meaning
             // -------------------------------------------------
             // D                  deleted from index
             // D             D    unmerged, both deleted
             // D             U    unmerged, deleted by us
-            commitMessage = logAppendMessage(commitMessage, fileStatus, "Removed from theirs");
-            await git.rm(conflicted);
+            if (fileStatus.working_dir === "U") {
+                // Deleted by Us
+                commitMessage = logAppendMessage(commitMessage, fileStatus, "Deleted by us => checkout theirs");
+                await git.checkout([
+                    "--theirs",
+                    conflicted
+                ]);
+
+                await git.raw([
+                    "add",
+                    "-f",
+                    conflicted]);
+            } else {
+                commitMessage = logAppendMessage(commitMessage, fileStatus, `Removed from ${fileStatus.working_dir === "D" ? "both" : "theirs"}`);
+                await git.rm(conflicted);
+            }
         } else if (fileStatus.index === "A") {
             // index      workingDir     Meaning
             // -------------------------------------------------
             // [ MTARC]      M    work tree changed since index
             // [ MTARC]      D    deleted in work tree
             // A             A    unmerged, both added
-            // A             U    unmerged, added by us                     <-- really means that it was deleted but merge didn't resolve
+            // A             U    unmerged, added by us                     <-- This could mean that it was deleted from their repo or just added by us and changes from historical versions that merge could not resolve
             // -------------------------------------------------
             // Not handled
             // -------------------------------------------------
@@ -389,33 +360,45 @@ async function resolveConflictsToTheirs(git: SimpleGit, commitDetails: ICommitDe
                     "--theirs",
                     conflicted
                 ]);
-                await git.add(conflicted);
+
+                await git.raw([
+                    "add",
+                    "-f",
+                    conflicted]);
             } else if (fileStatus.working_dir === "M") {
                 commitMessage = logAppendMessage(commitMessage, fileStatus, "Added in theirs, modified in ours => checkout theirs");
                 await git.checkout([
                     "--theirs",
                     conflicted
                 ]);
-                await git.add(conflicted);
+
+                await git.raw([
+                    "add",
+                    "-f",
+                    conflicted]);
             } else if (fileStatus.working_dir === "D") {
                 commitMessage = logAppendMessage(commitMessage, fileStatus, "Added in theirs, deleted in ours => checkout theirs");
                 await git.checkout([
                     "--theirs",
                     conflicted
                 ]);
-                await git.add(conflicted);
+
+                await git.raw([
+                    "add",
+                    "-f",
+                    conflicted]);
             } else if (fileStatus.working_dir === "U") {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, "Added in ours => try to checkout theirs");
-                try {
-                    await git.checkout([
-                        "--theirs",
-                        conflicted
-                    ]);
-                    await git.add(conflicted);
-                } catch (e) {
-                    commitMessage = logAppendMessage(commitMessage, fileStatus, "!!! Unable to checkout theirs so assuming it should be deleted");
-                    await git.rm(conflicted);
-                }
+                commitMessage = logAppendMessage(commitMessage, fileStatus, "Added in ours => checkout ours");
+                // Just checkout (keep) our version and any changes / deletions will be resolved during during sync validation steps
+                await git.checkout([
+                    "--ours",
+                    conflicted
+                ]);
+
+                await git.raw([
+                    "add",
+                    "-f",
+                    conflicted]);
             } else {
                 commitMessage = logAppendMessage(commitMessage, fileStatus, `Unsupported automatic merge state for ${conflicted}`);
             }
@@ -435,14 +418,22 @@ async function resolveConflictsToTheirs(git: SimpleGit, commitDetails: ICommitDe
                     "--theirs",
                     conflicted
                 ]);
-                await git.add(conflicted);
+
+                await git.raw([
+                    "add",
+                    "-f",
+                    conflicted]);
             } else if (fileStatus.working_dir === "D") {
                 commitMessage = logAppendMessage(commitMessage, fileStatus, "Renamed in theirs, deleted in ours => checkout theirs");
                 await git.checkout([
                     "--theirs",
                     conflicted
                 ]);
-                await git.add(conflicted);
+
+                await git.raw([
+                    "add",
+                    "-f",
+                    conflicted]);
             } else {
                 commitMessage = logAppendMessage(commitMessage, fileStatus, "!!! Unsupported automatic renamed merge state");
             }
@@ -461,14 +452,22 @@ async function resolveConflictsToTheirs(git: SimpleGit, commitDetails: ICommitDe
                     "--theirs",
                     conflicted
                 ]);
-                await git.add(conflicted);
+
+                await git.raw([
+                    "add",
+                    "-f",
+                    conflicted]);
             } else if (fileStatus.working_dir === "U") {
                 commitMessage = logAppendMessage(commitMessage, fileStatus, "Unmerged, both modified => checkout theirs");
                 await git.checkout([
                     "--theirs",
                     conflicted
                 ]);
-                await git.add(conflicted);
+
+                await git.raw([
+                    "add",
+                    "-f",
+                    conflicted]);
             } else {
                 commitMessage = logAppendMessage(commitMessage, fileStatus, "Unsupported automatic unmerged state");
             }
@@ -478,14 +477,17 @@ async function resolveConflictsToTheirs(git: SimpleGit, commitDetails: ICommitDe
                 "--theirs",
                 conflicted
             ]);
-            await git.add(conflicted);
+
+            await git.raw([
+                "add",
+                "-f",
+                conflicted]);
         }
     }
 
     status = await git.status().catch(abort(git, "Unable to get status")) as StatusResult;
     if (status.conflicted.length !== 0) {
-        status.staged = [ `Removed ${status.staged.length} entries for reporting` ];
-        await fail(git, `Still has conflicts ${status.conflicted.length} we can't auto resolve - ${commitMessage}\n${JSON.stringify(status, null, 4)}`);
+        await fail(git, `Still has conflicts ${status.conflicted.length} we can't auto resolve - ${commitMessage}\n${JSON.stringify(status.conflicted, null, 4)}`);
     }
 
     let summaryKeys = Object.keys(commitSummary);
@@ -507,100 +509,222 @@ async function resolveConflictsToTheirs(git: SimpleGit, commitDetails: ICommitDe
     return false;
 }
 
-/**
- * Deletes the local named branch
- * @param git - The SimpleGit instance for the repo to use
- * @param repoName - The configured repo name *(key of the RepoDetails)
- * @param details - The repo details which is used to create the local branch
- * @param forceDelete - Should the branch be force deleted
- */
-async function deleteLocalBranch(git: SimpleGit, repoName: string, details: IRepoDetails, forceDelete?: boolean) {
-    log(`Removing Local branch for ${repoName}...`)
-    let branches = await git.branch().catch(abort(git, "Failed getting branches"));
-    if (branches && branches.branches[details.mergeBranchName]) {
-        // Remove the local branch
-        await git.deleteLocalBranch(details.mergeBranchName, forceDelete).catch(abort(git, `Failed to remove branch for ${repoName} -- ${details.mergeBranchName}`));
+async function checkFixBadMerges(git: SimpleGit, repoName: string, baseFolder: string, destFolder: string, commitDetails: ICommitDetails, level: number) {
+
+    // Get master source files
+    const masterFiles = fs.readdirSync(baseFolder);
+    const destFiles = fs.readdirSync(destFolder);
+
+    function _isVerifyIgnore(source: string, ignoreOtherRepoFolders: boolean) {
+        if (source === "." || source === ".." || source === ".git" || source === ".vs") {
+            // Always ignore these
+            return true;
+        }
+
+        let isDefined = false;
+
+        // Don't ignore the auto-merge folder
+        if (source === MERGE_DEST_BASE_FOLDER) {
+            // Always process this folder
+            return false;
+        }
+        
+        if (reposToSyncAndMerge) {
+            let repoNames = Object.keys(reposToSyncAndMerge);
+            for (let lp = 0; lp < repoNames.length; lp++) {
+                let repoDestFolder = reposToSyncAndMerge[repoNames[lp]].destFolder;
+                if (repoName === repoNames[lp]) {
+                    if ((destFolder + "/" + source + "/").indexOf("/" + repoDestFolder + "/") !== -1) {
+                        // Always process this folder if it's the current repo
+                        return false;
+                    }
+                } else {
+                    if (repoDestFolder === source || (destFolder + "/" + source + "/").indexOf("/" + repoDestFolder + "/") !== -1 || (destFolder + "/" + source).endsWith("/" + repoDestFolder)) {
+                        isDefined = ignoreOtherRepoFolders;
+                    }
+                }
+            }
+        }
+    
+        return isDefined;
+    }
+
+    async function validateFile(masterFile: string, destFile: string) {
+        let changed = false;
+        if (fs.existsSync(destFile)) {
+            // Compare contents
+            let destStats = fs.statSync(destFile);
+            let masterStats = fs.statSync(masterFile);
+            if (destStats.size !== masterStats.size) {
+                // File size is different so was not moved / merged correctly
+                commitDetails.message = logAppendMessage(commitDetails.message, { index: "x", working_dir: "S", path: destFile } , `Re-Copying master file as size mismatch ${destStats.size} !== ${masterStats.size}`);
+                fs.copyFileSync(masterFile, destFile);
+                changed = true;
+            } else {
+                // Same file size, so compare contents
+                let masterContent = fs.readFileSync(masterFile);
+                let destContent = fs.readFileSync(destFile);
+                if (masterContent.length !== destContent.length) {
+                    // File content is different so was not moved / merged correctly
+                    commitDetails.message = logAppendMessage(commitDetails.message, { index: "x", working_dir: "C", path: destFile } , "Re-Copying master file as content mismatch");
+                    fs.copyFileSync(masterFile, destFile);
+                    changed = true;
+                } else {
+                    let isSame = true;
+                    let lp = 0;
+                    while (isSame && lp < masterContent.length) {
+                        if (masterContent[lp] !== destContent[lp]) {
+                            isSame = false;
+                        }
+                        lp++;
+                    }
+
+                    if (!isSame) {
+                        // File content is different so was not moved / merged correctly
+                        commitDetails.message = logAppendMessage(commitDetails.message, { index: "x", working_dir: "C", path: destFile } , "Re-Copying master file as content is different");
+                        fs.copyFileSync(masterFile, destFile);
+                        changed = true;
+                    }
+                }
+            }
+        } else {
+            // Missing dest so was not moved / merged correctly
+            commitDetails.message = logAppendMessage(commitDetails.message, { index: "x", working_dir: "M", path: destFile } , "Re-Copying master file");
+            fs.copyFileSync(masterFile, destFile);
+            changed = true;
+        }
+
+        return changed;
+    }
+
+    log(` - (Verifying) ${baseFolder} <=> ${destFolder}`);
+    for (let mLp = 0; mLp < masterFiles.length; mLp++) {
+        let theFile = masterFiles[mLp];
+        if (!_isVerifyIgnore(theFile, true)) {
+            // log(` - (...) ${baseFolder + "/" + masterFiles[mLp]} ==> ${theFile}`);
+            let masterStats = fs.statSync(baseFolder + "/" + theFile);
+            if (masterStats.isDirectory()) {
+                if (fs.existsSync(destFolder + "/" + theFile)) {
+                    let destStats = fs.statSync(destFolder + "/" + theFile);
+                    if (destStats.isDirectory()) {
+                        await checkFixBadMerges(git, repoName, baseFolder + "/" + theFile, destFolder + "/" + theFile, commitDetails, level + 1);
+                    } else {
+                        log(` - (Mismatch) ${destFolder + "/" + theFile} is not a folder`);
+                        commitDetails.message = logAppendMessage(commitDetails.message, { index: "x", working_dir: "T", path: destFolder + "/" + theFile } , "Dest is file should be folder");
+                        await git.rm(destFolder + "/" + theFile)
+    
+                        fs.mkdirSync(destFolder + "/" + theFile);
+                        await checkFixBadMerges(git, repoName, baseFolder + "/" + theFile, destFolder + "/" + theFile, commitDetails, level + 1);
+                    }
+                } else {
+                    log(` - (Missing) ${baseFolder} <=> ${destFolder}`);
+                    fs.mkdirSync(destFolder + "/" + theFile);
+                    await checkFixBadMerges(git, repoName, baseFolder + "/" + theFile, destFolder + "/" + theFile, commitDetails, level + 1);
+                }
+            } else {
+                // Assume file
+                if (validateFile(baseFolder + "/" +  theFile,  destFolder + "/" +  theFile)) {
+
+                    await git.raw([
+                        "add",
+                        "-f",
+                        destFolder + "/" +  theFile]);
+                }
+            }
+        } else {
+            log(` - (xI) ${baseFolder + "/" + masterFiles[mLp]} ==> ${theFile}`);
+        }
+    }
+
+    // Remove any files / folders that do not exist in the master repo
+    for (let dLp = 0; dLp < destFiles.length; dLp++) {
+        let destFile = destFiles[dLp];
+        if (masterFiles.indexOf(destFile) === -1 && !_isVerifyIgnore(destFile, true)) {
+            let destStats = fs.statSync(destFolder + "/" + destFile);
+            if (destStats.isDirectory()) {
+                commitDetails.message = logAppendMessage(commitDetails.message, { index: "*", working_dir: "F", path: destFolder + "/" + destFile } , `Removing extra folder ${destFile}`);
+                await git.raw([
+                    "rm",
+                    "-f",
+                    "-r",
+                    destFolder + "/" + destFile]);
+                // fs.rmdirSync(destFolder + "/" + destFile, {
+                //     recursive: true
+                // });
+            } else {
+                commitDetails.message = logAppendMessage(commitDetails.message, { index: "*", working_dir: "E", path: destFolder + "/" + destFile } , "Removing extra file");
+                await git.rm(destFolder + "/" + destFile);
+            }
+        }
     }
 }
 
-/**
- * Move the repo files into the destFolder, this is called recursively as `git mv` sometimes complains when moving
- * a folder which already exists, this occurs when a previous PR moved the file/folders and new files/folders are
- * added to the original location that now needs to be moved.
- * @param git - The SimpleGit instance for the repo to use
- * @param baseFolder - The base folder for the git instance
- * @param srcFolder - The source folder to be moved
- * @param destFolder - The destination folder to move the source folder to
- * @param commitDetails - Holds the commit details, used to generate the commit message
- */
-async function moveRepoTo(git: SimpleGit, baseFolder: string, srcFolder: string, destFolder: string, commitDetails: ICommitDetails) {
+async function getAndSyncSrcRepo(git: SimpleGit, repoName: string, details: IRepoDetails): Promise<ISourceRepoDetails> {
 
-    function appendCommitMessage(commitMessage: string, message: string) {
-        if (commitMessage.length + message.length < 2048) {
-            commitMessage += `\n${message}`;
-        } else if (commitMessage.indexOf("...truncated...") === -1) {
-            commitMessage += "\n...truncated...";
-        }
+    // Get a clone of the source repo and reset to the starting point
+    let srcOriginRepoUrl = details.url;
+    let srcOriginBranch = details.branch;
 
-        return commitMessage;
-    }
+    let forkDestOrg =  _mergeGitRoot + "-" + repoName;
 
-    let theLocalDestPath = path.resolve(path.join(baseFolder, destFolder)).replace(/\\/g, "/") + "/";
-    let theGitDestFolder = destFolder;
+    // Now lets go and create a local clone
+    log(`Cloning the source repo ${srcOriginRepoUrl} branch ${srcOriginBranch} to ${forkDestOrg}`);
+    await git.clone(srcOriginRepoUrl, forkDestOrg, [ "-b", srcOriginBranch]);
 
-    if (srcFolder.length === 0) {
-        // Don't log this if we are in recursively moving
-        log(`Moving Repo to ${theGitDestFolder}; Local dest path: ${theLocalDestPath}`);
-    }
+    let orgGit = createGit(forkDestOrg, "merge.org." + repoName + ".git");
+    let checkoutArgs = [
+        "--progress",
+        "-B", srcOriginBranch
+    ];
 
-    const files = fs.readdirSync(baseFolder + "/" + srcFolder);
-    log(`${files.length} file(s) found in ${baseFolder + "/" + srcFolder} to move`);
-    if (!fs.existsSync(theLocalDestPath)) {
-        fs.mkdirSync(theLocalDestPath, { recursive: true });
-    }
-
-    if (files.length > 0) {
-        let commitMessage = "";
-
-        if (srcFolder.length === 0) {
-            commitMessage += `\n### Moving additional unmerged (new) files from ${srcFolder ? srcFolder : "./"} to ${theGitDestFolder}`
-        }
-
-        for (let lp = 0; lp < files.length; lp++) {
-            let inputFile = files[lp];
-            if (inputFile !== destFolder && !isIgnoreFolder(reposToSyncAndMerge, inputFile, srcFolder.length === 0)) {
-                let fullInputPath = (srcFolder ? srcFolder + "/" : "") + inputFile;
-
-                let moved = false;
-                let isSrcDir = false;
-                let inputStats = fs.statSync(baseFolder + "/" + fullInputPath);
-                if (inputStats.isDirectory()) {
-                    log(` - ${fullInputPath}/`);
-                    isSrcDir = true;
-                } else {
-                    log(` - ${fullInputPath}`);
-                }
-
-                if (!moved) {
-                    await git.raw([
-                        "mv",
-                        "--force",
-                        "--verbose",
-                        fullInputPath + (isSrcDir ? "/" : ""),
-                        theGitDestFolder + (isSrcDir ? "/" + inputFile + "/" : "")
-                    ]);
-
-                    commitMessage = appendCommitMessage(commitMessage, ` - ${fullInputPath}${isSrcDir ? "/" : ""}`)
-                }
-            } else {
-                log(` - Ignoring ${inputFile}  (${destFolder})`);
-            }
-        };
-
-        commitDetails.message += commitMessage;
+    if (details.branchStartPoint) {
+        // Used for testing the the consistent "merging" over time based on using the configured
+        // tags (startPoints) from the original master repo.
+        checkoutArgs.push(details.branchStartPoint);
     } else {
-        log(` - No files found in ${baseFolder + "/" + srcFolder}`);
+        checkoutArgs.push("HEAD")
     }
+
+    await orgGit.checkout(checkoutArgs);
+
+    // Reset the local branch to the requested HEAD (or mergeStartPoint -- used for testing)
+    log("Resetting...");
+    await orgGit.reset(["--hard"]).catch(abort(git, "Failed to hard reset"));
+
+    // Remove any untracked files in this local branch
+    log("Cleaning...");
+    // The excludes where for local development / branch purposes to ensure local changes where not lost
+    await orgGit.clean([CleanOptions.RECURSIVE, CleanOptions.FORCE], ["-e", "/.vs"]).catch(abort(git, "Failed during clean"));
+
+    let hashDetails = await orgGit.show(["-s", details.branchStartPoint ? details.branchStartPoint : "HEAD"]).catch(abort(git, `Failed getting hash details ${details.branchStartPoint ? details.branchStartPoint : "HEAD"}`));
+
+    let commitHash: string = "";
+    let commitDetails = /^commit\s+(\w+)/g.exec(hashDetails || "");
+    if (commitDetails && commitDetails[1]) {
+        commitHash = commitDetails[1];
+    }
+
+    let ignoreTags: string[] = [];
+    Object.keys(reposToSyncAndMerge).forEach((value) => {
+        ignoreTags.push(reposToSyncAndMerge[value].tagPrefix + "/");
+    });
+
+    // rename the tags from the original repos so they have a prefix and remove the original
+    await renameTags(orgGit, reposToSyncAndMerge, details.tagPrefix + "/", ignoreTags);
+
+    let moveCommitMessage: ICommitDetails = {
+        committed: false,
+        message: `${repoName} @ [${commitHash.substring(0, 7)}...](${details.url}/commit/${commitHash})\n${hashDetails}`
+    }
+
+    // Now Move the merger project to its final destination folder
+    await moveRepoTo(orgGit, forkDestOrg, "", details.destFolder, moveCommitMessage);
+
+    return {
+        path: forkDestOrg,
+        branch: srcOriginBranch,
+        message: moveCommitMessage.message
+    };
 }
 
 /**
@@ -612,8 +736,8 @@ async function moveRepoTo(git: SimpleGit, baseFolder: string, srcFolder: string,
  * @returns A new ICommitDetails which identifies the changes performed for this function, which may or may not
  * include details from the passed branchCommitDetails.
  */
-async function mergeBranchToMergeMaster(git: SimpleGit, destBranch: string, details: IRepoDetails, branchCommitDetails: ICommitDetails): Promise<ICommitDetails> {
-    log(`Merging ${details.mergeBranchName} to merge ${destBranch}`);
+async function mergeBranchToMergeMaster(git: SimpleGit, mergeBranchName: string, destBranch: string, destFolder: string, branchCommitDetails: ICommitDetails): Promise<ICommitDetails> {
+    log(`Merging ${mergeBranchName} to merge ${destBranch}`);
 
     // Switch back to the merge branch 
     log(`Checking out ${destBranch}`);
@@ -643,7 +767,7 @@ async function mergeBranchToMergeMaster(git: SimpleGit, destBranch: string, deta
     }
 
     if (!mergeMessage) {
-        mergeMessage = `## Merging changes from local branch ${details.mergeBranchName}`;
+        mergeMessage = `## Merging changes from local branch ${mergeBranchName}`;
     }
 
     let mergeCommitMessage: ICommitDetails = {
@@ -651,6 +775,7 @@ async function mergeBranchToMergeMaster(git: SimpleGit, destBranch: string, deta
         message: mergeMessage
     };
 
+    log(`Merging ${mergeBranchName}`)
     let commitPerformed = false;
     await git.merge([
         "--allow-unrelated-histories",
@@ -659,12 +784,9 @@ async function mergeBranchToMergeMaster(git: SimpleGit, destBranch: string, deta
         "--progress",
         "--no-ff",
         "--no-edit",
-        details.mergeBranchName]).catch(async (reason) => {
+        mergeBranchName]).catch(async (reason) => {
             commitPerformed = await resolveConflictsToTheirs(git, mergeCommitMessage, false);
         });
-
-    // Now Move the merger project to its final destination folder
-    await moveRepoTo(git, _mergeGitRoot, "", details.destFolder, mergeCommitMessage);
 
     mergeCommitMessage.committed = await commitChanges(git, mergeCommitMessage) || commitPerformed;
 
@@ -686,9 +808,11 @@ addCleanupCallback(async (git: SimpleGit)  => {
 
 _theArgs = parseArgs({
     switches: {
-        "cloneTo": true,
-        "originBranch": true,
-        "originRepo": true
+        cloneTo: true,
+        originBranch: true,
+        originRepo: true,
+        test: false,
+        noPr: false
     },
     defaults: {
         values: _theArgs.values,
@@ -714,6 +838,11 @@ localGit.checkIsRepo().then(async (isRepo) => {
         const originRepo = _theArgs.switches.originRepo;
         const originRepoUrl = "https://github.com/" + originRepo;
         const originBranch = _theArgs.switches.originBranch;
+        let createPr = !_theArgs.switches.noPr;
+        if (_theArgs.switches.test ) {
+            createPr = false;
+            _theArgs.switches.cloneTo = "../" + _theArgs.switches.cloneTo;
+        }
 
         let userDetails = await getUser(localGit);
 
@@ -731,7 +860,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
 
         let prTitle = "[AutoMerge] Merging change(s) from ";
         let prBody = "";
-        let createPr = false;
+        let prRequired = false;
         
         console.log("Merge all Repos");
 
@@ -741,32 +870,90 @@ localGit.checkIsRepo().then(async (isRepo) => {
         await processRepos(reposToSyncAndMerge, async (repoName, repoDetails) => {
             log(`Merging ${repoName} from ${repoDetails.url} using ${repoDetails.mergeBranchName} into ${repoDetails.destFolder}`);
 
-            await addRemoteAndFetch(mergeGit, repoName, repoDetails);
-            branchCommitDetails[repoName] = await mergeRemoteIntoBranch(mergeGit, repoName, repoDetails);
-            //await removeRemote(mergeGit, repoName);
-        });
+            let sourceDetails = await getAndSyncSrcRepo(mergeGit, repoName,repoDetails);
 
-        // Now merge / move each repo into the staging location
-        console.log("Now merge repos into main merge staging")
-        await processRepos(reposToSyncAndMerge, async (repoName, repoDetails) => {
-            let commitDetails = await mergeBranchToMergeMaster(mergeGit, workingBranch, repoDetails, branchCommitDetails[repoName]);
+            log(`Adding Remote ${repoName} => ${sourceDetails.path} ${sourceDetails.branch}`)
+            // Add the new source repo as the remote
+            await addRemoteAndFetch(mergeGit, repoName, {
+                url: sourceDetails.path,
+                branch: sourceDetails.branch
+            });
+
+            branchCommitDetails[repoName] = {
+                committed: false,
+                message: "Merging " + sourceDetails.message
+            };
+
+            log("Merge Staged Repo into main merge staging");            
+            let mergeBranchName = repoName + "/" + sourceDetails.branch
+            let commitDetails = await mergeBranchToMergeMaster(mergeGit, mergeBranchName, workingBranch, repoDetails.destFolder, branchCommitDetails[repoName]);
             if (commitDetails.committed) {
                 prTitle += repoName + "; ";
                 if (prBody) {
                     prBody += "\n";
                 }
                 prBody += `# Changes from ${repoName}@${repoDetails.branch} (${repoDetails.url})\n${commitDetails.message}`;
-                createPr = true;
+                prRequired = true;
+            }
+
+            try {
+                // Attempt to push the tags to the origin
+                await mergeGit.pushTags("origin");
+            } catch (e) {
+                log(`Unable to push tags to origin - ${dumpObj(e)}`);
+            }
+
+            await removeRemote(mergeGit, repoName);
+        });
+
+        log("-----------------------------------------------");
+        log("Now check for merge issues and fix from staging");
+        log("-----------------------------------------------");
+        let fixMergeCommitDetails: ICommitDetails = {
+            committed: false,
+            message: `Identifying and fixing merge issues from staged repos`
+        };
+    
+        // Validate and fixup any bad merges that may have occurred -- make sure the source and new merged repo contain the same files
+        await processRepos(reposToSyncAndMerge, async (repoName, repoDetails) => {
+            fixMergeCommitDetails.message += `\nProcessing ${repoName}`;
+            let stagingRoot = _mergeGitRoot + "-" + repoName;
+            await checkFixBadMerges(mergeGit, repoName, stagingRoot, _mergeGitRoot, fixMergeCommitDetails, 0);
+            if (!prRequired) {
+                prTitle += repoName + "; ";
             }
         });
 
-        // Remove local branches
-        // await processRepos(reposToSyncAndMerge, async (repoName, repoDetails) => {
-        //     await deleteLocalBranch(mergeGit, repoName, repoDetails, true);
-        // });
+        // Commit changes to local branch
+        fixMergeCommitDetails.committed = await commitChanges(mergeGit, fixMergeCommitDetails);
 
-        if (createPr && await pushToBranch(mergeGit)) {
-            await createPullRequest(mergeGit, _mergeGitRoot, prTitle, prBody, originRepo, originBranch)
+        if (!prRequired && fixMergeCommitDetails.committed) {
+            if (prBody) {
+                prBody += "\n";
+            }
+            if (prBody) {
+                prBody += "\n";
+            }
+            prBody += `# Found and Fixed merge issues\n${fixMergeCommitDetails.message}`;
+            prRequired = true;
+        }
+
+        if (prRequired && createPr && await pushToBranch(mergeGit)) {
+            await createPullRequest(mergeGit, _mergeGitRoot, prTitle, prBody, originRepo, originBranch);
+
+            try {
+                // Attempt to push the tags to the origin
+                await mergeGit.pushTags("origin");
+            } catch (e) {
+                log(`Unable to push tags to origin - ${dumpObj(e)}`);
+            }
+
+            try {
+                // Attempt to push the tags to the originRepo
+                await mergeGit.pushTags("upstream");
+            } catch (e) {
+                log(`Unable to push tags to upstream - ${dumpObj(e)}`);
+            }
         }
 
         await doCleanup(mergeGit);

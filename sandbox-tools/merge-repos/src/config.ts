@@ -69,12 +69,14 @@ export const reposToSyncAndMerge: IRepoSyncDetails = {
         url: "https://github.com/open-telemetry/opentelemetry-js",
         branch: "main",
         //mergeStartPoint: "HEAD",    // Used for local testing to validate periodic execution
+        //branchStartPoint: "e91cac503c0bab95b429ff3c4b23249653882054",
         destFolder: MERGE_DEST_BASE_FOLDER + "/js"
     },
     "otel-js-contrib": {
         url: "https://github.com/open-telemetry/opentelemetry-js-contrib",
         branch: "main",
         //mergeStartPoint: "HEAD",    // Used for local testing to validate periodic execution
+        //branchStartPoint: "35226602b92a7587f16a1eb959e4f3b3948f6e9d",
         destFolder: MERGE_DEST_BASE_FOLDER + "/contrib"
     }
 };

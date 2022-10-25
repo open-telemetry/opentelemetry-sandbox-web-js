@@ -18,7 +18,7 @@ Any and ALL code in this repository __SHOULD NOT BE USED FOR PRODUCTION__ as it 
 For production level support please use these repositories
 
 - [OpenTelemetry Specification](https://github.com/open-telemetry/opentelemetry-specification)
-- [OpenTelemetry JS API](https://github.com/open-telemetry/opentelemetry-js-api)
+- [~~OpenTelemetry JS API~~](https://github.com/open-telemetry/opentelemetry-js-api) Now merged back into [OpenTelemetry JS](https://github.com/open-telemetry/opentelemetry-js)
 - [OpenTelemetry JS](https://github.com/open-telemetry/opentelemetry-js)
 - [OpenTelemetry JS Contrib](https://github.com/open-telemetry/opentelemetry-js-contrib)
 

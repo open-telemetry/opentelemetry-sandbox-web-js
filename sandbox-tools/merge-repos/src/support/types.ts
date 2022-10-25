@@ -33,6 +33,12 @@ export declare type CleanupFunc = (git: SimpleGit) => Promise<any>;
     branch: string;
 
     /**
+     * [Optional] Identifies the point on the source branch to be merged into the auto-merge branch.
+     * Defaults to undefined and therefore the HEAD of the specified branch
+     */
+    branchStartPoint?: string;
+
+    /**
      * The prefix to apply to remote tags when merging into the destination repo.
      * If not defined defaults to the <repo key name>
      */

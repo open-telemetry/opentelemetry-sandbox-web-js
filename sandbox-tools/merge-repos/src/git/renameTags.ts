@@ -87,8 +87,6 @@ export async function renameTags(git: SimpleGit, theRepos: IRepoSyncDetails, pre
                 }
                 // Delete the old tag
                 await git.tag(["-d", tag]);
-            } else {
-                log(` - Ignoring ${tag}`);
             }
         }
     }
