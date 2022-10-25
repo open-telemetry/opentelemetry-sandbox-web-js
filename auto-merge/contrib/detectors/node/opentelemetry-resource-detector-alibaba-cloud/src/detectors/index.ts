@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-export * from './AlibabaCloudEcsDetector';
+export { NodeTracerConfig } from './config';
+export * from './NodeTracerProvider';
+export * from '@opentelemetry/sdk-trace-base';
