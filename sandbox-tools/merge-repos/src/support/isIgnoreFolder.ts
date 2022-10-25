@@ -30,7 +30,7 @@ export function isIgnoreFolder(theRepos: IRepoSyncDetails, source: string, isRoo
         return true;
     }
 
-    if (isRoot) {
+    if (isRoot && theRepos) {
         let repoNames = Object.keys(theRepos);
         for (let lp = 0; lp < repoNames.length; lp++) {
             let destFolder = theRepos[repoNames[lp]].destFolder;

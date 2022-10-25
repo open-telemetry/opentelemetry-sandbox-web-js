@@ -16,11 +16,12 @@
 
 import * as fs from "fs";
 import { ResetMode, SimpleGit } from "simple-git";
-import { fail } from "../support/abort";
+import { abort, fail } from "../support/abort";
 import { createGit } from "./createGit";
 import { addRemoteAndFetch, getRemoteList } from "./remotes";
 import { setUser, UserDetails } from "./userDetails";
 import { log } from "../support/utils";
+import { IRepoDetails } from "../support/types";
 
 /**
  * Create a new local git instance in the `forkDest` folder
@@ -81,6 +82,10 @@ export async function createLocalBranch(git: SimpleGit, forkDest: string, origin
     }
     await addRemoteAndFetch(mergeGit, "upstream", { url: originRepoUrl, branch: originBranch });
 
+    // Rebase the origin branch to match the upstream branch
+    await mergeGit.reset(ResetMode.HARD, [ "upstream/" + originBranch ]);
+    await mergeGit.push("origin", originBranch, [ "-f" ]);
+
     log(`Creating new local branch ${workingLocalBranch} from origin/${originBranch}`);
     await mergeGit.checkout([
         "-b", workingLocalBranch,
@@ -92,4 +97,20 @@ export async function createLocalBranch(git: SimpleGit, forkDest: string, origin
     await mergeGit.push("origin", workingLocalBranch, [ "-f" ]);
 
     return mergeGit;
+}
+
+/**
+ * Deletes the local named branch
+ * @param git - The SimpleGit instance for the repo to use
+ * @param repoName - The configured repo name *(key of the RepoDetails)
+ * @param details - The repo details which is used to create the local branch
+ * @param forceDelete - Should the branch be force deleted
+ */
+ export async function deleteLocalBranch(git: SimpleGit, repoName: string, details: IRepoDetails, forceDelete?: boolean) {
+    log(`Removing Local branch for ${repoName}...`)
+    let branches = await git.branch().catch(abort(git, "Failed getting branches"));
+    if (branches && branches.branches[details.mergeBranchName]) {
+        // Remove the local branch
+        await git.deleteLocalBranch(details.mergeBranchName, forceDelete).catch(abort(git, `Failed to remove branch for ${repoName} -- ${details.mergeBranchName}`));
+    }
 }
