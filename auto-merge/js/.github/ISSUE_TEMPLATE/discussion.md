@@ -10,4 +10,3 @@ labels: discussion
 
 - [ ] This only affects the JavaScript OpenTelemetry library
 - [ ] This may affect other libraries, but I would like to get opinions here first
-
