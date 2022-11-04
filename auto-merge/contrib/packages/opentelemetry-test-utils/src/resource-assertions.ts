@@ -231,7 +231,7 @@ export const assertServiceResource = (
   resource: Resource,
   validations: {
     name: string;
-    instanceId?: string;
+    instanceId: string;
     namespace?: string;
     version?: string;
   }

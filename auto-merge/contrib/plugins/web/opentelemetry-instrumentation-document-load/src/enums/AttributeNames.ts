@@ -20,7 +20,3 @@ export enum AttributeNames {
   DOCUMENT_FETCH = 'documentFetch',
   RESOURCE_FETCH = 'resourceFetch',
 }
-
-export const AttributeValues: Readonly<AttributeValuesType> = {
-  RPC_SYSTEM: 'grpc'
-};

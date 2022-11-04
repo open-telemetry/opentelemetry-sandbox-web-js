@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/semantic_conventions/http.md
- */
 export enum AttributeNames {
   VERSION = 'nestjs.version',
   TYPE = 'nestjs.type',

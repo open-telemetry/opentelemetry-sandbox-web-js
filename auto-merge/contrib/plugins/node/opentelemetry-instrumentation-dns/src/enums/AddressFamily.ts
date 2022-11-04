@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export function unrefTimer(timer: NodeJS.Timer): void {
-  timer.unref();
+
+export enum AddressFamily {
+  IPV4 = 4,
+  IPV6 = 6,
+  UNKNOWN = 0,
 }

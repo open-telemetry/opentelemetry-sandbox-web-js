@@ -1,41 +1,33 @@
-# Instrumentation Examples
+# OpenTelemetry JavaScript Examples
 
-:warning: Note: We are working on migrating these examples to their respective package directories.
+This directory contains a number of examples of how to run real applications
+with OpenTelemetry JavaScript.
 
-For instance, examples of using `express` instrumentation have moved from this directory to [plugins/node/opentelemetry-instrumentation-express](https://github.com/open-telemetry/opentelemetry-js/tree/main/plugins/node/opentelemetry-instrumentation-express).
+## Maintained Examples
 
-## Instructions for Migrating an Example
+Maintained Examples are expected to be updated with every OpenTelemetry JavaScript release, to
+use the latest and greatest features, and best practices.
 
-* [ ] Move the files
-  * [ ] Choose an instrumentation package to migrate examples for.
-  * [ ] Move the examples from `./examples/[name]` to `./plugins/[node or web]]/opentelemetry-instrumentation-[name]/examples`.
-  * [ ] Update the `./plugins/[node or web]]/opentelemetry-instrumentation-[name]/README.md` and replace the path `examples/[name]` with the new path of the examples.
-* [ ] Update the `package.json` in the examples folder
-  * [ ] Remove the `@opentelemetry/instrumentation-[name]` dependency.
-  * [ ] Install `typescript` and `ts-node` in the examples directory.
-  * [ ] Replace usage of `node` in scripts with `ts-node`.
-  * [ ] Add a script for compiling the code in scripts: `"compile": "tsc -p ."`
-* [ ] Add a tsconfig.json file in the examples folder. (Example below)
-* [ ] Update the code
-  * [ ] Change code to use a relative import of the library.
-  * [ ] Add types to the code
-* [ ] Update the instrumentation package's `package.json`
-  * [ ] Add a script `"compile:examples": "cd examples && npm run compile",`.
-* [ ] Test the updated code
-  * [ ] Test building the examples by running `npm run compile:examples`
-  * [ ] Test that the actual exapmle code runs as expected
+| Name                                      | Description                                                                                                              | Complexity Level |
+|-------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|------------------|
+| [basic-tracer-node](basic-tracer-node/)   | Basic use of Tracing in Node.js application                                                                              | Beginner         |
+| [opentelemetry-web](opentelemetry-web/)          | Basic use of Tracing and Metrics in a Web application                                                                    | Beginner         |
+| [http](http/)                             | HTTP Instrumentation to automatically collect trace data and export them to the backend of choice                        | Intermediate     |
+| [https](https/)                           | HTTPS Instrumentation to automatically collect trace data and export them to the backend of choice                       | Intermediate     |
+| [grpc](grpc/)                             | gRPC Instrumentation to automatically collect trace data and export them to the backend of choice                        | Intermediate     |
+| [otlp-exporter-node](otlp-exporter-node/) | This example shows how to use `@opentelemetry/exporter-otlp-http` to instrument a simple Node.js application             | Intermediate     |
+| [opentracing-shim](opentracing-shim/)     | This is a simple example that demonstrates how existing OpenTracing instrumentation can be integrated with OpenTelemetry | Intermediate     |
 
-Example tsconfig.json file:
+Examples of experimental packages can be found at [experimental/examples](../experimental/examples).
 
-```json
-{
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "noEmit": true,
-    "rootDir": ".",
-  },
-  "include": [
-    "src/**/*.ts",
-  ]
-}
-```
+Additional examples can be found at [@opentelemetry/opentelemetry-js-contrib][opentelemetry-js-contrib-examples].
+
+## Contributing
+
+Please see [CONTRIBUTING.md](https://github.com/open-telemetry/opentelemetry-js/blob/main/CONTRIBUTING.md) for instructions on how to contribute.
+
+## LICENSE
+
+Apache License 2.0
+
+[opentelemetry-js-contrib-examples]: https://github.com/open-telemetry/opentelemetry-js-contrib/tree/main/examples
