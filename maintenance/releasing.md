@@ -1,8 +1,13 @@
 # Releasing OpenTelemetry Packages
 
-This document explains how to publish all OT modules at version x.y.z. Ensure that you’re following semver when choosing a version number.
+This repository uses [Release Please](https://github.com/googleapis/release-please) to manage its releases automatically and independently.
+Modified packages are automatically published to npm when the auto-generated Release Please PR is merged.
 
-Release Process:
+## Manual Publishing Process
+
+For posterity, or in the event of any failures with release-please, the process for performing a manual release is below.
+
+Manual Release Process Steps:
 
 - [Release Process (Maintainers only)](#release-process)
   - [Update to latest locally](#update-to-latest-locally)
@@ -21,7 +26,7 @@ Release Process:
 
 ## Release Process
 
-### Update to latest locally
+Use `git fetch` and `git checkout origin/main` to ensure you’re on the latest commit. Make sure you have no unstaged changes. Ideally, also use `git clean -dfx` to remove all ignored and untracked files.
 
 Use `git fetch` and `git checkout origin/main` to ensure you’re on the latest commit. Make sure you have no unstaged changes. Ideally, also use `git clean -dfx` to remove all ignored and untracked files.
 
@@ -43,7 +48,7 @@ Decide on the next `major.minor.patch` release number based on [semver](http://s
 
 Since we use `lerna`, we can use [lerna-changelog](https://github.com/lerna/lerna-changelog#lerna-changelog)
 
-##### How to use
+#### How to use
 
 Pass your [github token](https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line) to generate the changelog automatically.
 For security reasons, when you create a Github token, select the permissions: under **repo**, select **Access public repositories**, **Access commit status**.
@@ -74,7 +79,7 @@ By default lerna-changelog will show all pull requests that have been merged sin
 
 You can also use the `--from` and `--to` options to view a different range of pull requests:
 
-```sh
+```text
 GITHUB_AUTH=xxxxx lerna-changelog --from=v1.0.0 --to=v2.0.0
 ```
 
@@ -108,16 +113,14 @@ done
 
 Check your e-mail and make sure the number of “you’ve published this module” emails matches the number you expect.
 
-### Publish the GitHub Release
+## Publish the GitHub Release
 
 Publish the GitHub release, ensuring that the tag points to the newly landed commit corresponding to release proposal `x.y.z`.
 
 ### Update CHANGELOG
 
-- After releasing is done, update the [CHANGELOG.md](https://github.com/open-telemetry/opentelemetry-js/blob/main/CHANGELOG.md) and start new Unreleased label.
-- Create a new commit with the exact title: `Post Release: update CHANGELOG.md`.
-- Go through PR review and merge it to GitHub main branch.
-
-### Known Issues
+* After releasing is done, update the [CHANGELOG.md](https://github.com/open-telemetry/opentelemetry-js/blob/main/CHANGELOG.md) and start new Unreleased label.
+* Create a new commit with the exact title: `Post Release: update CHANGELOG.md`.
+* Go through PR review and merge it to GitHub main branch.
 
 - The `examples/` and `getting-started/` folders are not part of lerna packages, we need to manually bump the version in `package.json`.

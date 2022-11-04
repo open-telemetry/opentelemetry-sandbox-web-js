@@ -1,19 +1,23 @@
 {
-  "extends": ["config:base"],
+  "extends": [
+    "config:base"
+  ],
   "packageRules": [
     {
       "groupName": "all non-major dependencies",
-      "groupSlug": "all-minor-patch",
-      "matchUpdateTypes": ["patch", "minor"]
+      "updateTypes": ["patch", "minor"],
+      "groupSlug": "all-minor-patch"
     },
     {
-      "matchPaths": ["backwards-compatibility"],
-      "matchPackageNames": ["@types/node"],
-      "enabled": false
+      "matchPackageNames": ["@opentelemetry/api"],
+      "rangeStrategy": "bump"
     }
   ],
-  "ignoreDeps": ["gcp-metadata", "got", "mocha", "husky", "karma-webpack", "@opentelemetry/api"],
+  "ignoreDeps": ["lerna", "lerna-changelog"],
   "assignees": ["@blumamir", "@dyladan", "@legendecas", "@Rauno56", "@vmarchaud"],
-  "schedule": ["before 3am on Friday"],
-  "labels": ["dependencies"]
+  "schedule": [
+    "before 3am on Friday"
+  ],
+  "labels": ["dependencies"],
+  "semanticCommitType": "feat"
 }

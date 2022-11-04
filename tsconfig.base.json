@@ -20,7 +20,8 @@
     "strict": true,
     "strictNullChecks": true,
     "target": "es2017",
-    "useUnknownInCatchVariables": false
+    "incremental": true,
+    "newLine": "LF"
   },
   "exclude": [
     "node_modules"

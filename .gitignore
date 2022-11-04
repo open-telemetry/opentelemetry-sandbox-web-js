@@ -81,9 +81,9 @@ package.json.lerna_backup
 # VsCode configs
 .vscode/
 
-#Visual Studio
-.vs/
-
-#IDEA
-.idea
 *.iml
+.idea
+
+# version.ts file is automatically generated at compile time
+version.ts
+/.vs

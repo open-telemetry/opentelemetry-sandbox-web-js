@@ -14,24 +14,30 @@
  * limitations under the License.
  */
 
-const fs = require('fs');
-const os = require('os');
 const path = require('path');
-const semver = require('semver');
 
 const appRoot = process.cwd();
-
 const packageJsonUrl = path.resolve(`${appRoot}/package.json`);
 const pjson = require(packageJsonUrl);
 
-if (pjson.dependencies && pjson.dependencies["@opentelemetry/api"]) 
-    throw new Error(`Package ${pjson.name} depends on API but it should be a peer dependency`);
+const isExample = pjson.private && /-example$/.test(pjson.name);
 
-const peerVersion = pjson.peerDependencies && pjson.peerDependencies["@opentelemetry/api"]
-const devVersion = pjson.devDependencies && pjson.devDependencies["@opentelemetry/api"]
+if (isExample) {
+  return console.log(`Skipping checking ${pjson.name} because it's an example`);
+}
+
+if (pjson.dependencies && pjson.dependencies['@opentelemetry/api']) {
+  throw new Error(`Package ${pjson.name} depends on API but it should be a peer dependency`);
+}
+
+const peerVersion = pjson.peerDependencies && pjson.peerDependencies['@opentelemetry/api'];
+const devVersion = pjson.devDependencies && pjson.devDependencies['@opentelemetry/api'];
 if (peerVersion) {
-    if (!semver.subset(devVersion, peerVersion)) {
-        throw new Error(`Package ${pjson.name} depends on peer API version ${peerVersion} but version ${devVersion} in development`);
-    }
-    console.log(`${pjson.name} OK`);
+  if (devVersion !== peerVersion) {
+    throw new Error(
+      `Package ${pjson.name} depends on peer API version ${peerVersion} ` +
+      `but version ${devVersion} in development which doesn't match the peer API version`
+    );
+  }
+  console.log(`${pjson.name} OK`);
 }

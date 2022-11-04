@@ -7,7 +7,7 @@ Before creating a pull request, please make sure:
 - You have read the guide for contributing
   - See https://github.com/open-telemetry/opentelemetry-js/blob/main/CONTRIBUTING.md
 - You signed all your commits (otherwise we won't be able to merge the PR)
-  - See https://github.com/open-telemetry/community/blob/master/CONTRIBUTING.md#sign-the-cla
+  - See https://github.com/open-telemetry/community/blob/main/CONTRIBUTING.md#sign-the-cla
 - You added unit tests for the new functionality
 - You mention in the PR description which issue it is addressing, e.g. "Fixes #xxx". This will auto-close
   the issue that your PR fixes (if such)
@@ -21,23 +21,8 @@ Fixes # (issue)
 
 ## Short description of the changes
 
-## Type of change
+-
 
-Please delete options that are not relevant.
+## Checklist
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] This change requires a documentation update
-
-## How Has This Been Tested?
-
-Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also list any relevant details for your test configuration
-
-- [ ] Test A
-
-## Checklist:
-
-- [ ] Followed the style guidelines of this project
-- [ ] Unit tests have been added
-- [ ] Documentation has been updated
+- [ ] Ran `npm run test-all-versions` for the edited package(s) on the latest commit if applicable.

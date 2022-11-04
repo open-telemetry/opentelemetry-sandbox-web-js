@@ -1,15 +1,30 @@
 {
-  "version": "independent",
   "npmClient": "npm",
   "packages": [
-    "api",
     "packages/*",
-    "experimental/packages/*",
-    "experimental/backwards-compatability/*",
-    "integration-tests/*",
-    "selenium-tests",
-    "examples/otlp-exporter-node",
-    "examples/opentelemetry-web",
-    "examples/https"
-  ]
+    "metapackages/*",
+    "plugins/node/*",
+    "plugins/node/*/examples",
+    "plugins/web/*",
+    "plugins/web/*/examples",
+    "propagators/*",
+    "detectors/node/*"
+  ],
+  "version": "independent",
+  "changelog": {
+    "repo": "open-telemetry/opentelemetry-js-contrib",
+    "labels": {
+      "breaking": ":boom: Breaking Change",
+      "bug": ":bug: (Bug Fix)",
+      "core": ":wrench: Core",
+      "document": ":books: (Refine Doc)",
+      "enhancement": ":rocket: (Enhancement)",
+      "feature-request": ":sparkles: (Feature)",
+      "internal": ":house: Internal"
+    },
+    "cacheDir": ".changelog",
+    "ignoreCommitters": [
+      "github-actions"
+    ]
+  }
 }

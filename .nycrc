@@ -2,18 +2,20 @@
   "extension": [
     ".ts"
   ],
+  "include": [
+    "src/**"
+  ],
+  "reporter": ["text", "json"],
   "exclude": [
     "**/*.d.ts",
     "build/**/*.*",
     "src/index.ts",
-    "src/platform/**/index.ts",
-    "src/platform/browser/*.ts",
     "src/version.ts",
-    "test/**/*.*",
-    ".eslintrc.js",
     "karma.conf.js",
+    "src/platform/browser/*.ts",
+    "test/*.ts",
     "webpack/*.js",
-    "src/generated/**"
+    ".eslintrc.js"
   ],
   "all": true
 }
