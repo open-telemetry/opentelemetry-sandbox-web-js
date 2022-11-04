@@ -1,0 +1,46 @@
+{
+  "name": "example-otlp-exporter-node",
+  "private": true,
+  "version": "0.33.0",
+  "description": "Example of using @opentelemetry/collector-exporter in Node.js",
+  "main": "index.js",
+  "scripts": {
+    "start:tracing": "node tracing.js",
+    "start:metrics": "node metrics.js",
+    "docker:start": "cd ./docker && docker-compose down && docker-compose up",
+    "docker:startd": "cd ./docker && docker-compose down && docker-compose up -d",
+    "docker:stop": "cd ./docker && docker-compose down"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/open-telemetry/opentelemetry-js.git"
+  },
+  "keywords": [
+    "opentelemetry",
+    "tracing"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "author": "OpenTelemetry Authors",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/open-telemetry/opentelemetry-js/issues"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.1.0",
+    "@opentelemetry/api-metrics": "0.33.0",
+    "@opentelemetry/core": "1.7.0",
+    "@opentelemetry/exporter-metrics-otlp-grpc": "0.33.0",
+    "@opentelemetry/exporter-metrics-otlp-http": "0.33.0",
+    "@opentelemetry/exporter-metrics-otlp-proto": "0.33.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "0.33.0",
+    "@opentelemetry/exporter-trace-otlp-http": "0.33.0",
+    "@opentelemetry/exporter-trace-otlp-proto": "0.33.0",
+    "@opentelemetry/resources": "1.7.0",
+    "@opentelemetry/sdk-metrics": "0.33.0",
+    "@opentelemetry/sdk-trace-base": "1.7.0",
+    "@opentelemetry/semantic-conventions": "1.7.0"
+  },
+  "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/examples/otlp-exporter-node"
+}
