@@ -22,10 +22,7 @@
       "path": "../../../packages/opentelemetry-sdk-trace-base"
     },
     {
-      "path": "../opentelemetry-api-metrics"
-    },
-    {
-      "path": "../opentelemetry-sdk-metrics"
+      "path": "../../../packages/sdk-metrics"
     }
   ]
 }
