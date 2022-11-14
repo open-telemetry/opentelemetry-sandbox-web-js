@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-// Split module-level variable definition into separate files to allow
-// tree-shaking on each api instance.
-import { MetricsAPI } from './api/metrics';
-/** Entrypoint for metrics API */
-export const metrics = MetricsAPI.getInstance();
+export * from './globalThis';

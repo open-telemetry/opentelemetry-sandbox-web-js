@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-// Split module-level variable definition into separate files to allow
-// tree-shaking on each api instance.
-import { TraceAPI } from './api/trace';
-/** Entrypoint for trace API */
-export const trace = TraceAPI.getInstance();
+/** only globals that common to node and browsers are allowed */
+// eslint-disable-next-line node/no-unsupported-features/es-builtins
+export const _globalThis = typeof globalThis === 'object' ? globalThis : global;
