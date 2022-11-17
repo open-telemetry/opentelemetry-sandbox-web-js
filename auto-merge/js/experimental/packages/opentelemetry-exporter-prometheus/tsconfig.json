@@ -16,10 +16,10 @@
       "path": "../../../packages/opentelemetry-core"
     },
     {
-      "path": "../opentelemetry-api-metrics"
+      "path": "../../../packages/opentelemetry-resources"
     },
     {
-      "path": "../opentelemetry-sdk-metrics"
+      "path": "../../../packages/sdk-metrics"
     }
   ]
 }
