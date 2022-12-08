@@ -22,7 +22,7 @@ import { ICommitDetails } from "../git/commit";
 import { isIgnoreFolder } from "./isIgnoreFolder";
 import { log } from "./utils";
 
-async function moveFolder(git: SimpleGit, commitMessage: string, baseFolder: string, from: string, to: string, level: number) {
+export async function moveFolder(git: SimpleGit, commitMessage: string, baseFolder: string, from: string, to: string, level: number) {
 
     if (from !== to && !isIgnoreFolder(reposToSyncAndMerge, from, level === 0)) {
         let moved = false;

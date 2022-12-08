@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { CleanOptions, FileStatusResult, ResetMode, SimpleGit, StatusResult} from "simple-git";
 import * as fs from "fs";
 import * as path from "path";
+import { CleanOptions, FileStatusResult, ResetMode, SimpleGit, StatusResult} from "simple-git";
 import { commitChanges, ICommitDetails } from "./git/commit";
 import { createGit } from "./git/createGit";
 import { createLocalBranch } from "./git/createLocalBranch";
@@ -32,9 +32,10 @@ import { isIgnoreFolder } from "./support/isIgnoreFolder";
 import { parseArgs, ParsedOptions, SwitchBase } from "./support/parseArgs";
 import { processRepos } from "./support/processRepos";
 import { IRepoDetails, IRepoSyncDetails } from "./support/types";
-import { dumpObj, findCurrentRepoRoot, formatIndentLines, log } from "./support/utils";
+import { dumpObj, findCurrentRepoRoot, formatIndentLines, log, logAppendMessage } from "./support/utils";
 import { applyRepoDefaults, MERGE_CLONE_LOCATION, reposToSyncAndMerge, MERGE_ORIGIN_REPO, MERGE_ORIGIN_STAGING_BRANCH, MERGE_DEST_BASE_FOLDER } from "./config";
 import { moveRepoTo } from "./support/moveTo";
+import { resolveConflictsToTheirs } from "./git/resolveConflictsToTheirs";
 
 interface ISourceRepoDetails {
     path: string,
@@ -197,318 +198,6 @@ async function removePotentialMergeConflicts(git: SimpleGit, theRepos: IRepoSync
     return null;
 }
 
-function getFileStatus(status: StatusResult, name: string): FileStatusResult {
-    for (let lp = 0; lp < status.files.length; lp++) {
-        if (status.files[lp].path === name) {
-            return status.files[lp];
-        }
-    }
-
-    return null;
-}
-
-function logAppendMessage(commitMessage: string, fileStatus :FileStatusResult, message: string) {
-    let logMessage: string;
-    let thePath = fileStatus ? fileStatus.path : "";
-    if (thePath.startsWith(_mergeGitRoot)) {
-        thePath = thePath.substring(_mergeGitRoot.length);
-    }
-
-    if (fileStatus && thePath && fileStatus.index && fileStatus.working_dir) {
-        logMessage = ` - (${fileStatus.index.padEnd(1)}${fileStatus.working_dir.padEnd(1)}) ${thePath} - ${message}`;
-    } else if (fileStatus && thePath) {
-        logMessage = ` - ${thePath} - ${message}`;
-    } else {
-        logMessage = ` - ${message}`;
-    }
-
-    log(logMessage);
-    if (commitMessage.length + logMessage.length < 2048) {
-        commitMessage += `\n${logMessage}`;
-    } else if (commitMessage.indexOf("...truncated...") === -1) {
-        commitMessage += "\n...truncated...";
-    }
-
-    return commitMessage;
-}
-
-/**
- * Helper to resolve merge conflicts in favor of the original master repo's
- * 
- * The git "status" values
- * ' ' = unmodified
- * M = modified
- * T = file type changed (regular file, symbolic link or submodule)
- * A = added
- * D = deleted
- * R = renamed
- * C = copied (if config option status.renames is set to "copies")
- * U = updated but unmerged
- * 
- * index      workingDir     Meaning
- * -------------------------------------------------
- *            [AMD]   not updated
- * M          [ MTD]  updated in index
- * T          [ MTD]  type changed in index
- * A          [ MTD]  added to index                        <-- (T) not handled
- * D                  deleted from index
- * R          [ MTD]  renamed in index
- * C          [ MTD]  copied in index
- * [MTARC]            index and work tree matches           <-- Not handled here as === Not conflicting
- * [ MTARC]      M    work tree changed since index
- * [ MTARC]      T    type changed in work tree since index <-- not handled, should not occur
- * [ MTARC]      D    deleted in work tree
- *               R    renamed in work tree
- *               C    copied in work tree
- * -------------------------------------------------
- * D             D    unmerged, both deleted
- * A             U    unmerged, added by us                 <-- not handled, should not occur
- * U             D    unmerged, deleted by them
- * U             A    unmerged, added by them
- * D             U    unmerged, deleted by us
- * A             A    unmerged, both added
- * U             U    unmerged, both modified
- * -------------------------------------------------
- * ?             ?    untracked
- * !             !    ignored
- * -------------------------------------------------
- */
-async function resolveConflictsToTheirs(git: SimpleGit, commitDetails: ICommitDetails, performCommit: boolean): Promise<boolean> {
-
-    function describeStatus(status: string) {
-        switch(status) {
-            case "_":
-                return "Not Modified";
-            case "M":
-                return "Modified";
-            case "T":
-                return "Type Changed";
-            case "A":
-                return "Added";
-            case "D":
-                return "Deleted";
-            case "R":
-                return "Renamed";
-            case "C":
-                return "Copied";
-            case "U":
-                return "Updated";
-            default:
-        }
-
-        return "Unknown(" + status + ")";
-    }
-            
-    let status = await git.status().catch(abort(git, "Unable to get status")) as StatusResult;
-    if (status.conflicted.length === 0) {
-        log(`No Conflicts - ${commitDetails.message}`)
-        // No Conflicts
-        return false;
-    }
-
-    let commitSummary = {
-    };
-
-    log(`Resolving ${status.conflicted.length} conflicts`);
-    commitDetails.message += `\n### Auto resolving ${status.conflicted.length} conflict${status.conflicted.length > 1 ? "s" : ""} to select the master repo version`;
-
-    let commitMessage = "";
-    for (let lp = 0; lp < status.conflicted.length; lp++) {
-        let conflicted = status.conflicted[lp];
-        let fileStatus = getFileStatus(status, conflicted);
-        let fileState = `${fileStatus.index.padEnd(1)}${fileStatus.working_dir.padEnd(1)}`.replace(/\s/g, "_");
-
-        commitSummary[fileState] = (commitSummary[fileState] + 1 || 1);
-
-        if (fileStatus.index === "D") {
-            // index      workingDir     Meaning
-            // -------------------------------------------------
-            // D                  deleted from index
-            // D             D    unmerged, both deleted
-            // D             U    unmerged, deleted by us
-            if (fileStatus.working_dir === "U") {
-                // Deleted by Us
-                commitMessage = logAppendMessage(commitMessage, fileStatus, "Deleted by us => checkout theirs");
-                await git.checkout([
-                    "--theirs",
-                    conflicted
-                ]);
-
-                await git.raw([
-                    "add",
-                    "-f",
-                    conflicted]);
-            } else {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, `Removed from ${fileStatus.working_dir === "D" ? "both" : "theirs"}`);
-                await git.rm(conflicted);
-            }
-        } else if (fileStatus.index === "A") {
-            // index      workingDir     Meaning
-            // -------------------------------------------------
-            // [ MTARC]      M    work tree changed since index
-            // [ MTARC]      D    deleted in work tree
-            // A             A    unmerged, both added
-            // A             U    unmerged, added by us                     <-- This could mean that it was deleted from their repo or just added by us and changes from historical versions that merge could not resolve
-            // -------------------------------------------------
-            // Not handled
-            // -------------------------------------------------
-            // [MTARC]            index and work tree matches               <-- Not conflicting
-            // [ MTARC]      T    type changed in work tree since index     <-- Also should not occur
-            if (fileStatus.working_dir === "A") {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, "Added in both => checkout theirs");
-                await git.checkout([
-                    "--theirs",
-                    conflicted
-                ]);
-
-                await git.raw([
-                    "add",
-                    "-f",
-                    conflicted]);
-            } else if (fileStatus.working_dir === "M") {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, "Added in theirs, modified in ours => checkout theirs");
-                await git.checkout([
-                    "--theirs",
-                    conflicted
-                ]);
-
-                await git.raw([
-                    "add",
-                    "-f",
-                    conflicted]);
-            } else if (fileStatus.working_dir === "D") {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, "Added in theirs, deleted in ours => checkout theirs");
-                await git.checkout([
-                    "--theirs",
-                    conflicted
-                ]);
-
-                await git.raw([
-                    "add",
-                    "-f",
-                    conflicted]);
-            } else if (fileStatus.working_dir === "U") {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, "Added in ours => checkout ours");
-                // Just checkout (keep) our version and any changes / deletions will be resolved during during sync validation steps
-                await git.checkout([
-                    "--ours",
-                    conflicted
-                ]);
-
-                await git.raw([
-                    "add",
-                    "-f",
-                    conflicted]);
-            } else {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, `Unsupported automatic merge state for ${conflicted}`);
-            }
-        } else if (fileStatus.index === "R") {
-            // index      workingDir     Meaning
-            // -------------------------------------------------
-            // [ MTARC]      M    work tree changed since index
-            // [ MTARC]      D    deleted in work tree
-            // -------------------------------------------------
-            // Not handled
-            // -------------------------------------------------
-            // [MTARC]            index and work tree matches           <-- Not conflicting
-            // [ MTARC]      T    type changed in work tree since index
-            if (fileStatus.working_dir === "M") {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, "Renamed in theirs, modified in ours => remove local and checkout theirs");
-                await git.checkout([
-                    "--theirs",
-                    conflicted
-                ]);
-
-                await git.raw([
-                    "add",
-                    "-f",
-                    conflicted]);
-            } else if (fileStatus.working_dir === "D") {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, "Renamed in theirs, deleted in ours => checkout theirs");
-                await git.checkout([
-                    "--theirs",
-                    conflicted
-                ]);
-
-                await git.raw([
-                    "add",
-                    "-f",
-                    conflicted]);
-            } else {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, "!!! Unsupported automatic renamed merge state");
-            }
-        } else if (fileStatus.index === "U") {
-            // index      workingDir     Meaning
-            // -------------------------------------------------
-            // U             D    unmerged, deleted by them
-            // U             A    unmerged, added by them
-            // U             U    unmerged, both modified
-            if (fileStatus.working_dir === "D") {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, "Unmerged, deleted by them => remove");
-                await git.rm(conflicted);
-            } else if (fileStatus.working_dir === "A") {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, "Unmerged, added by them => checkout theirs");
-                await git.checkout([
-                    "--theirs",
-                    conflicted
-                ]);
-
-                await git.raw([
-                    "add",
-                    "-f",
-                    conflicted]);
-            } else if (fileStatus.working_dir === "U") {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, "Unmerged, both modified => checkout theirs");
-                await git.checkout([
-                    "--theirs",
-                    conflicted
-                ]);
-
-                await git.raw([
-                    "add",
-                    "-f",
-                    conflicted]);
-            } else {
-                commitMessage = logAppendMessage(commitMessage, fileStatus, "Unsupported automatic unmerged state");
-            }
-        } else {
-            commitMessage = logAppendMessage(commitMessage, fileStatus, " => checkout theirs");
-            await git.checkout([
-                "--theirs",
-                conflicted
-            ]);
-
-            await git.raw([
-                "add",
-                "-f",
-                conflicted]);
-        }
-    }
-
-    status = await git.status().catch(abort(git, "Unable to get status")) as StatusResult;
-    if (status.conflicted.length !== 0) {
-        await fail(git, `Still has conflicts ${status.conflicted.length} we can't auto resolve - ${commitMessage}\n${JSON.stringify(status.conflicted, null, 4)}`);
-    }
-
-    let summaryKeys = Object.keys(commitSummary);
-    if (summaryKeys.length > 0) {
-        commitDetails.message += "\nSummary of changes by file state";
-        summaryKeys.forEach((value) => {
-            let status = describeStatus(value[0]) + " <=> " + describeStatus(value[1]);
-            commitDetails.message += `\n${value} (${status}): ${commitSummary[value]}`;
-        });
-    }
-
-    commitDetails.message += `\n${commitMessage}`;
-
-    // Directly committing as using "git merge --continue" will ALWAYS popup an editor
-    if (performCommit) {
-        return await commitChanges(git, commitDetails);
-    }
-
-    return false;
-}
-
 async function checkFixBadMerges(git: SimpleGit, repoName: string, baseFolder: string, destFolder: string, commitDetails: ICommitDetails, level: number) {
 
     // Get master source files
@@ -557,7 +246,7 @@ async function checkFixBadMerges(git: SimpleGit, repoName: string, baseFolder: s
             let masterStats = fs.statSync(masterFile);
             if (destStats.size !== masterStats.size) {
                 // File size is different so was not moved / merged correctly
-                commitDetails.message = logAppendMessage(commitDetails.message, { index: "x", working_dir: "S", path: destFile } , `Re-Copying master file as size mismatch ${destStats.size} !== ${masterStats.size}`);
+                commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "x", working_dir: "S", path: destFile } , `Re-Copying master file as size mismatch ${destStats.size} !== ${masterStats.size}`);
                 fs.copyFileSync(masterFile, destFile);
                 changed = true;
             } else {
@@ -566,7 +255,7 @@ async function checkFixBadMerges(git: SimpleGit, repoName: string, baseFolder: s
                 let destContent = fs.readFileSync(destFile);
                 if (masterContent.length !== destContent.length) {
                     // File content is different so was not moved / merged correctly
-                    commitDetails.message = logAppendMessage(commitDetails.message, { index: "x", working_dir: "C", path: destFile } , "Re-Copying master file as content mismatch");
+                    commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "x", working_dir: "C", path: destFile } , "Re-Copying master file as content mismatch");
                     fs.copyFileSync(masterFile, destFile);
                     changed = true;
                 } else {
@@ -581,7 +270,7 @@ async function checkFixBadMerges(git: SimpleGit, repoName: string, baseFolder: s
 
                     if (!isSame) {
                         // File content is different so was not moved / merged correctly
-                        commitDetails.message = logAppendMessage(commitDetails.message, { index: "x", working_dir: "C", path: destFile } , "Re-Copying master file as content is different");
+                        commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "x", working_dir: "C", path: destFile } , "Re-Copying master file as content is different");
                         fs.copyFileSync(masterFile, destFile);
                         changed = true;
                     }
@@ -589,7 +278,7 @@ async function checkFixBadMerges(git: SimpleGit, repoName: string, baseFolder: s
             }
         } else {
             // Missing dest so was not moved / merged correctly
-            commitDetails.message = logAppendMessage(commitDetails.message, { index: "x", working_dir: "M", path: destFile } , "Re-Copying master file");
+            commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "x", working_dir: "M", path: destFile } , "Re-Copying master file");
             fs.copyFileSync(masterFile, destFile);
             changed = true;
         }
@@ -610,7 +299,7 @@ async function checkFixBadMerges(git: SimpleGit, repoName: string, baseFolder: s
                         await checkFixBadMerges(git, repoName, baseFolder + "/" + theFile, destFolder + "/" + theFile, commitDetails, level + 1);
                     } else {
                         log(` - (Mismatch) ${destFolder + "/" + theFile} is not a folder`);
-                        commitDetails.message = logAppendMessage(commitDetails.message, { index: "x", working_dir: "T", path: destFolder + "/" + theFile } , "Dest is file should be folder");
+                        commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "x", working_dir: "T", path: destFolder + "/" + theFile } , "Dest is file should be folder");
                         await git.rm(destFolder + "/" + theFile)
     
                         fs.mkdirSync(destFolder + "/" + theFile);
@@ -642,7 +331,7 @@ async function checkFixBadMerges(git: SimpleGit, repoName: string, baseFolder: s
         if (masterFiles.indexOf(destFile) === -1 && !_isVerifyIgnore(destFile, true)) {
             let destStats = fs.statSync(destFolder + "/" + destFile);
             if (destStats.isDirectory()) {
-                commitDetails.message = logAppendMessage(commitDetails.message, { index: "*", working_dir: "F", path: destFolder + "/" + destFile } , `Removing extra folder ${destFile}`);
+                commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "*", working_dir: "F", path: destFolder + "/" + destFile } , `Removing extra folder ${destFile}`);
                 await git.raw([
                     "rm",
                     "-f",
@@ -652,7 +341,7 @@ async function checkFixBadMerges(git: SimpleGit, repoName: string, baseFolder: s
                 //     recursive: true
                 // });
             } else {
-                commitDetails.message = logAppendMessage(commitDetails.message, { index: "*", working_dir: "E", path: destFolder + "/" + destFile } , "Removing extra file");
+                commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "*", working_dir: "E", path: destFolder + "/" + destFile } , "Removing extra file");
                 await git.rm(destFolder + "/" + destFile);
             }
         }
@@ -785,7 +474,7 @@ async function mergeBranchToMergeMaster(git: SimpleGit, mergeBranchName: string,
         "--no-ff",
         "--no-edit",
         mergeBranchName]).catch(async (reason) => {
-            commitPerformed = await resolveConflictsToTheirs(git, mergeCommitMessage, false);
+            commitPerformed = await resolveConflictsToTheirs(git, _mergeGitRoot, mergeCommitMessage, false);
         });
 
     mergeCommitMessage.committed = await commitChanges(git, mergeCommitMessage) || commitPerformed;
@@ -858,7 +547,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
             await fail(localGit, `A PR already exists -- please commit or close the previous PR`)
         }
 
-        let prTitle = "[AutoMerge] Merging change(s) from ";
+        let prTitle = "[AutoMerge][Staging] Merging change(s) from ";
         let prBody = "";
         let prRequired = false;
         

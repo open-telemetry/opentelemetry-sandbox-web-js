@@ -1,0 +1,28 @@
+name: '[Auto Merge] Merge official OTel JS repo-staging branch to main'
+
+# Define this as a workflow, which will be available once this change
+# is in main
+on:
+  workflow_dispatch:
+
+jobs:
+  action:
+    runs-on: ubuntu-latest
+        
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: open-telemetry/opentelemetry-sandbox-web-js
+          token: ${{ secrets.BOT_TOKEN }}
+
+      - name: Use CLA approved github bot
+        run: |
+          # Set the OpenTelemetry CLA approved bot account info
+          git config user.name opentelemetrybot
+          git config user.email 107717825+opentelemetrybot@users.noreply.github.com
+      - name: Merge changes from JS and JS-API repos
+        env:
+          # not using secrets.GITHUB_TOKEN since pull requests from that token do not run workflows
+          # The BOT_TOKEN secret must exist
+          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: npm run do-sandbox-staging-merge

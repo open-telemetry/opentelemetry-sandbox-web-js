@@ -16,6 +16,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import { FileStatusResult } from "simple-git";
 
 /**
  * Helper to dump (convert) an object (generally an error) for logging to the console
@@ -44,6 +45,22 @@ export function dumpObj(object: any): string {
  */
 export function log(message: string) {
     console.log(message);
+}
+
+/**
+ * Log a warning message to the console
+ * @param message 
+ */
+export function logWarn(message) {
+    console.warn("!! - " + message);
+}
+
+/**
+ * Log an error message to the console
+ * @param message 
+ */
+ export function logError(message) {
+    console.error("!! - " + message);
 }
 
 /**
@@ -124,3 +141,54 @@ export function findCurrentRepoRoot() {
     return null;
 }
 
+/**
+ * Transforms any package name "@opentelemetry*" to "@opentelemetry-sandbox*"
+ * @param text The content to process
+ * @returns The transformed content
+ */
+export function transformPackages(text: string) {
+    const pkgRegEx = /@opentelemetry\/(?!sandbox-)([\w]*)/g;
+    let newContent = text.replace(pkgRegEx, "@opentelemetry/sandbox-$1");
+
+    return newContent;
+}
+
+/**
+ * Transform the provided text with all of the required transforms
+ * @param text The content to process
+ * @returns The transformed content
+ */
+export function transformContent(text: string) {
+    let newContent = transformPackages(text);
+
+    return newContent;
+}
+
+export function removeTrailingComma(text: string) {
+    return text.replace(/,(\s*[}\],])/g, "$1");
+}
+
+export function logAppendMessage(gitRoot: string, commitMessage: string, fileStatus: FileStatusResult, message: string) {
+    let logMessage: string;
+    let thePath = fileStatus ? fileStatus.path : "";
+    if (thePath.startsWith(gitRoot)) {
+        thePath = thePath.substring(gitRoot.length);
+    }
+
+    if (fileStatus && thePath && fileStatus.index && fileStatus.working_dir) {
+        logMessage = ` - (${fileStatus.index.padEnd(1)}${fileStatus.working_dir.padEnd(1)}) ${thePath} - ${message}`;
+    } else if (fileStatus && thePath) {
+        logMessage = ` - ${thePath} - ${message}`;
+    } else {
+        logMessage = ` - ${message}`;
+    }
+
+    log(logMessage);
+    if (commitMessage.length + logMessage.length < 2048) {
+        commitMessage += `\n${logMessage}`;
+    } else if (commitMessage.indexOf("...truncated...") === -1) {
+        commitMessage += "\n...truncated...";
+    }
+
+    return commitMessage;
+}
