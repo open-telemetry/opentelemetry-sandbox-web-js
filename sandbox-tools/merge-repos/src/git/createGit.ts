@@ -43,5 +43,9 @@ export function createGit(baseDir: string, progressPrefix: string): SimpleGit {
         }
     };
 
-    return simpleGit(options);
+    let git = simpleGit(options);
+    git.addConfig("merge.renameLimit", "999999");
+    git.addConfig("follow", "true");
+
+    return git;
 }

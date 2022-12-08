@@ -14,7 +14,8 @@
     "private": true,
     "scripts": {
         "build": "tsc",
-        "do-repo-merge": "npm run build && node ./build/syncReposToStaging.js"
+        "do-repo-merge": "npm run build && node ./build/syncReposToStaging.js",
+        "do-staging-merge": "npm run build && node ./build/mergeStagingToMain.js"
     },
     "repository": "open-telemetry/opentelemetry-sandbox-web-js",
     "homepage": "https://github.com/open-telemetry/opentelemetry-sandbox-web-js#readme",

@@ -50,7 +50,7 @@ export async function checkPrExists(git: SimpleGit, gitRoot: string, targetRepo:
             let lines = value.stdout.split("\n");
             if (lines.length > 0) {
                 lines.forEach((line) => {
-                    if (line) {
+                    if (line && line.indexOf("[AutoMerge]") !== -1) {
                         prExists = true;
                         let tokens = line.split("\t");
                         log(` - #${tokens[0]} - ${tokens[1]}`);

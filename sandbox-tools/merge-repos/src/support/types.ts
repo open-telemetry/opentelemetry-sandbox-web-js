@@ -75,3 +75,80 @@ export interface IRepoSyncDetails {
     [key: string]: IRepoDetails
 }
 
+export interface IMergeDetail {
+    /**
+     * Identifies the location in the staging repo
+     */
+    srcPath: string;
+
+    /**
+     * Identifies the location in the main repo where to merge this package
+     */
+    destPath: string;
+}
+
+export interface IMergePackageDetail extends IMergeDetail {
+    /**
+     * Identifies the package name.
+     * eg. @opentelemetry/api; @opentelemetry/resources
+     */
+    name: string;
+
+    /**
+     * The filename of the generated bundle
+     */
+    bundleName: string;
+
+    /**
+     * The namespace to use for the generated bundle
+     */
+    bundleNamespace: string;
+
+    /**
+     * Identifies that this package doesn't have any tests and therefore should not add test targets or config
+     */
+    noTests?: boolean;
+
+    /**
+     * Identifies that this package doesn't have any worker tests and therefore should not add worker test targets or config
+     */
+    noWorkerTests?: boolean;
+}
+
+/**
+ * Simple package.json definition
+ */
+export interface IPackageJson {
+    name: string,
+    version: string,
+    description: string,
+    keywords?: string[],
+    author?: string,
+    license?: string,
+    repository?: string,
+    homepage?: string,
+    scripts?: { [key: string]: string },
+    dependencies?: { [key: string]: string },
+    devDependencies?: { [key: string]: string },
+    peerDependencies?: { [key: string]: string },
+}
+
+/**
+ * Simplified rush.json project definition
+ */
+export interface IRushProject {
+    packageName: string,
+    projectFolder: string,
+    shouldPublish: boolean
+}
+
+/**
+ * Simplified rush.json definition
+ */
+export interface IRushJson {
+    $schema: string,
+    npmVersion: string,
+    rushVersion: string,
+    projectFolderMaxDepth: number,
+    projects: IRushProject[]
+}
