@@ -1,0 +1,12 @@
+{
+  "name": "rush-common",
+  "version": "0.0.0",
+  "lockfileVersion": 2,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "rush-common",
+      "version": "0.0.0"
+    }
+  }
+}
