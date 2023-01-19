@@ -15,8 +15,6 @@
  */
 
 import nodeResolve from "@rollup/plugin-node-resolve";
-import minify from 'rollup-plugin-minify-es';
-import replace from "@rollup/plugin-replace";
 import cleanup from "rollup-plugin-cleanup";
 import commonjs from '@rollup/plugin-commonjs';
 
