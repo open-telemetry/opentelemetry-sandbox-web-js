@@ -19,7 +19,9 @@ import { MetricAttributes, Observable } from './Metric';
 /**
  * Interface that is being used in callback function for Observable Metric.
  */
-export interface ObservableResult<AttributesTypes extends MetricAttributes = MetricAttributes> {
+export interface ObservableResult<
+  AttributesTypes extends MetricAttributes = MetricAttributes
+> {
   /**
    * Observe a measurement of the value associated with the given attributes.
    *
@@ -28,13 +30,19 @@ export interface ObservableResult<AttributesTypes extends MetricAttributes = Met
    * one values associated with the same attributes values, SDK may pick the
    * last one or simply drop the entire observable result.
    */
-  observe(value: number, attributes?: AttributesTypes): void;
+  observe(
+    this: ObservableResult<AttributesTypes>,
+    value: number,
+    attributes?: AttributesTypes
+  ): void;
 }
 
 /**
  * Interface that is being used in batch observable callback function.
  */
-export interface BatchObservableResult<AttributesTypes extends MetricAttributes = MetricAttributes> {
+export interface BatchObservableResult<
+  AttributesTypes extends MetricAttributes = MetricAttributes
+> {
   /**
    * Observe a measurement of the value associated with the given attributes.
    *
@@ -44,5 +52,10 @@ export interface BatchObservableResult<AttributesTypes extends MetricAttributes 
    * one values associated with the same attributes values, SDK may pick the
    * last one or simply drop the entire observable result.
    */
-  observe(metric: Observable<AttributesTypes>, value: number, attributes?: AttributesTypes): void;
+  observe(
+    this: BatchObservableResult<AttributesTypes>,
+    metric: Observable<AttributesTypes>,
+    value: number,
+    attributes?: AttributesTypes
+  ): void;
 }
