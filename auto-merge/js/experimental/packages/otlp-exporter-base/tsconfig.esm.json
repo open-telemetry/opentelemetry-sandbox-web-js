@@ -14,15 +14,6 @@
     },
     {
       "path": "../../../packages/opentelemetry-core"
-    },
-    {
-      "path": "../../../packages/opentelemetry-resources"
-    },
-    {
-      "path": "../../../packages/opentelemetry-sdk-trace-base"
-    },
-    {
-      "path": "../../../packages/sdk-metrics"
     }
   ]
 }

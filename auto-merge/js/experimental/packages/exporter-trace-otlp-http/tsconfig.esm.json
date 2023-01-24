@@ -13,10 +13,19 @@
       "path": "../../../api"
     },
     {
+      "path": "../../../packages/opentelemetry-core"
+    },
+    {
       "path": "../../../packages/opentelemetry-resources"
     },
     {
-      "path": "../../../packages/opentelemetry-semantic-conventions"
+      "path": "../../../packages/opentelemetry-sdk-trace-base"
+    },
+    {
+      "path": "../otlp-exporter-base"
+    },
+    {
+      "path": "../otlp-transformer"
     }
   ]
 }

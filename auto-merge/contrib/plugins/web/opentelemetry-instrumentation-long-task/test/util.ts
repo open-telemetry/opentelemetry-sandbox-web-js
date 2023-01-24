@@ -15,29 +15,10 @@
  */
 import * as tracing from '@opentelemetry/sdk-trace-base';
 
-import * as sinon from 'sinon';
-import { Resource } from '@opentelemetry/resources';
-import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+export class DummySpanExporter implements tracing.SpanExporter {
+  export(spans: tracing.ReadableSpan[]) {}
 
-export const mockedHrTimeMs = 1586347902211;
-
-export function mockHrTime() {
-  sinon.useFakeTimers(mockedHrTimeMs);
+  shutdown() {
+    return Promise.resolve();
+  }
 }
-
-export const serviceName = Resource.default()
-  .attributes[SemanticResourceAttributes.SERVICE_NAME]?.toString()
-  .replace(/\\/g, '\\\\')
-  .replace(/\n/g, '\\n');
-export const sdkLanguage = Resource.default()
-  .attributes[SemanticResourceAttributes.TELEMETRY_SDK_LANGUAGE]?.toString()
-  .replace(/\\/g, '\\\\')
-  .replace(/\n/g, '\\n');
-export const sdkName = Resource.default()
-  .attributes[SemanticResourceAttributes.TELEMETRY_SDK_NAME]?.toString()
-  .replace(/\\/g, '\\\\')
-  .replace(/\n/g, '\\n');
-export const sdkVersion = Resource.default()
-  .attributes[SemanticResourceAttributes.TELEMETRY_SDK_VERSION]?.toString()
-  .replace(/\\/g, '\\\\')
-  .replace(/\n/g, '\\n');
