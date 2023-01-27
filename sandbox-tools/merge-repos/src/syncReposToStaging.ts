@@ -16,7 +16,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import { CleanOptions, FileStatusResult, ResetMode, SimpleGit, StatusResult} from "simple-git";
+import { CleanOptions, SimpleGit } from "simple-git";
 import { commitChanges, ICommitDetails } from "./git/commit";
 import { createGit } from "./git/createGit";
 import { createLocalBranch } from "./git/createLocalBranch";
@@ -61,6 +61,17 @@ interface SyncRepoToStagingOptions extends SwitchBase {
      * Don't create the PR
      */
     noPr: boolean;
+
+    /**
+     * Use this user as source repo owner rather than the current user (determined from the git config)
+     */
+    originUser?: string;
+
+    /**
+     * Use this user as the destination repo owner rather than the current user (determined from the git config)
+     * The originUser (if supplied) will become the default
+     */
+    destUser?: string;
 }
 
 // The current git repo root
@@ -144,7 +155,7 @@ async function _init(localGit: SimpleGit, originRepo: string, originBranch: stri
 
     const repoName = repoTokens[1];
 
-    let userDetails = await getUser(localGit);
+    let userDetails = await getUser(localGit, _theArgs.switches.destUser || _theArgs.switches.originUser);
     let destUser = userDetails.name;
     if (!destUser || destUser.indexOf(" ") !== -1) {
         destUser = userDetails.user;
@@ -501,7 +512,9 @@ _theArgs = parseArgs({
         originBranch: true,
         originRepo: true,
         test: false,
-        noPr: false
+        noPr: false,
+        originUser: true,
+        destUser: true
     },
     defaults: {
         values: _theArgs.values,
@@ -533,7 +546,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
             _theArgs.switches.cloneTo = "../" + _theArgs.switches.cloneTo;
         }
 
-        let userDetails = await getUser(localGit);
+        let userDetails = await getUser(localGit, _theArgs.switches.originUser);
 
         let workingBranch = userDetails.name + "/" + (originBranch.replace(/\//g, "-"));
         if (userDetails.name.indexOf(" ") !== -1) {

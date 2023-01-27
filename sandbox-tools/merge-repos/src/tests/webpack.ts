@@ -32,10 +32,36 @@ const WEBPACK_BROWSER_TEMPLATE = LICENSE_HEADER + "{\n" +
     "}\n" +
     "\n";
 
+const WEBPACK_TEST_FOLDER_TEMPLATE = "{\n" +
+"  const testsContext = require.context('${folder}', false, /test$/);\n" +
+"  testsContext.keys().forEach(testsContext);\n" +
+"}\n";
+
 // This is the webpack configuration for browser Karma tests with coverage.
 const WEBPACK_WORKER_TEMPLATE = LICENSE_HEADER + "const testsContext = require.context('./', false, /test$/);\n" +
     "testsContext.keys().forEach(testsContext);\n" +
     "\n";
+
+function createTemplate(dest: string, folders: string[], addDefault: boolean) {
+    let content = "";
+
+    folders.forEach((folder) => {
+        let hasFolder = fs.existsSync(path.join(dest, `test/${folder}`).replace(/\\/g, "/"));
+        if (hasFolder) {
+            if (!content) {
+                content += LICENSE_HEADER;
+            }
+
+            content += WEBPACK_TEST_FOLDER_TEMPLATE.replace("${folder}", "./" + folder)
+        }
+    });
+
+    if (!content && addDefault) {
+        content = LICENSE_HEADER + WEBPACK_TEST_FOLDER_TEMPLATE.replace("${folder}", "./");
+    }
+
+    return content;
+}
 
 export async function createPackageWebpackTestConfig(git: SimpleGit, basePath: string, destPath: string, mergePath: string, packageDetails: IMergePackageDetail) {
     let dest = path.join(basePath, destPath).replace(/\\/g, "/");
@@ -47,19 +73,21 @@ export async function createPackageWebpackTestConfig(git: SimpleGit, basePath: s
         let browserCfg = path.join(dest, "test/index-webpack.ts").replace(/\\/g, "/");
         if (!fs.existsSync(browserCfg)) {
             log(` -- ${browserCfg} creating...`);
-            fs.writeFileSync(browserCfg, WEBPACK_BROWSER_TEMPLATE);
+            fs.writeFileSync(browserCfg, createTemplate(dest, [ "browser", "window", "common" ], true));
             await git.add(browserCfg);
         }
-
-        if (!packageDetails.noWorkerTests) {
-            let workerCfg = path.join(dest, "test/index-webpack.worker.ts").replace(/\\/g, "/");
+    }
+    
+    if (!packageDetails.noWorkerTests) {
+        // TODO
+        let workerCfg = path.join(dest, "test/worker/index-webpack.worker.ts").replace(/\\/g, "/");
+        if (!fs.existsSync(workerCfg)) {
+            workerCfg = path.join(dest, "test/index-webpack.worker.ts").replace(/\\/g, "/");
             if (!fs.existsSync(workerCfg)) {
                 log(` -- ${workerCfg} creating...`);
-                fs.writeFileSync(workerCfg, WEBPACK_WORKER_TEMPLATE);
+                fs.writeFileSync(workerCfg, createTemplate(dest, [ "worker", "window", "common" ], true));
                 await git.add(workerCfg);
             }
         }
-    } else if (!packageDetails.noWorkerTests) {
-        // TODO
     }
 }

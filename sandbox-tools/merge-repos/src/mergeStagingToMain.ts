@@ -38,9 +38,10 @@ import { addCleanupCallback, doCleanup } from "./support/clean";
 import { isIgnoreFolder } from "./support/isIgnoreFolder";
 import { moveFolder } from "./support/moveTo";
 import { parseArgs, ParsedOptions, SwitchBase } from "./support/parseArgs";
-import { IMergeDetail, IMergePackageDetail, IPackageJson, IRepoDetails, IRushJson } from "./support/types";
+import { IMergeDetail, IMergePackageDetail, IPackageJson, IPackages, IRepoDetails, IRushJson } from "./support/types";
 import { dumpObj, findCurrentRepoRoot, formatIndentLines, log, logError, logWarn, removeTrailingComma, transformPackages } from "./support/utils";
 import { createPackageWebpackTestConfig } from "./tests/webpack";
+import { initPackageJson } from "./package/package";
 
 interface IStagingRepoDetails {
     git: SimpleGit,
@@ -48,41 +49,6 @@ interface IStagingRepoDetails {
     branch: string,
     commitDetails: ICommitDetails
 }
-
-interface IPackageJsonDetail {
-    isNew?: boolean;
-
-    /**
-     * The root path for the project
-     */
-    path: string,
-
-    /**
-     * The relative path for the project
-     */
-    rPath: string,
-
-     /**
-     * The path to the package.json
-     */
-    pkgPath: string,
-
-    /**
-     * Holds the loaded package.json
-     */
-    pkg: IPackageJson,
-
-    /**
-     * The original package.json text
-     */
-    pkgText: string
-}
-
-interface IPackages {
-    src: { [key: string]: IPackageJsonDetail },
-    dest: { [key: string]: IPackageJsonDetail }
-}
-
 /**
  * The command line options for this script
  */
@@ -104,6 +70,17 @@ interface IPackages {
      * Don't create the PR
      */
     noPr: boolean;
+
+    /**
+     * Use this user as source repo owner rather than the current user (determined from the git config)
+     */
+    originUser?: string;
+
+    /**
+     * Use this user as the destination repo owner rather than the current user (determined from the git config)
+     * The originUser (if supplied) will become the default
+     */
+    destUser?: string;
 }
 
 // The current git repo root
@@ -131,6 +108,9 @@ let _theArgs: ParsedOptions<MergeStagingToMainOptions> = {
     }
 };
 
+/**
+ * Local script instances of the before and after package json definitions
+ */
 let _packages: IPackages = {
     src: {},
     dest: {},
@@ -191,7 +171,7 @@ function showHelp() {
 
     const repoName = repoTokens[1];
 
-    let userDetails = await getUser(localGit);
+    let userDetails = await getUser(localGit, _theArgs.switches.destUser || _theArgs.switches.originUser);
     let destUser = userDetails.name;
     if (!destUser || destUser.indexOf(" ") !== -1) {
         destUser = userDetails.user;
@@ -330,15 +310,15 @@ async function getStagingRepo(git: SimpleGit, repoName: string, details: IRepoDe
             let destPackageName = transformPackages(packageName);
 
             let dest = path.join(forkDestOrg, packageDetails.destPath);
-            if (!initPackageJson(dest, destPackageName, packageDetails.destPath, true)) {
+            if (!initPackageJson(_packages, dest, destPackageName, packageDetails.destPath, true)) {
                 process.exit(11);
             }
 
-            await updateFileRelativePaths(stagingDetails, forkDestOrg, packageDetails.destPath);
+            await updateConfigFileRelativePaths(stagingDetails, forkDestOrg, packageDetails.destPath);
             await createPackageRollupConfig(stagingDetails.git, forkDestOrg, packageDetails.destPath, packageDetails.bundleName, packageDetails.bundleNamespace);
             if (!packageDetails.noTests) {
-                await createPackageKarmaConfig(stagingDetails.git, forkDestOrg, packageDetails.destPath, _mergeGitRoot, packageDetails);
                 await createPackageWebpackTestConfig(stagingDetails.git, forkDestOrg, packageDetails.destPath, _mergeGitRoot, packageDetails);
+                await createPackageKarmaConfig(stagingDetails.git, forkDestOrg, packageDetails.destPath, _mergeGitRoot, packageDetails);
             }
 
             //await updateEslint(stagingDetails, forkDestOrg, packageDetails.destPath);
@@ -377,17 +357,6 @@ async function getStagingRepo(git: SimpleGit, repoName: string, details: IRepoDe
         stagingDetails.commitDetails.message = commitMessage;
     });
 
-    // Cleanup packages that we don't want to "keep"
-    log(` - (unlinking) ${forkDestOrg + "/" + MERGE_DEST_BASE_FOLDER}`);
-    // fs.rmdirSync(path.join(forkDestOrg, MERGE_DEST_BASE_FOLDER), {
-    //     recursive: true
-    // });
-    // await stagingGit.raw([
-    //     "rm",
-    //     "-r",
-    //     MERGE_DEST_BASE_FOLDER
-    // ]);    
-
     // Update package names
     await processMergeDetail(foldersToMerge, async (packageDetails: IMergePackageDetail) => {
         let packageName = packageDetails.name;
@@ -415,35 +384,6 @@ async function getStagingRepo(git: SimpleGit, repoName: string, details: IRepoDe
     return stagingDetails;
 }
 
-function initPackageJson(thePath: string, key: string, packageDestPath: string, isDest?: boolean) {
-    var packagePath = path.join(thePath, "package.json");
-    log(`Loading package ${key} => ${packagePath}`);
-    if (fs.existsSync(packagePath)) {
-        // Reading file vs using require(packagePath) as some package.json have a trailing "," which doesn't load via require()
-        var packageText = removeTrailingComma(fs.readFileSync(packagePath, "utf-8"));
-        try {
-            let packageJson: IPackageJson = JSON.parse(packageText);
-            let packageBase = isDest ? _packages.dest : _packages.src;
-
-            packageBase[key] = {
-                pkgPath: packagePath,
-                rPath: packageDestPath.replace(/[/\\]$/, ""),
-                path: thePath,
-                pkg: packageJson,
-                pkgText: packageText
-            }
-
-            return true;
-        } catch (e) {
-            logError("Unable to read [" + packagePath + "] - " + e);
-        }
-    } else {
-        logError("Missing package.json - " + packagePath);
-    }
-
-    return false;
-}
-
 async function updateScripts(git: SimpleGit, forkDestOrg: string) {
     let versionUpdate = path.join(forkDestOrg, "scripts/version-update.js").replace(/\\/g, "/");
 
@@ -467,8 +407,8 @@ async function updateRushJson(git: SimpleGit, thePath: string) {
     let rushText: string;
     let rushJson: IRushJson = {
         $schema: "https://developer.microsoft.com/json-schemas/rush/v5/rush.schema.json",
-        npmVersion: "9.2.0",
-        rushVersion: "",
+        npmVersion: "8.19.3",
+        rushVersion: "5.82.1",
         projectFolderMaxDepth: 8,
         projects: []
     };
@@ -520,7 +460,7 @@ async function updateRushJson(git: SimpleGit, thePath: string) {
 function checkPackageName(thePath: string, expectedName: string, packageDestPath: string, isDest?: boolean) {
     let packageBase = isDest ? _packages.dest : _packages.src;
     if (!packageBase[expectedName]) {
-        if (!initPackageJson(thePath, expectedName, packageDestPath, isDest)) {
+        if (!initPackageJson(_packages, thePath, expectedName, packageDestPath, isDest)) {
             return false;
         }
     }
@@ -692,6 +632,9 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
         }
     }
 
+    let hasKarmaBrowserCfg = fs.existsSync(path.join(basePath, path.join(packageDetails.destPath, "./karma.browser.conf.js")).replace(/\\/g, "/"));
+    let hasKarmaWorkerCfg = fs.existsSync(path.join(basePath, path.join(packageDetails.destPath, "./karma.worker.conf.js")).replace(/\\/g, "/"));
+
     let newPackageScripts = {
         "build": "npm run lint:fix-quiet && npm run version && tsc --build " + tsConfigJson.trim() + " && npm run package",
         "rebuild": "npm run build",
@@ -716,10 +659,16 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
 
     Object.keys(newPackageScripts).forEach((script) => {
         if (!newPackage.scripts[script] || newPackage.scripts[script] !== newPackageScripts[script]) {
-            let addTarget = (!script.startsWith("test") || !packageDetails.noTests) &&
-                (!script.startsWith("test:webworker") || !packageDetails.noWorkerTests);
-            newPackage.scripts[script] = addTarget  ? newPackageScripts[script] : "";
-            changed = true;
+            let keepExistTarget = (script.startsWith("test:browser") && hasKarmaBrowserCfg) ||
+                (script.startsWith("test:webworker") && hasKarmaWorkerCfg);
+            if (!keepExistTarget) {
+                let addTarget = (!script.startsWith("test") || !packageDetails.noTests) &&
+                    (!script.startsWith("test:browser") || hasKarmaBrowserCfg) &&
+                    (!script.startsWith("test:webworker") || !packageDetails.noWorkerTests || hasKarmaWorkerCfg) &&
+                    (!script.startsWith("test:node") || !packageDetails.noNodeTests);
+                newPackage.scripts[script] = addTarget  ? newPackageScripts[script] : "";
+                changed = true;
+            }
         }
     });
 
@@ -756,7 +705,7 @@ async function updateFilePackageReferences(stagingDetails: IStagingRepoDetails, 
     }
 }
 
-async function updateFileRelativePaths(stagingDetails: IStagingRepoDetails, basePath: string, destPath: string) {
+async function updateConfigFileRelativePaths(stagingDetails: IStagingRepoDetails, basePath: string, destPath: string) {
     let dest = path.join(basePath, destPath).replace(/\\/g, "/");
     let relativePath = path.relative(dest, path.join(basePath, "$$$temp$$$")).replace(/\\/g, "/").replace("/$$$temp$$$", "/");
 
@@ -930,7 +879,9 @@ _theArgs = parseArgs({
         destBranch: true,
         originRepo: true,
         test: false,
-        noPr: false
+        noPr: false,
+        originUser: true,
+        destUser: true
     },
     defaults: {
         values: _theArgs.values,
@@ -964,7 +915,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
             _theArgs.switches.cloneTo = "../" + _theArgs.switches.cloneTo;
         }
 
-        let userDetails = await getUser(localGit);
+        let userDetails = await getUser(localGit, _theArgs.switches.originUser);
 
         let workingBranch = userDetails.name + "/merge-" + (destBranch.replace(/\//g, "-"));
         if (userDetails.name.indexOf(" ") !== -1) {
