@@ -43,11 +43,19 @@ export interface UserDetails {
  * @param git - The SimpleGit instance for this repo
  * @returns 
  */
-export async function getUser(git: SimpleGit): Promise<UserDetails> {
+export async function getUser(git: SimpleGit, overrideUser?: string): Promise<UserDetails> {
     let userEmail = (await git.getConfig("user.email")).value;
     let userName = (await git.getConfig("user.name")).value;
 
     let originUser = "";
+    if (userEmail) {
+        // Try and identify the origin user from the email
+        let checkEmail = /\d+\+([^@]+)@users\.noreply\.github\.com/.exec(userName.trim());
+        if (checkEmail && checkEmail.length > 1) {
+            originUser = checkEmail[1];
+        }
+    }
+
     let remotes = await getRemoteList(git);
     if (remotes.origin && remotes.origin.fetch) {
         let remoteFetch = remotes.origin.fetch;
@@ -63,7 +71,7 @@ export async function getUser(git: SimpleGit): Promise<UserDetails> {
     return {
         name: userName,
         email: userEmail,
-        user: originUser
+        user: overrideUser || originUser
     };
 }
 

@@ -113,6 +113,11 @@ export interface IMergePackageDetail extends IMergeDetail {
      * Identifies that this package doesn't have any worker tests and therefore should not add worker test targets or config
      */
     noWorkerTests?: boolean;
+
+    /**
+     * Identifies that this package doesn't have any node tests and therefore should not add node test targets or config
+     */
+    noNodeTests?: boolean;
 }
 
 /**
@@ -132,6 +137,48 @@ export interface IPackageJson {
     devDependencies?: { [key: string]: string },
     peerDependencies?: { [key: string]: string },
 }
+
+/**
+ * Holds the loaded details about package.json instances
+ */
+export interface IPackageJsonDetail {
+    isNew?: boolean;
+
+    /**
+     * The root path for the project
+     */
+    path: string,
+
+    /**
+     * The relative path for the project
+     */
+    rPath: string,
+
+     /**
+     * The path to the package.json
+     */
+    pkgPath: string,
+
+    /**
+     * Holds the loaded package.json
+     */
+    pkg: IPackageJson,
+
+    /**
+     * The original package.json text
+     */
+    pkgText: string
+}
+
+/**
+ * Defines the structure for current `src` and changed `dest` package.json instances
+ */
+export interface IPackages {
+    src: { [key: string]: IPackageJsonDetail },
+    dest: { [key: string]: IPackageJsonDetail }
+}
+
+
 
 /**
  * Simplified rush.json project definition

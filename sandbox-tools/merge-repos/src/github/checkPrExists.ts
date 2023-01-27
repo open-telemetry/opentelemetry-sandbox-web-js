@@ -17,7 +17,7 @@
 import * as child_process from "child_process";
 import * as util from "util";
 import { SimpleGit} from "simple-git";
-import { log } from "../support/utils";
+import { log, logError } from "../support/utils";
 import path = require("path");
 
 const execFile = util.promisify(child_process.execFile);
@@ -58,6 +58,9 @@ export async function checkPrExists(git: SimpleGit, gitRoot: string, targetRepo:
                 })
             }
         });
+    } catch (e) {
+        logError("Failed -- Have you installed the GitHub CLI tools https://cli.github.com/");
+        throw e;
     } finally {
         process.chdir(cwd);
     }

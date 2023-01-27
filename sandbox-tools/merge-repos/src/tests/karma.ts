@@ -59,6 +59,15 @@ const KARMA_WEBPACK_TEMPLATE = LICENSE_HEADER + "const webpackNodePolyfills = re
     "  }\n" +
     "};\n";
 
+const KARMA_WORKER_TEMPLATE = LICENSE_HEADER + "const karmaWebpackConfig = require('${karma.base.webpack}');\n" +
+    "const karmaBaseConfig = require('${karma.worker}');\n" +
+    "\n" +
+    "module.exports = (config) => {\n" +
+    " config.set(Object.assign({}, karmaBaseConfig, {\n" +
+    "   webpack: karmaWebpackConfig,\n" +
+    " }))\n" +
+    "};\n";
+
 const KARMA_DEBUG_TEMPLATE = LICENSE_HEADER +  "const karmaBaseConfig = require(\"${karma.debug}\");\n" +
     "\n" +
     "module.exports = (config) => {\n" +
@@ -110,30 +119,64 @@ const KARMA_DEBUG_BASE_TEMPLATE = LICENSE_HEADER + "const baseConfig = require(\
 
 export async function createPackageKarmaConfig(git: SimpleGit, basePath: string, destPath: string, mergePath: string, packageDetails: IMergePackageDetail) {
     let dest = path.join(basePath, destPath).replace(/\\/g, "/");
+    let addWebpack = false;
 
     // Only update / create if the merge root (final destination) doesn't exist.
     // this is to support migration and updates to "main" without merge conflicts
     let mergeBrowserCfg = path.join(mergePath, "karma.browser.conf.js").replace(/\\/g, "/");
     if (!fs.existsSync(mergeBrowserCfg)) {
-        let browserCfg = path.join(dest, "karma.browser.conf.js").replace(/\\/g, "/");
-        let karmaBase = path.relative(dest, path.join(basePath, "./karma.base")).replace(/\\/g, "/");
+        if (!fs.existsSync(path.join(mergePath, "karma.conf.js").replace(/\\/g, "/"))) {
+            let hasTestDefinition = fs.existsSync(path.join(dest, "test/browser/index-webpack.ts").replace(/\\/g, "/")) ||
+                fs.existsSync(path.join(dest, "test/index-webpack.ts").replace(/\\/g, "/"));
 
-        log(` -- ${browserCfg} creating...`);
-        fs.writeFileSync(browserCfg, KARMA_BROWSER_TEMPLATE.replace("${karma.base}", karmaBase));
-        await git.add(browserCfg);
-    }
-
-    let mergeWebpackCfg = path.join(mergePath, "karma.webpack.js").replace(/\\/g, "/");
-    if (!fs.existsSync(mergeWebpackCfg)) {
-        let webpackPolyfills = path.relative(dest, path.join(basePath, "./webpack.node-polyfills.js")).replace(/\\/g, "/");
+            if (!hasTestDefinition) {
+                let browserCfg = path.join(dest, "karma.browser.conf.js").replace(/\\/g, "/");
+                let karmaBase = path.relative(dest, path.join(basePath, "./karma.base")).replace(/\\/g, "/");
         
-        let webpackCfg = path.join(dest, "karma.webpack.js").replace(/\\/g, "/");
-        log(` -- ${webpackCfg} creating...`);
-        fs.writeFileSync(webpackCfg, KARMA_WEBPACK_TEMPLATE
-            .replace("${webpack.polyfills}", webpackPolyfills));
-        await git.add(webpackCfg);
+                log(` -- ${browserCfg} creating...`);
+                fs.writeFileSync(browserCfg, KARMA_BROWSER_TEMPLATE.replace("${karma.base}", karmaBase));
+                await git.add(browserCfg);
+
+                addWebpack = true;
+            }
+        }
     }
 
+    if (!packageDetails.noWorkerTests) {
+        let mergeWorkerkCfg = path.join(mergePath, "karma.worker.js").replace(/\\/g, "/");
+        if (!fs.existsSync(mergeWorkerkCfg)) {
+            let hasTestDefinition = fs.existsSync(path.join(dest, "test/worker/index-webpack.worker.ts").replace(/\\/g, "/")) ||
+                fs.existsSync(path.join(dest, "test/index-webpack.worker.ts").replace(/\\/g, "/"));
+
+            if (!hasTestDefinition) {
+                let karmaBaseWebpack = path.relative(dest, path.join(basePath, "./karma.webpack")).replace(/\\/g, "/");
+                let karmaBaseWorker = path.relative(dest, path.join(basePath, "./karma.worker")).replace(/\\/g, "/");
+                
+                let webpackCfg = path.join(dest, "karma.worker.js").replace(/\\/g, "/");
+                log(` -- ${webpackCfg} creating...`);
+                fs.writeFileSync(webpackCfg, KARMA_WORKER_TEMPLATE
+                    .replace("${karma.base.webpack}", karmaBaseWebpack)
+                    .replace("${karma.worker}", karmaBaseWorker));
+                await git.add(webpackCfg);
+
+                addWebpack = true;
+            }
+        }
+    }
+
+    if (addWebpack) {
+        let mergeWebpackCfg = path.join(mergePath, "karma.webpack.js").replace(/\\/g, "/");
+        if (!fs.existsSync(mergeWebpackCfg)) {
+            let webpackPolyfills = path.relative(dest, path.join(basePath, "./webpack.node-polyfills.js")).replace(/\\/g, "/");
+        
+            let webpackCfg = path.join(dest, "karma.webpack.js").replace(/\\/g, "/");
+            log(` -- ${webpackCfg} creating...`);
+            fs.writeFileSync(webpackCfg, KARMA_WEBPACK_TEMPLATE
+                .replace("${webpack.polyfills}", webpackPolyfills));
+            await git.add(webpackCfg);
+        }
+    }
+    
     let mergeDebugCfg = path.join(mergePath, "karma.debug.conf.js").replace(/\\/g, "/");
     if (!fs.existsSync(mergeDebugCfg)) {
         let debugCfg = path.join(dest, "karma.debug.conf.js").replace(/\\/g, "/");
