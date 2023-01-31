@@ -94,7 +94,8 @@ export async function createLocalBranch(git: SimpleGit, forkDest: string, origin
     
     // rebase to upstream to avoid merge conflicts for the final PR
     await mergeGit.reset(ResetMode.HARD, [ "upstream/" + originBranch ]);
-    await mergeGit.push("origin", workingLocalBranch, [ "-f" ]);
+    // If there is an open PR on the origin branch this causes the PR to get closed because there are no changes
+    //await mergeGit.push("origin", workingLocalBranch, [ "-f" ]);
 
     return mergeGit;
 }
