@@ -126,7 +126,7 @@ describe('Global Utils', () => {
     assert.strictEqual(logger.error.firstCall.args.length, 1);
     assert.ok(
       logger.error.firstCall.args[0].startsWith(
-        'Error: @opentelemetry/api: Attempted duplicate registration of API: context'
+        'Error: @opentelemetry/sandbox-api: Attempted duplicate registration of API: context'
       )
     );
   });
