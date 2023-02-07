@@ -27,7 +27,7 @@ import { createLocalBranch } from "./git/createLocalBranch";
 import { pushToBranch } from "./git/pushToBranch.ts";
 import { addRemoteAndFetch } from "./git/remotes";
 import { resolveConflictsToTheirs } from "./git/resolveConflictsToTheirs";
-import { getUser } from "./git/userDetails";
+import { getUser, setUser, UserDetails } from "./git/userDetails";
 import { checkPrExists } from "./github/checkPrExists";
 import { createPullRequest, gitHubCreateForkRepo } from "./github/github";
 import { createPackageKarmaConfig } from "./tests/karma";
@@ -231,7 +231,7 @@ function showHelp() {
     }
 }
 
-async function getStagingRepo(git: SimpleGit, repoName: string, details: IRepoDetails): Promise<IStagingRepoDetails> {
+async function getStagingRepo(git: SimpleGit, repoName: string, details: IRepoDetails, userDetails: UserDetails): Promise<IStagingRepoDetails> {
 
     // Get a clone of the source repo and reset to the starting point
     let srcOriginRepoUrl = details.url;
@@ -267,6 +267,9 @@ async function getStagingRepo(git: SimpleGit, repoName: string, details: IRepoDe
     log("Cleaning...");
     // The excludes where for local development / branch purposes to ensure local changes where not lost
     await stagingGit.clean([CleanOptions.RECURSIVE, CleanOptions.FORCE], ["-e", "/.vs"]).catch(abort(git, "Failed during clean"));
+
+    // set the git config user.name and user.email for this git instance
+    await setUser(stagingGit, userDetails);
 
     let hashDetails = await stagingGit.show(["-s", details.branchStartPoint ? details.branchStartPoint : "HEAD"]).catch(abort(git, `Failed getting hash details ${details.branchStartPoint ? details.branchStartPoint : "HEAD"}`));
 
@@ -941,7 +944,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
             url: originRepoUrl,
             branch: stagingBranch,
             branchStartPoint: stagingStartPoint
-        });
+        }, userDetails);
 
         if (stagingDetails.commitDetails.committed) {
             if (prBody) {
