@@ -103,7 +103,7 @@ let _theArgs: ParsedOptions<MergeStagingToMainOptions> = {
         originRepo: MERGE_ORIGIN_REPO,
         stagingBranch: MERGE_ORIGIN_STAGING_BRANCH,
         destBranch: MERGE_ORIGIN_MERGE_MAIN_BRANCH,
-        test: true,
+        test: false,
         noPr: false
     }
 };
@@ -911,7 +911,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
         const destBranch = _theArgs.switches.destBranch;
         let createPr = !_theArgs.switches.noPr;
         if (_theArgs.switches.test ) {
-            //createPr = false;
+            createPr = false;
             _theArgs.switches.cloneTo = "../" + _theArgs.switches.cloneTo;
         }
 
