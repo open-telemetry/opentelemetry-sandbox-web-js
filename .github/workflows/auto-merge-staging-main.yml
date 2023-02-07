@@ -1,4 +1,4 @@
-name: '[Auto Merge] Merge official OTel JS repo-staging branch to main'
+name: '[Auto Merge] repo-staging branch to main'
 
 # Define this as a workflow, which will be available once this change
 # is in main
