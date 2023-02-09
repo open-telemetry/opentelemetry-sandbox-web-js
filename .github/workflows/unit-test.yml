@@ -1,0 +1,75 @@
+name: Unit Tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  node-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        node_version: [ 14, 16, 18 ]
+    runs-on: ubuntu-latest
+    env:
+      NPM_CONFIG_UNSAFE_PERM: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node_version }}
+
+      - run: npm install -g npm@latest
+
+      - name: Bootstrap
+        run: |
+          npm install
+          node common/scripts/install-run-rush.js check && node common/scripts/install-run-rush.js update
+
+      - name: Build 🔧
+        run: |
+          npm run rebuild --verbose
+
+      - name: Unit tests
+        run: |
+          # TODO(legendecas): webpack https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported
+          if [ "${{ matrix.node_version }}" = "18" ]; then
+            export NODE_OPTIONS=--openssl-legacy-provider
+          fi
+          npm run test --verbose
+
+  node-windows-tests:
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node_version: [ 16 ]
+
+    env:
+      NPM_CONFIG_UNSAFE_PERM: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node_version }}
+
+      - run: npm install -g npm@latest
+
+      - name: Bootstrap
+        run: |
+          npm install
+          node common/scripts/install-run-rush.js check && node common/scripts/install-run-rush.js update
+
+      - name: Build 🔧
+        run: |
+          npm run rebuild --verbose
+
+      - name: Unit tests
+        run: |
+          npm run test --verbose
