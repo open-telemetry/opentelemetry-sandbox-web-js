@@ -645,7 +645,7 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
         "clean": "tsc --build --clean " + tsConfigJson.trim() + "",
         "package": "npx rollup -c ./rollup.config.js --bundleConfigAsCjs",
         "test": "npm run test:node && npm run test:browser && npm run test:webworker",
-        "test:node": "nyc ts-mocha -p tsconfig.json test/**/*.test.ts --exclude 'test/browser/**/*.ts'",
+        "test:node": "nyc ts-mocha -p tsconfig.json 'test/**/*.test.ts' --exclude 'test/browser/**/*.ts'",
         "test:browser": "nyc karma start ./karma.browser.conf.js --single-run",
         "test:webworker": "nyc karma start karma.worker.js --single-run",
         "test:debug": "nyc karma start ./karma.debug.conf.js --wait",
