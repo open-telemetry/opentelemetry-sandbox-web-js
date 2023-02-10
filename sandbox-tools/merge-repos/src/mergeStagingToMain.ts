@@ -650,8 +650,8 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
         "test:webworker": "nyc karma start karma.worker.js --single-run",
         "test:debug": "nyc karma start ./karma.debug.conf.js --wait",
         "lint": "eslint . --ext .ts",
-        "lint:fix": "eslint . --ext .ts --fix",
-        "lint:fix-quiet": "eslint . --ext .ts --fix --quiet",
+        "lint:fix": "npm run lint -- --fix",
+        "lint:fix-quiet": "npm run lint -- --fix --quiet",
         "version": `node ${versionUpdate}`,
         "watch": "npm run version && tsc --build --watch " + tsConfigJson.trim() + ""
     }

@@ -138,7 +138,8 @@ export const filesToMerge: IMergeDetail[] = [
     { srcPath: "auto-merge/js/tsconfig.base.json",          destPath: "tsconfig.base.json" },
     { srcPath: "auto-merge/js/tsconfig.es5.json",           destPath: "tsconfig.es5.json" },
     { srcPath: "auto-merge/js/tsconfig.json",               destPath: "tsconfig.json" },
-    { srcPath: "auto-merge/js/webpack.node-polyfills.js",   destPath: "webpack.node-polyfills.js" }
+    { srcPath: "auto-merge/js/webpack.node-polyfills.js",   destPath: "webpack.node-polyfills.js" },
+    { srcPath: "auto-merge/js/prettier.config.js",          destPath: "prettier.config.js" }
 ];
 
 /**
@@ -169,7 +170,10 @@ export let addMissingDevDeps = {
     "@typescript-eslint/parser": "5.3.1",
     "eslint": "7.32.0",
     "eslint-plugin-header": "3.1.1",
-    "eslint-plugin-node": "11.1.0"
+    "eslint-plugin-node": "11.1.0",
+    "typedoc": "0.22.18",
+    "typedoc-plugin-missing-exports": "1.0.0",
+    "typedoc-plugin-resolve-crossmodule-references": "0.2.2"
 };
 
 /**
@@ -230,6 +234,8 @@ export let commonDevDependencyVersions = {
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-import": "2.25.3",
     "eslint-plugin-node": "11.1.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-prettier": "4.2.1",
     "istanbul-instrumenter-loader": "3.0.1",
     "karma": "6.3.16",
     "karma-chrome-launcher": "3.1.0",

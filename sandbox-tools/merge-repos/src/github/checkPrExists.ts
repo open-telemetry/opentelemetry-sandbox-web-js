@@ -45,7 +45,8 @@ export async function checkPrExists(git: SimpleGit, gitRoot: string, targetRepo:
             "list",
             "--state", "open",
             "--repo", targetRepo,
-            "--base", targetBranch
+            "--base", targetBranch,
+            "--author", "@me"
         ]).then(async (value) => {
             let lines = value.stdout.split("\n");
             if (lines.length > 0) {
