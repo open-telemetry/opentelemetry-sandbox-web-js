@@ -22,9 +22,9 @@ import { ComponentLoggerOptions, DiagLogger, DiagLogFunction } from './types';
  * will add automatically additional namespace in front of the log message.
  * It will then forward all message to global diag logger
  * @example
- * const cLogger = diag.createComponentLogger({ namespace: '@opentelemetry/instrumentation-http' });
+ * const cLogger = diag.createComponentLogger({ namespace: '@opentelemetry/sandbox-instrumentation-http' });
  * cLogger.debug('test');
- * // @opentelemetry/instrumentation-http test
+ * // @opentelemetry/sandbox-instrumentation-http test
  */
 export class DiagComponentLogger implements DiagLogger {
   private _namespace: string;

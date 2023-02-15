@@ -45,7 +45,7 @@ export function registerGlobal<Type extends keyof OTelGlobalAPI>(
   if (!allowOverride && api[type]) {
     // already registered an API of this type
     const err = new Error(
-      `@opentelemetry/api: Attempted duplicate registration of API: ${type}`
+      `@opentelemetry/sandbox-api: Attempted duplicate registration of API: ${type}`
     );
     diag.error(err.stack || err.message);
     return false;
@@ -54,7 +54,7 @@ export function registerGlobal<Type extends keyof OTelGlobalAPI>(
   if (api.version !== VERSION) {
     // All registered APIs must be of the same version exactly
     const err = new Error(
-      '@opentelemetry/api: All API registration versions must match'
+      '@opentelemetry/sandbox-api: All API registration versions must match'
     );
     diag.error(err.stack || err.message);
     return false;
@@ -62,7 +62,7 @@ export function registerGlobal<Type extends keyof OTelGlobalAPI>(
 
   api[type] = instance;
   diag.debug(
-    `@opentelemetry/api: Registered a global for ${type} v${VERSION}.`
+    `@opentelemetry/sandbox-api: Registered a global for ${type} v${VERSION}.`
   );
 
   return true;
@@ -80,7 +80,7 @@ export function getGlobal<Type extends keyof OTelGlobalAPI>(
 
 export function unregisterGlobal(type: keyof OTelGlobalAPI, diag: DiagLogger) {
   diag.debug(
-    `@opentelemetry/api: Unregistering a global for ${type} v${VERSION}.`
+    `@opentelemetry/sandbox-api: Unregistering a global for ${type} v${VERSION}.`
   );
   const api = _global[GLOBAL_OPENTELEMETRY_API_KEY];
 
