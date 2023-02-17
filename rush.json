@@ -8,6 +8,11 @@
       "packageName": "@opentelemetry/sandbox-api",
       "projectFolder": "pkgs/api",
       "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-semantic-conventions",
+      "projectFolder": "pkgs/semantic-conventions",
+      "shouldPublish": true
     }
   ]
 }
