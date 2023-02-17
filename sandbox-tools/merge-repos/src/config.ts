@@ -107,8 +107,8 @@ export const reposToSyncAndMerge: IRepoSyncDetails = {
  * location that the package should be moved to.
  */
 export const foldersToMerge: IMergePackageDetail[] = [
-    { name: "@opentelemetry/api", destPath: "pkgs/api/", srcPath: "auto-merge/js/api", bundleName: "otel-sndbx.api", bundleNamespace: "opentelemetry.sandbox.web.api" }
-    // { name: "@opentelemetry/semantic-conventions", destPath: "pkgs/semantic-conventions/", srcPath: "auto-merge/js/packages/opentelemetry-semantic-conventions/", bundleName: "otel-sndbx.semantic-conventions", bundleNamespace: "opentelemetry.sandbox.web.semantic-conventions", noTests: true },
+    { name: "@opentelemetry/api", destPath: "pkgs/api/", srcPath: "auto-merge/js/api", bundleName: "otel-sndbx.api", bundleNamespace: "opentelemetry.sandbox.web.api" },
+    { name: "@opentelemetry/semantic-conventions", destPath: "pkgs/semantic-conventions/", srcPath: "auto-merge/js/packages/opentelemetry-semantic-conventions/", bundleName: "otel-sndbx.semantic-conventions", bundleNamespace: "opentelemetry.sandbox.web.semantic-conventions", noTests: true }
     // { name: "@opentelemetry/core", destPath: "pkgs/core/",   srcPath: "auto-merge/js/packages/opentelemetry-core/", bundleName: "otel-sndbx.core", bundleNamespace: "opentelemetry.sandbox.web.core" },
     // { name: "@opentelemetry/resources", destPath: "pkgs/resources/", srcPath: "auto-merge/js/packages/opentelemetry-resources/", bundleName: "otel-sndbx.resources", bundleNamespace: "opentelemetry.sandbox.web.resources" },
     // { name: "@opentelemetry/context-zone", destPath: "pkgs/context/zone/", srcPath: "auto-merge/js/packages/opentelemetry-context-zone/", bundleName: "otel-sndbx.context-zone", bundleNamespace: "opentelemetry.sandbox.web.context-zone", noTests: true },
