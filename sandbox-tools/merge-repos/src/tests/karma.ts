@@ -117,19 +117,19 @@ const KARMA_DEBUG_BASE_TEMPLATE = LICENSE_HEADER + "const baseConfig = require(\
     "    logLevel: LOG_DEBUG\n" +
     "};\n";
 
-export async function createPackageKarmaConfig(git: SimpleGit, basePath: string, destPath: string, mergePath: string, packageDetails: IMergePackageDetail) {
+export async function createPackageKarmaConfig(git: SimpleGit, basePath: string, destPath: string, mergeBasePath: string, packageDetails: IMergePackageDetail) {
     let dest = path.join(basePath, destPath).replace(/\\/g, "/");
     let addWebpack = false;
 
     // Only update / create if the merge root (final destination) doesn't exist.
     // this is to support migration and updates to "main" without merge conflicts
-    let mergeBrowserCfg = path.join(mergePath, "karma.browser.conf.js").replace(/\\/g, "/");
+    let mergeBrowserCfg = path.join(dest, "karma.browser.conf.js").replace(/\\/g, "/");
     if (!fs.existsSync(mergeBrowserCfg)) {
-        if (!fs.existsSync(path.join(mergePath, "karma.conf.js").replace(/\\/g, "/"))) {
+        if (!fs.existsSync(path.join(dest, "karma.conf.js").replace(/\\/g, "/"))) {
             let hasTestDefinition = fs.existsSync(path.join(dest, "test/browser/index-webpack.ts").replace(/\\/g, "/")) ||
                 fs.existsSync(path.join(dest, "test/index-webpack.ts").replace(/\\/g, "/"));
 
-            if (!hasTestDefinition) {
+            if (hasTestDefinition) {
                 let browserCfg = path.join(dest, "karma.browser.conf.js").replace(/\\/g, "/");
                 let karmaBase = path.relative(dest, path.join(basePath, "./karma.base")).replace(/\\/g, "/");
         
@@ -143,12 +143,12 @@ export async function createPackageKarmaConfig(git: SimpleGit, basePath: string,
     }
 
     if (!packageDetails.noWorkerTests) {
-        let mergeWorkerkCfg = path.join(mergePath, "karma.worker.js").replace(/\\/g, "/");
+        let mergeWorkerkCfg = path.join(dest, "karma.worker.js").replace(/\\/g, "/");
         if (!fs.existsSync(mergeWorkerkCfg)) {
             let hasTestDefinition = fs.existsSync(path.join(dest, "test/worker/index-webpack.worker.ts").replace(/\\/g, "/")) ||
                 fs.existsSync(path.join(dest, "test/index-webpack.worker.ts").replace(/\\/g, "/"));
 
-            if (!hasTestDefinition) {
+            if (hasTestDefinition) {
                 let karmaBaseWebpack = path.relative(dest, path.join(basePath, "./karma.webpack")).replace(/\\/g, "/");
                 let karmaBaseWorker = path.relative(dest, path.join(basePath, "./karma.worker")).replace(/\\/g, "/");
                 
@@ -160,12 +160,19 @@ export async function createPackageKarmaConfig(git: SimpleGit, basePath: string,
                 await git.add(webpackCfg);
 
                 addWebpack = true;
+            } else {
+                log(` -- ${path.join(dest, "test/worker/index-webpack.worker.ts")} -- missing`);
+                log(` -- ${path.join(dest, "test/index-webpack.worker.ts")} -- missing`);
             }
+        } else {
+            log(` -- Existing ${mergeWorkerkCfg}`);
         }
+    } else {
+        log(` -- Skipping worker tests for ${packageDetails.name}`);
     }
 
     if (addWebpack) {
-        let mergeWebpackCfg = path.join(mergePath, "karma.webpack.js").replace(/\\/g, "/");
+        let mergeWebpackCfg = path.join(dest, "karma.webpack.js").replace(/\\/g, "/");
         if (!fs.existsSync(mergeWebpackCfg)) {
             let webpackPolyfills = path.relative(dest, path.join(basePath, "./webpack.node-polyfills.js")).replace(/\\/g, "/");
         
@@ -177,7 +184,7 @@ export async function createPackageKarmaConfig(git: SimpleGit, basePath: string,
         }
     }
     
-    let mergeDebugCfg = path.join(mergePath, "karma.debug.conf.js").replace(/\\/g, "/");
+    let mergeDebugCfg = path.join(dest, "karma.debug.conf.js").replace(/\\/g, "/");
     if (!fs.existsSync(mergeDebugCfg)) {
         let debugCfg = path.join(dest, "karma.debug.conf.js").replace(/\\/g, "/");
         let karmaDebugBase = path.relative(dest, path.join(basePath, "./karma.base")).replace(/\\/g, "/");
@@ -187,7 +194,7 @@ export async function createPackageKarmaConfig(git: SimpleGit, basePath: string,
         await git.add(debugCfg);
     }
 
-    let mergeDebugBaseCfg = path.join(mergePath, "karma.debug.js").replace(/\\/g, "/");
+    let mergeDebugBaseCfg = path.join(dest, "karma.debug.js").replace(/\\/g, "/");
     if (!fs.existsSync(mergeDebugBaseCfg)) {
         let debugBaseCfg = path.join(basePath, "karma.debug.js").replace(/\\/g, "/");
         log(` -- ${debugBaseCfg} creating...`);
