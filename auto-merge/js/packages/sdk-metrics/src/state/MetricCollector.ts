@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { hrTime } from '@opentelemetry/core';
+import { millisToHrTime } from '@opentelemetry/core';
 import { AggregationTemporalitySelector } from '../export/AggregationSelector';
 import { CollectionResult } from '../export/MetricData';
 import { MetricProducer, MetricCollectOptions } from '../export/MetricProducer';
@@ -30,13 +30,18 @@ import { MeterProviderSharedState } from './MeterProviderSharedState';
  * state for each MetricReader.
  */
 export class MetricCollector implements MetricProducer {
-  constructor(private _sharedState: MeterProviderSharedState, private _metricReader: MetricReader) {
-  }
+  constructor(
+    private _sharedState: MeterProviderSharedState,
+    private _metricReader: MetricReader
+  ) {}
 
   async collect(options?: MetricCollectOptions): Promise<CollectionResult> {
-    const collectionTime = hrTime();
-    const meterCollectionPromises = Array.from(this._sharedState.meterSharedStates.values())
-      .map(meterSharedState => meterSharedState.collect(this, collectionTime, options));
+    const collectionTime = millisToHrTime(Date.now());
+    const meterCollectionPromises = Array.from(
+      this._sharedState.meterSharedStates.values()
+    ).map(meterSharedState =>
+      meterSharedState.collect(this, collectionTime, options)
+    );
     const result = await Promise.all(meterCollectionPromises);
 
     return {
