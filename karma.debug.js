@@ -26,7 +26,7 @@ const LOG_DISABLE = "OFF";
 process.env.CHROME_BIN = require("puppeteer").executablePath();
 
 // Default to using edge locally -- choose your own browser as required
-//process.env.CHROME_BIN = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
+process.env.CHROME_BIN = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
 
 module.exports = {
     ...baseConfig,
