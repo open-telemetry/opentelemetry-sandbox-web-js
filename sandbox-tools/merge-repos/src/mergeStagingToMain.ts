@@ -601,6 +601,7 @@ function updatePackageJson(basePath: string, dest: string, srcPackage: IPackageJ
     changed = updatePackageJsonScripts(basePath, dest, destPackage, srcPackage, packageDetails) || changed;
     changed = updateDependencies(srcPackage, destPackage, "dependencies") || changed;
     changed = updateDependencies(srcPackage, destPackage, "devDependencies") || changed;
+    changed = updateDependencies(srcPackage, destPackage, "peerDependencies") || changed;
 
     Object.keys(addMissingDevDeps).forEach((key) => {
         if (!destPackage["devDependencies"][key]) {
