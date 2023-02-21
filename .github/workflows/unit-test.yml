@@ -27,7 +27,7 @@ jobs:
       - name: Bootstrap
         run: |
           npm install
-          node common/scripts/install-run-rush.js check && node common/scripts/install-run-rush.js update
+          node common/scripts/install-run-rush.js update
 
       - name: Build 🔧
         run: |
@@ -64,7 +64,7 @@ jobs:
       - name: Bootstrap
         run: |
           npm install
-          node common/scripts/install-run-rush.js check && node common/scripts/install-run-rush.js update
+          node common/scripts/install-run-rush.js update
 
       - name: Build 🔧
         run: |
