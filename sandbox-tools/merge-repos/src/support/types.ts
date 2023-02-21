@@ -115,6 +115,11 @@ export interface IMergePackageDetail extends IMergeDetail {
     noTests?: boolean;
 
     /**
+     * Identifies that this package doesn't have any browser tests and therefore should not add browser test targets or config
+     */
+    noBrowserTests?: boolean;
+
+    /**
      * Identifies that this package doesn't have any worker tests and therefore should not add worker test targets or config
      */
     noWorkerTests?: boolean;

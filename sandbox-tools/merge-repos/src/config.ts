@@ -112,19 +112,21 @@ export const foldersToMerge: IMergePackageDetail[] = [
     { name: "@opentelemetry/core", destPath: "pkgs/core/", srcPath: "auto-merge/js/packages/opentelemetry-core/", bundleName: "otel-sndbx.core", bundleNamespace: "opentelemetry.sandbox.web.core" },
     { name: "@opentelemetry/resources", destPath: "pkgs/resources/", srcPath: "auto-merge/js/packages/opentelemetry-resources/", bundleName: "otel-sndbx.resources", bundleNamespace: "opentelemetry.sandbox.web.resources" },
     { name: "@opentelemetry/context-zone-peer-dep", destPath: "pkgs/context/zone-peer-dep/", srcPath: "auto-merge/js/packages/opentelemetry-context-zone-peer-dep/", bundleName: "otel-sndbx.context-zone-peer-dep", bundleNamespace: "opentelemetry.sandbox.web.context-zone-peer-dep", noWorkerTests: true, noNodeTests: true },
-    { name: "@opentelemetry/context-zone", destPath: "pkgs/context/zone/", srcPath: "auto-merge/js/packages/opentelemetry-context-zone/", bundleName: "otel-sndbx.context-zone", bundleNamespace: "opentelemetry.sandbox.web.context-zone", noTests: true }
+    { name: "@opentelemetry/context-zone", destPath: "pkgs/context/zone/", srcPath: "auto-merge/js/packages/opentelemetry-context-zone/", bundleName: "otel-sndbx.context-zone", bundleNamespace: "opentelemetry.sandbox.web.context-zone", noTests: true },
     // //{ name: "@opentelemetry/context-async-hooks", destPath: "pkgs/context/async-hooks/", srcPath: "auto-merge/js/packages/opentelemetry-context-async-hooks/", bundleName: "otel-sndbx.context-zone-async-hooks", bundleNamespace: "opentelemetry.sandbox.web.context-zone-async-hooks" },
-    // { name: "@opentelemetry/propagator-b3", destPath: "pkgs/propagators/b3/", srcPath: "auto-merge/js/packages/opentelemetry-propagator-b3/", bundleName: "otel-sndbx.propagator-b3", bundleNamespace: "opentelemetry.sandbox.web.propagator-b3" },
-    // { name: "@opentelemetry/sdk-trace-base", destPath: "pkgs/sdk/trace-base/", srcPath: "auto-merge/js/packages/opentelemetry-sdk-trace-base/", bundleName: "otel-sndbx.sdk-trace-base", bundleNamespace: "opentelemetry.sandbox.web.sdk-trace-base" },
-    // { name: "@opentelemetry/sdk-trace-web", destPath: "pkgs/sdk/trace-web/", srcPath: "auto-merge/js/packages/opentelemetry-sdk-trace-web/", bundleName: "otel-sndbx.sdk-trace-web", bundleNamespace: "opentelemetry.sandbox.web.sdk-trace-web", noWorkerTests: true, noNodeTests: true },
-    // { name: "@opentelemetry/sdk-metrics", destPath: "pkgs/sdk/metrics/", srcPath: "auto-merge/js/packages/sdk-metrics/", bundleName: "otel-sndbx.sdk-metrics", bundleNamespace: "opentelemetry.sandbox.web.sdk-metrics" },
+    { name: "@opentelemetry/propagator-b3", destPath: "pkgs/propagators/b3/", srcPath: "auto-merge/js/packages/opentelemetry-propagator-b3/", bundleName: "otel-sndbx.propagator-b3", bundleNamespace: "opentelemetry.sandbox.web.propagator-b3", noWorkerTests: true },
+    { name: "@opentelemetry/sdk-trace-base", destPath: "pkgs/sdk/trace/base/", srcPath: "auto-merge/js/packages/opentelemetry-sdk-trace-base/", bundleName: "otel-sndbx.sdk-trace-base", bundleNamespace: "opentelemetry.sandbox.web.sdk-trace-base", noWorkerTests: true /* To be fixed in core repo */, noNodeTests: true },
+    { name: "@opentelemetry/sdk-trace-web", destPath: "pkgs/sdk/trace/web/", srcPath: "auto-merge/js/packages/opentelemetry-sdk-trace-web/", bundleName: "otel-sndbx.sdk-trace-web", bundleNamespace: "opentelemetry.sandbox.web.sdk-trace-web", noWorkerTests: true /* To be fixed in core repo */, noNodeTests: true },
+    { name: "@opentelemetry/sdk-metrics", destPath: "pkgs/sdk/metrics/", srcPath: "auto-merge/js/packages/sdk-metrics/", bundleName: "otel-sndbx.sdk-metrics", bundleNamespace: "opentelemetry.sandbox.web.sdk-metrics" },
     // // { name: "@opentelemetry/exporter-trace-otlp-grpc",  destPath: "pkgs/exporters/otlp/trace-grpc/",   srcPath: "auto-merge/js/experimental/packages/exporter-trace-otlp-grpc/" },
     // // { name: "@opentelemetry/exporter-jaeger",  destPath: "pkgs/exporters/jaeger/",   srcPath: "auto-merge/js/packages/opentelemetry-exporter-jaeger/" },
     // // { name: "@opentelemetry/exporter-zipkin",  destPath: "pkgs/exporters/zipkin/",   srcPath: "auto-merge/js/packages/opentelemetry-exporter-zipkin/" },
-    // { name: "@opentelemetry/instrumentation", destPath: "pkgs/instrumentation/", srcPath: "auto-merge/js/experimental/packages/opentelemetry-instrumentation/", bundleName: "otel-sndbx.instrumentation", bundleNamespace: "opentelemetry.sandbox.web.instrumentation" },
-    // { name: "@opentelemetry/instrumentation-document-load", destPath: "pkgs/plugins/web/document-load/", srcPath: "auto-merge/contrib/plugins/web/opentelemetry-instrumentation-document-load/", bundleName: "otel-sndbx.instr-doc-load", bundleNamespace: "opentelemetry.sandbox.plugin.web.instrumentation-document-load", noWorkerTests: true },
-    // { name: "@opentelemetry/instrumentation-user-interaction", destPath: "pkgs/plugins/web/user-interaction/", srcPath: "auto-merge/contrib/plugins/web/opentelemetry-instrumentation-user-interaction/", bundleName: "otel-sndbx.instr-user-interaction", bundleNamespace: "opentelemetry.sandbox.plugin.web.instrumentation-user-interaction", noWorkerTests: true },
-    // { name: "@opentelemetry/instrumentation-long-task", destPath: "pkgs/plugins/web/long-task/", srcPath: "auto-merge/contrib/plugins/web/opentelemetry-instrumentation-long-task/", bundleName: "otel-sndbx.instr-long-task", bundleNamespace: "opentelemetry.sandbox.plugin.web.instrumentation-long-task", noWorkerTests: true }
+    // { name: "@opentelemetry/instrumentation", destPath: "pkgs/instr/instrumentation/", srcPath: "auto-merge/js/experimental/packages/opentelemetry-instrumentation/", bundleName: "otel-sndbx.instrumentation", bundleNamespace: "opentelemetry.sandbox.web.instrumentation" },
+    // { name: "@opentelemetry/instrumentation-fetch", destPath: "pkgs/instr/web/fetch", srcPath: "auto-merge/js/experimental/packages/opentelemetry-instrumentation-fetch/", bundleName: "otel-sndbx.instr.fetch", bundleNamespace: "opentelemetry.sandbox.instr.web.fetch" },
+    // { name: "@opentelemetry/instrumentation-xml-http-request", destPath: "pkgs/instr/web/xhr", srcPath: "auto-merge/js/experimental/packages/opentelemetry-instrumentation-xml-http-request/", bundleName: "otel-sndbx.instr.xhr", bundleNamespace: "opentelemetry.sandbox.instr.web.xhr" },
+    // { name: "@opentelemetry/instrumentation-document-load", destPath: "pkgs/instr/web/document-load/", srcPath: "auto-merge/contrib/plugins/web/opentelemetry-instrumentation-document-load/", bundleName: "otel-sndbx.instr-doc-load", bundleNamespace: "opentelemetry.sandbox.plugin.web.instrumentation-document-load", noWorkerTests: true },
+    // { name: "@opentelemetry/instrumentation-user-interaction", destPath: "pkgs/instr/web/user-interaction/", srcPath: "auto-merge/contrib/plugins/web/opentelemetry-instrumentation-user-interaction/", bundleName: "otel-sndbx.instr-user-interaction", bundleNamespace: "opentelemetry.sandbox.plugin.web.instrumentation-user-interaction", noWorkerTests: true },
+    // { name: "@opentelemetry/instrumentation-long-task", destPath: "pkgs/instr/web/long-task/", srcPath: "auto-merge/contrib/plugins/web/opentelemetry-instrumentation-long-task/", bundleName: "otel-sndbx.instr-long-task", bundleNamespace: "opentelemetry.sandbox.plugin.web.instrumentation-long-task", noWorkerTests: true }
 ];
 
 /**
@@ -153,7 +155,7 @@ export const filesToMerge: IMergeDetail[] = [
  */
 export let dependencyVersions = {
     "@types/mocha": "^10.0.0",
-    "@types/node": "^18.6.5",
+    "@types/node": "^18.14.2",
     "@types/sinon": "^10.0.13",
     "@types/webpack-env": "1.16.3",
     "@types/jquery": "^3.5.14",
@@ -167,7 +169,7 @@ export let dependencyVersions = {
  */
 export let addMissingDevDeps = {
     "@types/mocha": "^10.0.0",
-    "@types/node": "^18.6.5",
+    "@types/node": "^18.14.2",
     "@types/sinon": "^10.0.13",
     "@types/webpack-env": "1.16.3",
     "@types/jquery": "^3.5.14",
@@ -177,9 +179,9 @@ export let addMissingDevDeps = {
     "eslint": "7.32.0",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-node": "11.1.0",
-    "typedoc": "0.22.18",
-    "typedoc-plugin-missing-exports": "1.0.0",
-    "typedoc-plugin-resolve-crossmodule-references": "0.2.2"
+    "typedoc": "^0.23.26",
+    "typedoc-plugin-missing-exports": "^1.0.0",
+    "typedoc-plugin-resolve-crossmodule-references": "^0.3.3"
 };
 
 /**
@@ -217,9 +219,9 @@ export let cleanupScripts = {
  * Add these dev depencencies to the root package.json
  */
 export let initDevDependencyVersions = {
-    "@microsoft/rush": "5.86.0",
+    "@microsoft/rush": "5.93.1",
     "markdownlint-cli": "^0.31.1",
-    "typedoc": "^0.22.17",
+    "typedoc": "^0.23.26",
     "codecov": "^3.8.3",
     "rollup": "^3.10.0",
     "@rollup/plugin-commonjs": "^24.0.0",
@@ -257,7 +259,7 @@ export let commonDevDependencyVersions = {
     "nyc": "^15.1.0",
     "ts-loader": "8.4.0",
     "ts-mocha": "10.0.0",
-    "typescript": "^4.7.4",
+    "typescript": "^4.9.5",
     "webpack": "^4.46.0",
     "pako": "^2.0.3"
 };

@@ -147,8 +147,14 @@ export function findCurrentRepoRoot() {
  * @returns The transformed content
  */
 export function transformPackages(text: string) {
-    const pkgRegEx = /@opentelemetry\/(?!sandbox-)([\w]*)/g;
-    let newContent = text.replace(pkgRegEx, "@opentelemetry/sandbox-$1");
+    // Handles both "just" the package name "@opentelemetry/xxx" and an entire file (*.ts)
+    // This works around the resources usage of a specific version and does not translate the name
+    // - "@opentelemetry/resources_1.9.0": "npm:@opentelemetry/resources@1.9.0",
+    // - import { Resource as Resource190 } from '@opentelemetry/resources_1.9.0';
+    const pkgRegEx = /^@opentelemetry\/(?!sandbox-)([\w\-]*)$|(['"])@opentelemetry\/(?!sandbox-)([\w\-]*)['"]/g;
+    let newContent = text.replace(pkgRegEx, function(_all, g1, g2, g3) {
+        return (g2 || "") + "@opentelemetry/sandbox-" + (g1 || g3) + (g2 || "");
+    });
 
     return newContent;
 }
@@ -160,6 +166,15 @@ export function transformPackages(text: string) {
  */
 export function transformContent(text: string) {
     let newContent = transformPackages(text);
+
+    // Handles both "just" the package name "@opentelemetry/xxx" and an entire file (*.ts)
+    // This works around the resources usage of a specific version and does not translate the name
+    // - "@opentelemetry/resources_1.9.0": "npm:@opentelemetry/resources@1.9.0",
+    // - import { Resource as Resource190 } from '@opentelemetry/resources_1.9.0';
+    const pkgRegEx = /^@opentelemetry\/(?!sandbox-)([\w\-]*)(_[\w_\.]+)$|(['"])@opentelemetry\/(?!sandbox-)([\w\-]*)(_[\w_\.]+)['"]/g;
+    newContent = newContent.replace(pkgRegEx, function(_all, g1, g2, g3, g4, g5) {
+        return (g3 || "") + "@opentelemetry/" + (g1 || g4) + (g3 || "");
+    });
 
     return newContent;
 }

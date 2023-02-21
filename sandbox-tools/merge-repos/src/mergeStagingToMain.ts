@@ -39,7 +39,7 @@ import { isIgnoreFolder } from "./support/isIgnoreFolder";
 import { moveFolder } from "./support/moveTo";
 import { parseArgs, ParsedOptions, SwitchBase } from "./support/parseArgs";
 import { IMergeDetail, IMergePackageDetail, IPackageJson, IPackages, IRepoDetails, IRushJson } from "./support/types";
-import { dumpObj, findCurrentRepoRoot, formatIndentLines, log, logError, logWarn, removeTrailingComma, transformPackages } from "./support/utils";
+import { dumpObj, findCurrentRepoRoot, formatIndentLines, log, logError, logWarn, removeTrailingComma, transformContent, transformPackages } from "./support/utils";
 import { createPackageWebpackTestConfig } from "./tests/webpack";
 import { initPackageJson } from "./package/package";
 
@@ -414,8 +414,8 @@ async function updateRushJson(git: SimpleGit, thePath: string) {
     let rushText: string;
     let rushJson: IRushJson = {
         $schema: "https://developer.microsoft.com/json-schemas/rush/v5/rush.schema.json",
-        npmVersion: "8.19.3",
-        rushVersion: "5.82.1",
+        npmVersion: "9.5.1",
+        rushVersion: "5.93.1",
         projectFolderMaxDepth: 8,
         projects: []
     };
@@ -661,22 +661,36 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
         "watch": "npm run version && tsc --build --watch " + tsConfigJson.trim() + ""
     }
 
+    if (!hasKarmaBrowserCfg && fs.existsSync(path.join(basePath, path.join(packageDetails.destPath, "./karma.conf.js")).replace(/\\/g, "/"))) {
+        newPackageScripts["test:browser"] = "nyc karma start ./karma.conf.js --single-run";
+        hasKarmaBrowserCfg = true;
+    }
+
     if (!newPackage.scripts) {
         fail(null, JSON.stringify(newPackage));
     }
 
     Object.keys(newPackageScripts).forEach((script) => {
         if (!newPackage.scripts[script] || newPackage.scripts[script] !== newPackageScripts[script]) {
-            let keepExistTarget = (script.startsWith("test:browser") && hasKarmaBrowserCfg) ||
-                (script.startsWith("test:webworker") && hasKarmaWorkerCfg);
-            if (!keepExistTarget) {
-                let addTarget = (!script.startsWith("test") || !packageDetails.noTests) &&
-                    (!script.startsWith("test:browser") || hasKarmaBrowserCfg) &&
-                    (!script.startsWith("test:webworker") || !packageDetails.noWorkerTests || hasKarmaWorkerCfg) &&
-                    (!script.startsWith("test:node") || !packageDetails.noNodeTests);
-                newPackage.scripts[script] = addTarget  ? newPackageScripts[script] : "";
-                changed = true;
+            let addTarget = true;
+            if (script.startsWith("test")) {
+                addTarget = !packageDetails.noTests;
+
+                if (script.startsWith("test:browser")) {
+                    addTarget = hasKarmaBrowserCfg && !packageDetails.noBrowserTests;
+                }
+
+                if (script.startsWith("test:webworker")) {
+                    addTarget = hasKarmaWorkerCfg && !packageDetails.noWorkerTests;
+                }
+
+                if (script.startsWith("test:node")) {
+                    addTarget = !packageDetails.noNodeTests;
+                }
             }
+
+            newPackage.scripts[script] = addTarget  ? newPackageScripts[script] : "";
+            changed = true;
         }
     });
 
@@ -700,7 +714,7 @@ async function updateFilePackageReferences(stagingDetails: IStagingRepoDetails, 
             let newFromStats = fs.statSync(baseFolder + "/" + theFilename);
             if (newFromStats.isFile()) {
                 let content = fs.readFileSync(baseFolder + "/" + theFilename, "utf-8");
-                let newContent = transformPackages(content);
+                let newContent = transformContent(content);
                 if (content && newContent && content != newContent) {
                     log(` -- ${theFilename} changed -- rewriting...`);
                     fs.writeFileSync(baseFolder + "/" + theFilename, newContent);
