@@ -348,7 +348,7 @@ async function getStagingRepo(git: SimpleGit, repoName: string, details: IRepoDe
 
         let commitMessage = stagingDetails.commitDetails.message;
 
-        commitMessage += `\n### Moving ${fileDetails.srcPath} to ${fileDetails.destPath}`;
+        //commitMessage += `\n### Moving ${fileDetails.srcPath} to ${fileDetails.destPath}`;
         await stagingGit.raw([
             "mv",
             "--force",
@@ -853,7 +853,7 @@ export async function movePackage(stagingDetails: IStagingRepoDetails, srcFolder
     if (files.length > 0) {
         let commitMessage = stagingDetails.commitDetails.message;
 
-        commitMessage += `\n### Moving files from ${srcFolder ? srcFolder : "./"} to ${theGitDestFolder}`
+        commitMessage += `\n### Moving package from ${srcFolder ? srcFolder : "./"} to ${theGitDestFolder}`
         commitMessage = await moveFolder(stagingDetails.git, commitMessage, stagingDetails.path, srcFolder, theGitDestFolder, 0);
 
         stagingDetails.commitDetails.message = commitMessage;
@@ -914,7 +914,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
         const destBranch = _theArgs.switches.destBranch;
         let createPr = !_theArgs.switches.noPr;
         if (_theArgs.switches.test ) {
-            createPr = false;
+            //createPr = false;
             _theArgs.switches.cloneTo = "../" + _theArgs.switches.cloneTo;
         }
 
@@ -928,7 +928,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
         const mergeGit = await _init(localGit, originRepo, destBranch, workingBranch);
 
         let existingPr = await checkPrExists(mergeGit, _mergeGitRoot, originRepoUrl, destBranch);
-        if (existingPr) {
+        if (existingPr && createPr) {
             await fail(localGit, `A PR already exists -- please commit or close the previous PR`)
         }
 
