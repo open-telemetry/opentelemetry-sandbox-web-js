@@ -10,8 +10,23 @@
       "shouldPublish": true
     },
     {
+      "packageName": "@opentelemetry/sandbox-context-zone",
+      "projectFolder": "pkgs/context/zone",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-context-zone-peer-dep",
+      "projectFolder": "pkgs/context/zone-peer-dep",
+      "shouldPublish": true
+    },
+    {
       "packageName": "@opentelemetry/sandbox-core",
       "projectFolder": "pkgs/core",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-resources",
+      "projectFolder": "pkgs/resources",
       "shouldPublish": true
     },
     {
