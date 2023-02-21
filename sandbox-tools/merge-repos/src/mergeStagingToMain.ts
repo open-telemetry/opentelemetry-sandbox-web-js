@@ -343,6 +343,10 @@ async function getStagingRepo(git: SimpleGit, repoName: string, details: IRepoDe
 
         let src = path.join(forkDestOrg, fileDetails.srcPath).replace(/\\/g, "/");
         if (!fs.existsSync(src)) {
+            if (fileDetails.optional) {
+                return;
+            }
+            
             fail(stagingGit, "[" + src + "] - does not exist!");
         }
 
@@ -913,9 +917,14 @@ localGit.checkIsRepo().then(async (isRepo) => {
         const stagingStartPoint = _theArgs.switches.stagingStartPoint;
         const destBranch = _theArgs.switches.destBranch;
         let createPr = !_theArgs.switches.noPr;
+        let prTitle = "[AutoMerge][Main] Merging staged change(s) to main ";
+        let prBody = "";
+        let prRequired = false;
+
         if (_theArgs.switches.test ) {
             //createPr = false;
             _theArgs.switches.cloneTo = "../" + _theArgs.switches.cloneTo;
+            prTitle = "[Test]" + prTitle;
         }
 
         let userDetails = await getUser(localGit, _theArgs.switches.originUser);
@@ -932,10 +941,6 @@ localGit.checkIsRepo().then(async (isRepo) => {
             await fail(localGit, `A PR already exists -- please commit or close the previous PR`)
         }
 
-        let prTitle = "[AutoMerge][Main] Merging staged change(s) to main ";
-        let prBody = "";
-        let prRequired = false;
-        
         console.log("Merge all Repos");
 
         // let mergeCommitDetails: ICommitDetails = { };
