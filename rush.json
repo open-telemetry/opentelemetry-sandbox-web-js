@@ -10,6 +10,11 @@
       "shouldPublish": true
     },
     {
+      "packageName": "@opentelemetry/sandbox-core",
+      "projectFolder": "pkgs/core",
+      "shouldPublish": true
+    },
+    {
       "packageName": "@opentelemetry/sandbox-semantic-conventions",
       "projectFolder": "pkgs/semantic-conventions",
       "shouldPublish": true
