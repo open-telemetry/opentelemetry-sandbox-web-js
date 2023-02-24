@@ -11,13 +11,32 @@ For experimental package changes, see the [experimental CHANGELOG](experimental/
 
 ### :rocket: (Enhancement)
 
+* feat (api-logs): separate Events API into its own package [3550](https://github.com/open-telemetry/opentelemetry-js/pull/3550) @martinkuba
+* feat(sdk-metrics): apply binary search in histogram recording [#3539](https://github.com/open-telemetry/opentelemetry-js/pull/3539) @legendecas
+* perf(propagator-jaeger): improve deserializeSpanContext performance [#3541](https://github.com/open-telemetry/opentelemetry-js/pull/3541) @doochik
+* feat: support TraceState in SamplingResult [#3530](https://github.com/open-telemetry/opentelemetry-js/pull/3530) @raphael-theriault-swi
+
 ### :bug: (Bug Fix)
 
 ### :books: (Refine Doc)
 
 ### :house: (Internal)
 
+* fix(sdk-metrics): ix flaky LastValueAggregator test by using fake timer [#3587](https://github.com/open-telemetry/opentelemetry-js/pull/3587) @pichlermarc
+
+## 1.9.1
+
+### :bug: (Bug Fix)
+
+* fix: avoid grpc types dependency [#3551](https://github.com/open-telemetry/opentelemetry-js/pull/3551) @flarna
+* fix(otlp-proto-exporter-base): Match Accept header with Content-Type in the proto exporter
+ [#3562](https://github.com/open-telemetry/opentelemetry-js/pull/3562) @scheler
+* fix: include tracestate in export [#3569](https://github.com/open-telemetry/opentelemetry-js/pull/3569) @flarna
+
+### :house: (Internal)
+
 * chore: fix cross project links and missing implicitly exported types [#3533](https://github.com/open-telemetry/opentelemetry-js/pull/3533) @legendecas
+* feat(sdk-metrics): add exponential histogram mapping functions [#3504](https://github.com/open-telemetry/opentelemetry-js/pull/3504) @mwear
 
 ## 1.9.0
 
