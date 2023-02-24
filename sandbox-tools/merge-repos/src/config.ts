@@ -109,10 +109,10 @@ export const reposToSyncAndMerge: IRepoSyncDetails = {
 export const foldersToMerge: IMergePackageDetail[] = [
     { name: "@opentelemetry/api", destPath: "pkgs/api/", srcPath: "auto-merge/js/api", bundleName: "otel-sndbx.api", bundleNamespace: "opentelemetry.sandbox.web.api" },
     { name: "@opentelemetry/semantic-conventions", destPath: "pkgs/semantic-conventions/", srcPath: "auto-merge/js/packages/opentelemetry-semantic-conventions/", bundleName: "otel-sndbx.semantic-conventions", bundleNamespace: "opentelemetry.sandbox.web.semantic-conventions", noTests: true },
-    { name: "@opentelemetry/core", destPath: "pkgs/core/", srcPath: "auto-merge/js/packages/opentelemetry-core/", bundleName: "otel-sndbx.core", bundleNamespace: "opentelemetry.sandbox.web.core" }
-    // { name: "@opentelemetry/resources", destPath: "pkgs/resources/", srcPath: "auto-merge/js/packages/opentelemetry-resources/", bundleName: "otel-sndbx.resources", bundleNamespace: "opentelemetry.sandbox.web.resources" },
-    // { name: "@opentelemetry/context-zone", destPath: "pkgs/context/zone/", srcPath: "auto-merge/js/packages/opentelemetry-context-zone/", bundleName: "otel-sndbx.context-zone", bundleNamespace: "opentelemetry.sandbox.web.context-zone", noTests: true },
-    // { name: "@opentelemetry/context-zone-peer-dep", destPath: "pkgs/context/zone-peer-dep/", srcPath: "auto-merge/js/packages/opentelemetry-context-zone-peer-dep/", bundleName: "otel-sndbx.context-zone-peer-dep", bundleNamespace: "opentelemetry.sandbox.web.context-zone-peer-dep", noWorkerTests: true, noNodeTests: true },
+    { name: "@opentelemetry/core", destPath: "pkgs/core/", srcPath: "auto-merge/js/packages/opentelemetry-core/", bundleName: "otel-sndbx.core", bundleNamespace: "opentelemetry.sandbox.web.core" },
+    { name: "@opentelemetry/resources", destPath: "pkgs/resources/", srcPath: "auto-merge/js/packages/opentelemetry-resources/", bundleName: "otel-sndbx.resources", bundleNamespace: "opentelemetry.sandbox.web.resources" },
+    { name: "@opentelemetry/context-zone-peer-dep", destPath: "pkgs/context/zone-peer-dep/", srcPath: "auto-merge/js/packages/opentelemetry-context-zone-peer-dep/", bundleName: "otel-sndbx.context-zone-peer-dep", bundleNamespace: "opentelemetry.sandbox.web.context-zone-peer-dep", noWorkerTests: true, noNodeTests: true },
+    { name: "@opentelemetry/context-zone", destPath: "pkgs/context/zone/", srcPath: "auto-merge/js/packages/opentelemetry-context-zone/", bundleName: "otel-sndbx.context-zone", bundleNamespace: "opentelemetry.sandbox.web.context-zone", noTests: true }
     // //{ name: "@opentelemetry/context-async-hooks", destPath: "pkgs/context/async-hooks/", srcPath: "auto-merge/js/packages/opentelemetry-context-async-hooks/", bundleName: "otel-sndbx.context-zone-async-hooks", bundleNamespace: "opentelemetry.sandbox.web.context-zone-async-hooks" },
     // { name: "@opentelemetry/propagator-b3", destPath: "pkgs/propagators/b3/", srcPath: "auto-merge/js/packages/opentelemetry-propagator-b3/", bundleName: "otel-sndbx.propagator-b3", bundleNamespace: "opentelemetry.sandbox.web.propagator-b3" },
     // { name: "@opentelemetry/sdk-trace-base", destPath: "pkgs/sdk/trace-base/", srcPath: "auto-merge/js/packages/opentelemetry-sdk-trace-base/", bundleName: "otel-sndbx.sdk-trace-base", bundleNamespace: "opentelemetry.sandbox.web.sdk-trace-base" },
@@ -136,17 +136,20 @@ export const filesToMerge: IMergeDetail[] = [
     { srcPath: "auto-merge/js/karma.base.js",               destPath: "karma.base.js" },
     { srcPath: "auto-merge/js/karma.webpack.js",            destPath: "karma.webpack.js" },
     { srcPath: "auto-merge/js/karma.worker.js",             destPath: "karma.worker.js" },
-    { srcPath: "auto-merge/js/tsconfig.base.esm.json",      destPath: "tsconfig.base.esm.json" },
+    { srcPath: "auto-merge/js/tsconfig.base.es5.json",      destPath: "tsconfig.base.es5.json",     optional: true  },
+    { srcPath: "auto-merge/js/tsconfig.base.esm.json",      destPath: "tsconfig.base.esm.json",     optional: true  },
     { srcPath: "auto-merge/js/tsconfig.base.esnext.json",   destPath: "tsconfig.base.esnext.json" },
     { srcPath: "auto-merge/js/tsconfig.base.json",          destPath: "tsconfig.base.json" },
-    { srcPath: "auto-merge/js/tsconfig.es5.json",           destPath: "tsconfig.es5.json" },
+    { srcPath: "auto-merge/js/tsconfig.es5.json",           destPath: "tsconfig.es5.json",          optional: true },
+    { srcPath: "auto-merge/js/tsconfig.esm.json",           destPath: "tsconfig.esm.json",          optional: true },
+    { srcPath: "auto-merge/js/tsconfig.esnext.json",        destPath: "tsconfig.esnext.json",       optional: true },
     { srcPath: "auto-merge/js/tsconfig.json",               destPath: "tsconfig.json" },
     { srcPath: "auto-merge/js/webpack.node-polyfills.js",   destPath: "webpack.node-polyfills.js" },
     { srcPath: "auto-merge/js/prettier.config.js",          destPath: "prettier.config.js" }
 ];
 
 /**
- * Enforce these versions when specified (required or dev)
+ * Enforce these versions when specified (required, dev or peer)
  */
 export let dependencyVersions = {
     "@types/mocha": "^10.0.0",
@@ -156,7 +159,7 @@ export let dependencyVersions = {
     "@types/jquery": "^3.5.14",
     "@typescript-eslint/eslint-plugin": "5.3.1",
     "@typescript-eslint/parser": "5.3.1",
-    "zone-js": "^0.11.4"
+    "zone.js": "^0.11.4"
 };
 
 /**

@@ -85,6 +85,11 @@ export interface IMergeDetail {
      * Identifies the location in the main repo where to merge this package
      */
     destPath: string;
+
+    /**
+     * Is moving this file optional
+     */
+    optional?: boolean;
 }
 
 export interface IMergePackageDetail extends IMergeDetail {

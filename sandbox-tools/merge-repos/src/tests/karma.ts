@@ -87,7 +87,7 @@ const KARMA_DEBUG_BASE_TEMPLATE = LICENSE_HEADER + "const baseConfig = require(\
     "process.env.CHROME_BIN = require(\"puppeteer\").executablePath();\n" +
     "\n" +
     "// Default to using edge locally -- choose your own browser as required\n" +
-    "process.env.CHROME_BIN = \"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\";\n" +
+    "// process.env.CHROME_BIN = \"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\";\n" +
     "\n" +
     "module.exports = {\n" +
     "    ...baseConfig,\n" +
