@@ -25,8 +25,23 @@
       "shouldPublish": true
     },
     {
+      "packageName": "@opentelemetry/sandbox-propagator-b3",
+      "projectFolder": "pkgs/propagators/b3",
+      "shouldPublish": true
+    },
+    {
       "packageName": "@opentelemetry/sandbox-resources",
       "projectFolder": "pkgs/resources",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-sdk-trace-base",
+      "projectFolder": "pkgs/sdk/trace-base",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-sdk-trace-web",
+      "projectFolder": "pkgs/sdk/trace-web",
       "shouldPublish": true
     },
     {
