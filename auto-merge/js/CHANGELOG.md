@@ -19,15 +19,20 @@ For experimental package changes, see the [experimental CHANGELOG](experimental/
 * perf(propagator-jaeger): improve deserializeSpanContext performance [#3541](https://github.com/open-telemetry/opentelemetry-js/pull/3541) @doochik
 * feat: support TraceState in SamplingResult [#3530](https://github.com/open-telemetry/opentelemetry-js/pull/3530) @raphael-theriault-swi
 * feat(sdk-trace-base): add diagnostic logging when spans are dropped [#3610](https://github.com/open-telemetry/opentelemetry-js/pull/3610) @neoeinstein
+* feat: add unit to view instrument selection criteria [#3647](https://github.com/open-telemetry/opentelemetry-js/pull/3647) @jlabatut
 
 ### :bug: (Bug Fix)
 
 * fix(core): added falsy check to make otel core work with browser where webpack config had process as false or null [#3613](https://github.com/open-telemetry/opentelemetry-js/issues/3613) @ravindra-dyte
+* fix(instrumentation-http): include query params in http.target [#3646](https://github.com/open-telemetry/opentelemetry-js/pull/3646) @kobi-co
 
 ### :books: (Refine Doc)
 
+* chore: update http example [#3651](https://github.com/open-telemetry/opentelemetry-js/pull/3651) @JamieDanielson
+
 ### :house: (Internal)
 
+* chore(exporter-jaeger): deprecate jaeger exporter [#3585](https://github.com/open-telemetry/opentelemetry-js/pull/3585) @pichlermarc
 * fix(sdk-metrics): fix flaky LastValueAggregator test by using fake timer [#3587](https://github.com/open-telemetry/opentelemetry-js/pull/3587) @pichlermarc
 * fix(test): fix failing tests by preventing source-map generation [#3642](https://github.com/open-telemetry/opentelemetry-js/pull/3642) @pichlermarc
 
