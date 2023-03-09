@@ -29,7 +29,7 @@
     "peer-api-check": "node ../scripts/peer-api-check.js",
     "rebuild": "npm run build",
     "test": "npm run test:node && npm run test:browser && npm run test:webworker",
-    "test:browser": "",
+    "test:browser": "nyc karma start ./karma.conf.js --single-run",
     "test:debug": "nyc karma start ./karma.debug.conf.js --wait",
     "test:node": "nyc ts-mocha -p tsconfig.json 'test/**/*.test.ts' --exclude 'test/browser/**/*.ts'",
     "test:webworker": "nyc karma start karma.worker.js --single-run",

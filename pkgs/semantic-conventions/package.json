@@ -21,7 +21,7 @@
     "test": "",
     "test:browser": "",
     "test:debug": "",
-    "test:node": "",
+    "test:node": "nyc ts-mocha -p tsconfig.json 'test/**/*.test.ts' --exclude 'test/browser/**/*.ts'",
     "test:webworker": "",
     "version": "node ../../scripts/version-update.js",
     "watch": "npm run version && tsc --build --watch tsconfig.json tsconfig.esm.json tsconfig.esnext.json"
