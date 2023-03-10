@@ -25,6 +25,36 @@
       "shouldPublish": true
     },
     {
+      "packageName": "@opentelemetry/sandbox-instrumentation",
+      "projectFolder": "pkgs/instr/instrumentation",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-instrumentation-document-load",
+      "projectFolder": "pkgs/instr/web/document-load",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-instrumentation-fetch",
+      "projectFolder": "pkgs/instr/web/fetch",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-instrumentation-long-task",
+      "projectFolder": "pkgs/instr/web/long-task",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-instrumentation-user-interaction",
+      "projectFolder": "pkgs/instr/web/user-interaction",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-instrumentation-xml-http-request",
+      "projectFolder": "pkgs/instr/web/xhr",
+      "shouldPublish": true
+    },
+    {
       "packageName": "@opentelemetry/sandbox-propagator-b3",
       "projectFolder": "pkgs/propagators/b3",
       "shouldPublish": true
