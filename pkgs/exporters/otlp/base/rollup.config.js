@@ -14,12 +14,8 @@
  * limitations under the License.
 */
 
-const karmaWebpackConfig = require("./karma.webpack");
-const karmaBaseConfig = require("../../../karma.base");
+import { createConfig } from "../../../../rollup.base.config";
+const version = require("./package.json").version;
+const inputName = "build/esm/index.js";
 
-module.exports = (config) => {
-  config.set(Object.assign({}, karmaBaseConfig, {
-    webpack: karmaWebpackConfig
-  }))
-};
-
+export default createConfig("opentelemetry.sandbox.exporter.otlp-base", inputName, "otel-exprtr.otlp-base", version);

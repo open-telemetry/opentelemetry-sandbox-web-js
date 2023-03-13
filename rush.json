@@ -10,6 +10,11 @@
       "shouldPublish": true
     },
     {
+      "packageName": "@opentelemetry/sandbox-auto-instrumentations-web",
+      "projectFolder": "pkgs/instrumentations/web/auto",
+      "shouldPublish": true
+    },
+    {
       "packageName": "@opentelemetry/sandbox-context-zone",
       "projectFolder": "pkgs/context/zone",
       "shouldPublish": true
@@ -22,6 +27,46 @@
     {
       "packageName": "@opentelemetry/sandbox-core",
       "projectFolder": "pkgs/core",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-instrumentation",
+      "projectFolder": "pkgs/instrumentations/instrumentation",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-instrumentation-document-load",
+      "projectFolder": "pkgs/instrumentations/web/document-load",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-instrumentation-fetch",
+      "projectFolder": "pkgs/instrumentations/web/fetch",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-instrumentation-long-task",
+      "projectFolder": "pkgs/instrumentations/web/long-task",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-instrumentation-user-interaction",
+      "projectFolder": "pkgs/instrumentations/web/user-interaction",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-instrumentation-xml-http-request",
+      "projectFolder": "pkgs/instrumentations/web/xhr",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-opentelemetry-browser-detector",
+      "projectFolder": "pkgs/detectors/browser",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-otlp-exporter-base",
+      "projectFolder": "pkgs/exporters/otlp/base",
       "shouldPublish": true
     },
     {

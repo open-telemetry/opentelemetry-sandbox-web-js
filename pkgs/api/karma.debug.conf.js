@@ -20,3 +20,4 @@ module.exports = (config) => {
   config.set(Object.assign({}, karmaBaseConfig, {
   }));
 };
+
