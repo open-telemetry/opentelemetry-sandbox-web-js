@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+*/
 
 const karmaWebpackConfig = require('../../../../karma.webpack');
 const karmaBaseConfig = require('../../../../karma.base');
@@ -22,3 +22,4 @@ module.exports = (config) => {
     webpack: karmaWebpackConfig
   }))
 };
+

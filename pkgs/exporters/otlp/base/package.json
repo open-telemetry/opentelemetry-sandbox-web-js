@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-otlp-exporter-base",
-  "version": "0.35.1",
+  "version": "0.36.0",
   "description": "OpenTelemetry OTLP Exporter base (for internal use only)",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -66,10 +66,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-core": "1.9.1"
+    "@opentelemetry/sandbox-core": "1.10.0"
   },
   "devDependencies": {
-    "@opentelemetry/sandbox-api": "1.4.0",
+    "@opentelemetry/sandbox-api": "1.4.1",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
@@ -109,7 +109,7 @@
     "webpack": "^4.46.0"
   },
   "peerDependencies": {
-    "@opentelemetry/sandbox-api": "1.4.0"
+    "@opentelemetry/sandbox-api": "1.4.1"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/experimental/packages/otlp-exporter-base",
   "sideEffects": false

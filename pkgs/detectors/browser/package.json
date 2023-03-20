@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-opentelemetry-browser-detector",
-  "version": "0.35.1",
+  "version": "0.36.0",
   "description": "OpenTelemetry Resource Detector for Browser",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.16.0",
-    "@opentelemetry/sandbox-api": "1.4.0",
+    "@opentelemetry/sandbox-api": "1.4.1",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
@@ -98,11 +98,11 @@
     "webpack": "^4.46.0"
   },
   "peerDependencies": {
-    "@opentelemetry/sandbox-api": "1.4.0"
+    "@opentelemetry/sandbox-api": "1.4.1"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-resources": "1.9.1",
-    "@opentelemetry/sandbox-semantic-conventions": "1.9.1"
+    "@opentelemetry/sandbox-resources": "1.10.0",
+    "@opentelemetry/sandbox-semantic-conventions": "1.10.0"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/experimental/packages/browser-detector"
 }
