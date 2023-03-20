@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Resource, Detector, ResourceDetectionConfig } from '../../src';
+import * as assert from 'assert';
 
-import { Detector } from '../../types';
-import { ResourceDetectionConfig } from '../../config';
-import { IResource } from '../../IResource';
-import { processDetectorSync } from './ProcessDetectorSync';
-
-/**
- * ProcessDetector will be used to detect the resources related current process running
- * and being instrumented from the NodeJS Process module.
- */
-class ProcessDetector implements Detector {
-  detect(config?: ResourceDetectionConfig): Promise<IResource> {
-    return Promise.resolve(processDetectorSync.detect(config));
+// DO NOT MODIFY THIS DETECTOR: Previous detectors used Resource as IResource did not yet exist.
+// If compilation fails at this point then the changes made are breaking.
+class RegressionTestResourceDetector_1_9_1 implements Detector {
+  async detect(_config?: ResourceDetectionConfig): Promise<Resource> {
+    return Resource.empty();
   }
 }
 
-export const processDetector = new ProcessDetector();
+describe('Regression Test @opentelemetry/resources@1.9.1', () => {
+  it('constructor', () => {
+    assert.ok(new RegressionTestResourceDetector_1_9_1());
+  });
+});
