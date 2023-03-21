@@ -22,7 +22,7 @@ import {
 } from '@opentelemetry/sandbox-api';
 
 /**
- * @deprecated Use the one defined in @opentelemetry/sandbox-sdk-trace-base instead.
+ * @deprecated Use the one defined in @opentelemetry/sdk-trace-base instead.
  * Sampler that samples a given fraction of traces based of trace id deterministically.
  */
 export class TraceIdRatioBasedSampler implements Sampler {

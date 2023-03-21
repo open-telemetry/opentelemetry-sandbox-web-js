@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-instrumentation-fetch",
-  "version": "0.35.1",
+  "version": "0.36.1",
   "description": "OpenTelemetry fetch automatic instrumentation package.",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -61,10 +61,10 @@
   },
   "devDependencies": {
     "@babel/core": "7.16.0",
-    "@opentelemetry/sandbox-api": "1.4.0",
-    "@opentelemetry/sandbox-context-zone": "1.9.1",
-    "@opentelemetry/sandbox-propagator-b3": "1.9.1",
-    "@opentelemetry/sandbox-sdk-trace-base": "1.9.1",
+    "@opentelemetry/sandbox-api": "1.4.1",
+    "@opentelemetry/sandbox-context-zone": "1.10.1",
+    "@opentelemetry/sandbox-propagator-b3": "1.10.1",
+    "@opentelemetry/sandbox-sdk-trace-base": "1.10.1",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
@@ -107,13 +107,13 @@
     "webpack-merge": "5.8.0"
   },
   "peerDependencies": {
-    "@opentelemetry/sandbox-api": "1.4.0"
+    "@opentelemetry/sandbox-api": "1.4.1"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-core": "1.9.1",
-    "@opentelemetry/sandbox-instrumentation": "0.35.1",
-    "@opentelemetry/sandbox-sdk-trace-web": "1.9.1",
-    "@opentelemetry/sandbox-semantic-conventions": "1.9.1"
+    "@opentelemetry/sandbox-core": "1.10.1",
+    "@opentelemetry/sandbox-instrumentation": "0.36.1",
+    "@opentelemetry/sandbox-sdk-trace-web": "1.10.1",
+    "@opentelemetry/sandbox-semantic-conventions": "1.10.1"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/experimental/packages/opentelemetry-instrumentation-fetch",
   "sideEffects": false

@@ -4,13 +4,13 @@
 [![Apache License][license-image]][license-image]
 
 This module provides *Zone Context Manager with bundled [zone-js]* for Web applications.
-If you have your own [zone-js] please use [@opentelemetry/sandbox-context-zone-peer-dep]
-If you use Angular it means you already have the [zone-js] and you should use [@opentelemetry/sandbox-context-zone-peer-dep]
+If you have your own [zone-js] please use [@opentelemetry/context-zone-peer-dep]
+If you use Angular it means you already have the [zone-js] and you should use [@opentelemetry/context-zone-peer-dep]
 
 ## Installation
 
 ```bash
-npm install --save @opentelemetry/sandbox-context-zone
+npm install --save @opentelemetry/context-zone
 ```
 
 ## Usage
@@ -66,7 +66,7 @@ Apache 2.0 - See [LICENSE][license-url] for more information.
 [discussions-url]: https://github.com/open-telemetry/opentelemetry-js/discussions
 [license-url]: https://github.com/open-telemetry/opentelemetry-js/blob/main/LICENSE
 [license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat
-[npm-url]: https://www.npmjs.com/package/@opentelemetry/sandbox-context-zone
+[npm-url]: https://www.npmjs.com/package/@opentelemetry/context-zone
 [npm-img]: https://badge.fury.io/js/%40opentelemetry%2Fcontext-zone.svg
 [zone-js]: https://www.npmjs.com/package/zone.js
-[@opentelemetry/sandbox-context-zone-peer-dep]: https://www.npmjs.com/package/@opentelemetry/sandbox-context-zone-peer-dep
+[@opentelemetry/context-zone-peer-dep]: https://www.npmjs.com/package/@opentelemetry/context-zone-peer-dep
