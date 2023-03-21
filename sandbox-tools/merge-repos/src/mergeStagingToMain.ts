@@ -42,6 +42,7 @@ import { IMergeDetail, IMergePackageDetail, IPackageJson, IPackages, IRepoDetail
 import { dumpObj, findCurrentRepoRoot, formatIndentLines, log, logError, logWarn, removeTrailingComma, transformContent, transformPackages } from "./support/utils";
 import { createPackageWebpackTestConfig } from "./tests/webpack";
 import { initPackageJson } from "./package/package";
+import { checkFixBadMerges } from "./support/mergeFixup";
 
 interface IStagingRepoDetails {
     git: SimpleGit,
@@ -323,8 +324,6 @@ async function getStagingRepo(git: SimpleGit, repoName: string, details: IRepoDe
                 await createPackageWebpackTestConfig(stagingDetails.git, forkDestOrg, packageDetails.destPath, _mergeGitRoot, packageDetails);
                 await createPackageKarmaConfig(stagingDetails.git, forkDestOrg, packageDetails.destPath, _mergeGitRoot, packageDetails);
             }
-
-            //await updateEslint(stagingDetails, forkDestOrg, packageDetails.destPath);
         } else {
             fail(stagingGit, `[${src}] - Not as expected!`);
         }
@@ -785,6 +784,7 @@ async function updateConfigFileRelativePaths(stagingDetails: IStagingRepoDetails
             // update paths to base eslint.config.js
             content = fs.readFileSync(theFilename, "utf-8");
             newContent = content.replace(/require\(['"](.*eslint\.config\.js)['"]\)/gm, function(match, group) {
+                log(` -- replacing ${group} => ${baseEsLintConfig}`);
                 return match.replace(group, baseEsLintConfig);
             });
         } else if (name.startsWith("karma")) {
@@ -825,6 +825,23 @@ async function mergeStagingToMaster(mergeGit: SimpleGit, stagingDetails: IStagin
             commitPerformed = await resolveConflictsToTheirs(mergeGit, _mergeGitRoot, mergeCommitMessage, false);
         });
 
+    log("-----------------------------------------------");
+    log("Now check for merge issues and fix from staging");
+    log("-----------------------------------------------");
+    mergeCommitMessage.message += `\nIdentifying and fixing merge issues from staged repos`
+
+    function _isVerifyIgnore(repoName: string, destFolder: string, source: string, ignoreOtherRepoFolders: boolean): boolean {
+        if (source === "." || source === ".." || source === ".git" || source === ".vs" || source === "node_modules" || source === "auto-merge") {
+            // Always ignore these
+            return true;
+        }
+
+        return false;
+    }
+
+    // Validate and fixup any bad merges that may have occurred -- make sure the source and new merged repo contain the same files
+    await checkFixBadMerges(mergeGit, _mergeGitRoot, _isVerifyIgnore, stagingDetails.branch, stagingDetails.path + "/pkgs", _mergeGitRoot + "/pkgs", mergeCommitMessage, 0);
+    
     // Update the root package json
     if (!checkPackageName(_mergeGitRoot, SANDBOX_PROJECT_NAME, _mergeGitRoot, true)) {
         fail(mergeGit, "Current repo folder does not appear to be the sandbox");
