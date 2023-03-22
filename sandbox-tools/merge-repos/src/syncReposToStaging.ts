@@ -36,6 +36,7 @@ import { dumpObj, findCurrentRepoRoot, formatIndentLines, log, logAppendMessage 
 import { applyRepoDefaults, MERGE_CLONE_LOCATION, reposToSyncAndMerge, MERGE_ORIGIN_REPO, MERGE_ORIGIN_STAGING_BRANCH, MERGE_DEST_BASE_FOLDER } from "./config";
 import { moveRepoTo } from "./support/moveTo";
 import { resolveConflictsToTheirs } from "./git/resolveConflictsToTheirs";
+import { checkFixBadMerges } from "./support/mergeFixup";
 
 interface ISourceRepoDetails {
     path: string,
@@ -209,154 +210,38 @@ async function removePotentialMergeConflicts(git: SimpleGit, theRepos: IRepoSync
     return null;
 }
 
-async function checkFixBadMerges(git: SimpleGit, repoName: string, baseFolder: string, destFolder: string, commitDetails: ICommitDetails, level: number) {
+function _isVerifyIgnore(repoName: string, destFolder: string, source: string, ignoreOtherRepoFolders: boolean) {
+    if (source === "." || source === ".." || source === ".git" || source === ".vs") {
+        // Always ignore these
+        return true;
+    }
 
-    // Get master source files
-    const masterFiles = fs.readdirSync(baseFolder);
-    const destFiles = fs.readdirSync(destFolder);
+    let isDefined = false;
 
-    function _isVerifyIgnore(source: string, ignoreOtherRepoFolders: boolean) {
-        if (source === "." || source === ".." || source === ".git" || source === ".vs") {
-            // Always ignore these
-            return true;
-        }
-
-        let isDefined = false;
-
-        // Don't ignore the auto-merge folder
-        if (source === MERGE_DEST_BASE_FOLDER) {
-            // Always process this folder
-            return false;
-        }
-        
-        if (reposToSyncAndMerge) {
-            let repoNames = Object.keys(reposToSyncAndMerge);
-            for (let lp = 0; lp < repoNames.length; lp++) {
-                let repoDestFolder = reposToSyncAndMerge[repoNames[lp]].destFolder;
-                if (repoName === repoNames[lp]) {
-                    if ((destFolder + "/" + source + "/").indexOf("/" + repoDestFolder + "/") !== -1) {
-                        // Always process this folder if it's the current repo
-                        return false;
-                    }
-                } else {
-                    if (repoDestFolder === source || (destFolder + "/" + source + "/").indexOf("/" + repoDestFolder + "/") !== -1 || (destFolder + "/" + source).endsWith("/" + repoDestFolder)) {
-                        isDefined = ignoreOtherRepoFolders;
-                    }
-                }
-            }
-        }
+    // Don't ignore the auto-merge folder
+    if (source === MERGE_DEST_BASE_FOLDER) {
+        // Always process this folder
+        return false;
+    }
     
-        return isDefined;
-    }
-
-    async function validateFile(masterFile: string, destFile: string) {
-        let changed = false;
-        if (fs.existsSync(destFile)) {
-            // Compare contents
-            let destStats = fs.statSync(destFile);
-            let masterStats = fs.statSync(masterFile);
-            if (destStats.size !== masterStats.size) {
-                // File size is different so was not moved / merged correctly
-                commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "x", working_dir: "S", path: destFile } , `Re-Copying master file as size mismatch ${destStats.size} !== ${masterStats.size}`);
-                fs.copyFileSync(masterFile, destFile);
-                changed = true;
-            } else {
-                // Same file size, so compare contents
-                let masterContent = fs.readFileSync(masterFile);
-                let destContent = fs.readFileSync(destFile);
-                if (masterContent.length !== destContent.length) {
-                    // File content is different so was not moved / merged correctly
-                    commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "x", working_dir: "C", path: destFile } , "Re-Copying master file as content mismatch");
-                    fs.copyFileSync(masterFile, destFile);
-                    changed = true;
-                } else {
-                    let isSame = true;
-                    let lp = 0;
-                    while (isSame && lp < masterContent.length) {
-                        if (masterContent[lp] !== destContent[lp]) {
-                            isSame = false;
-                        }
-                        lp++;
-                    }
-
-                    if (!isSame) {
-                        // File content is different so was not moved / merged correctly
-                        commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "x", working_dir: "C", path: destFile } , "Re-Copying master file as content is different");
-                        fs.copyFileSync(masterFile, destFile);
-                        changed = true;
-                    }
-                }
-            }
-        } else {
-            // Missing dest so was not moved / merged correctly
-            commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "x", working_dir: "M", path: destFile } , "Re-Copying master file");
-            fs.copyFileSync(masterFile, destFile);
-            changed = true;
-        }
-
-        return changed;
-    }
-
-    log(` - (Verifying) ${baseFolder} <=> ${destFolder}`);
-    for (let mLp = 0; mLp < masterFiles.length; mLp++) {
-        let theFile = masterFiles[mLp];
-        if (!_isVerifyIgnore(theFile, true)) {
-            // log(` - (...) ${baseFolder + "/" + masterFiles[mLp]} ==> ${theFile}`);
-            let masterStats = fs.statSync(baseFolder + "/" + theFile);
-            if (masterStats.isDirectory()) {
-                if (fs.existsSync(destFolder + "/" + theFile)) {
-                    let destStats = fs.statSync(destFolder + "/" + theFile);
-                    if (destStats.isDirectory()) {
-                        await checkFixBadMerges(git, repoName, baseFolder + "/" + theFile, destFolder + "/" + theFile, commitDetails, level + 1);
-                    } else {
-                        log(` - (Mismatch) ${destFolder + "/" + theFile} is not a folder`);
-                        commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "x", working_dir: "T", path: destFolder + "/" + theFile } , "Dest is file should be folder");
-                        await git.rm(destFolder + "/" + theFile)
-    
-                        fs.mkdirSync(destFolder + "/" + theFile);
-                        await checkFixBadMerges(git, repoName, baseFolder + "/" + theFile, destFolder + "/" + theFile, commitDetails, level + 1);
-                    }
-                } else {
-                    log(` - (Missing) ${baseFolder} <=> ${destFolder}`);
-                    fs.mkdirSync(destFolder + "/" + theFile);
-                    await checkFixBadMerges(git, repoName, baseFolder + "/" + theFile, destFolder + "/" + theFile, commitDetails, level + 1);
+    if (reposToSyncAndMerge) {
+        let repoNames = Object.keys(reposToSyncAndMerge);
+        for (let lp = 0; lp < repoNames.length; lp++) {
+            let repoDestFolder = reposToSyncAndMerge[repoNames[lp]].destFolder;
+            if (repoName === repoNames[lp]) {
+                if ((destFolder + "/" + source + "/").indexOf("/" + repoDestFolder + "/") !== -1) {
+                    // Always process this folder if it's the current repo
+                    return false;
                 }
             } else {
-                // Assume file
-                if (validateFile(baseFolder + "/" +  theFile,  destFolder + "/" +  theFile)) {
-
-                    await git.raw([
-                        "add",
-                        "-f",
-                        destFolder + "/" +  theFile]);
+                if (repoDestFolder === source || (destFolder + "/" + source + "/").indexOf("/" + repoDestFolder + "/") !== -1 || (destFolder + "/" + source).endsWith("/" + repoDestFolder)) {
+                    isDefined = ignoreOtherRepoFolders;
                 }
             }
-        } else {
-            log(` - (xI) ${baseFolder + "/" + masterFiles[mLp]} ==> ${theFile}`);
         }
     }
 
-    // Remove any files / folders that do not exist in the master repo
-    for (let dLp = 0; dLp < destFiles.length; dLp++) {
-        let destFile = destFiles[dLp];
-        if (masterFiles.indexOf(destFile) === -1 && !_isVerifyIgnore(destFile, true)) {
-            let destStats = fs.statSync(destFolder + "/" + destFile);
-            if (destStats.isDirectory()) {
-                commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "*", working_dir: "F", path: destFolder + "/" + destFile } , `Removing extra folder ${destFile}`);
-                await git.raw([
-                    "rm",
-                    "-f",
-                    "-r",
-                    destFolder + "/" + destFile]);
-                // fs.rmdirSync(destFolder + "/" + destFile, {
-                //     recursive: true
-                // });
-            } else {
-                commitDetails.message = logAppendMessage(_mergeGitRoot, commitDetails.message, { index: "*", working_dir: "E", path: destFolder + "/" + destFile } , "Removing extra file");
-                await git.rm(destFolder + "/" + destFile);
-            }
-        }
-    }
+    return isDefined;
 }
 
 async function getAndSyncSrcRepo(git: SimpleGit, repoName: string, details: IRepoDetails): Promise<ISourceRepoDetails> {
@@ -620,7 +505,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
         await processRepos(reposToSyncAndMerge, async (repoName, repoDetails) => {
             fixMergeCommitDetails.message += `\nProcessing ${repoName}`;
             let stagingRoot = _mergeGitRoot + "-" + repoName;
-            await checkFixBadMerges(mergeGit, repoName, stagingRoot, _mergeGitRoot, fixMergeCommitDetails, 0);
+            await checkFixBadMerges(mergeGit, _mergeGitRoot, _isVerifyIgnore, repoName, stagingRoot, _mergeGitRoot, fixMergeCommitDetails, 0);
             if (!prRequired) {
                 prTitle += repoName + "; ";
             }
