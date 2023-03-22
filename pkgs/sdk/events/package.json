@@ -1,5 +1,5 @@
 {
-  "name": "@opentelemetry/sdk-events",
+  "name": "@opentelemetry/sandbox-sdk-events",
   "version": "0.35.1",
   "publishConfig": {
     "access": "public"
