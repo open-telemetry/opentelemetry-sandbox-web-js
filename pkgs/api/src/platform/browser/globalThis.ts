@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// Updates to this file should also be replicated to @opentelemetry/sandbox-core too.
+// Updates to this file should also be replicated to @opentelemetry/core too.
 
 /**
  * - globalThis (New standard)
