@@ -36,6 +36,7 @@ For production level support please use these repositories
 - [auto-merge/repo-staging] Used as a staging branch to merge the `main` branch from the original source [OpenTelemetry JS](https://github.com/open-telemetry/opentelemetry-js);  [OpenTelemetry JS API](https://github.com/open-telemetry/opentelemetry-js-api) repositories so that all commit history and tags are included in this repository. To avoid / reduce merge issues, as part of the [auto-merge script](./sandbox-tools/merge-repos/) it will ALWAYS select the source repository's version, this branch does not have any compile targets or validation. This branch will be updated periodically to continuously merge changes from the original master source repos into this repository.
 - `minification` (TBD) - used to experiment with different levels of minification.
 - `release` (TBD) Only if needed to publish packages for 3rd party testing.
+- [auto-instrumentation-poc](https://github.com/open-telemetry/opentelemetry-sandbox-web-js/tree/auto-instrumentation-poc) This branch is used to prototype new instrumentations that generate events (as log records). 
 
 ## Automated merge workflows
 
