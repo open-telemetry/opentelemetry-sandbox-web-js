@@ -10,6 +10,16 @@
       "shouldPublish": true
     },
     {
+      "packageName": "@opentelemetry/sandbox-api-events",
+      "projectFolder": "pkgs/api-events",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-api-logs",
+      "projectFolder": "pkgs/api-logs",
+      "shouldPublish": true
+    },
+    {
       "packageName": "@opentelemetry/sandbox-auto-instrumentations-web",
       "projectFolder": "pkgs/instrumentations/web/auto",
       "shouldPublish": true

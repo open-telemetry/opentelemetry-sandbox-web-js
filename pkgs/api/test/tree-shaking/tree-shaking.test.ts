@@ -22,7 +22,7 @@ import { fs as mfs } from 'memfs';
 import * as realFs from 'fs';
 
 /**
- * Verify that tree-shaking can be properly applied on the @opentelemetry/sandbox-api package.
+ * Verify that tree-shaking can be properly applied on the @opentelemetry/api package.
  * Unused optional apis should be able to be removed from the final bundle.
  */
 describe('tree-shaking', () => {

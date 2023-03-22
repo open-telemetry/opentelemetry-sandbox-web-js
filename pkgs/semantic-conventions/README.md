@@ -8,7 +8,7 @@ Semantic Convention constants for use with the OpenTelemetry SDK/APIs. [This doc
 ## Installation
 
 ```bash
-npm install --save @opentelemetry/sandbox-semantic-conventions
+npm install --save @opentelemetry/semantic-conventions
 ```
 
 ## Usage
@@ -35,7 +35,7 @@ Apache 2.0 - See [LICENSE][license-url] for more information.
 [discussions-url]: https://github.com/open-telemetry/opentelemetry-js/discussions
 [license-url]: https://github.com/open-telemetry/opentelemetry-js/blob/main/LICENSE
 [license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat
-[npm-url]: https://www.npmjs.com/package/@opentelemetry/sandbox-semantic-conventions
+[npm-url]: https://www.npmjs.com/package/@opentelemetry/semantic-conventions
 [npm-img]: https://badge.fury.io/js/%40opentelemetry%2Fsemantic-conventions.svg
 
 [trace-semantic_conventions]: https://github.com/open-telemetry/opentelemetry-specification/tree/master/specification/trace/semantic_conventions

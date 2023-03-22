@@ -19,7 +19,7 @@ const SPAN_ID_BYTES = 8;
 const TRACE_ID_BYTES = 16;
 
 /**
- * @deprecated Use the one defined in @opentelemetry/sandbox-sdk-trace-base instead.
+ * @deprecated Use the one defined in @opentelemetry/sdk-trace-base instead.
  */
 export class RandomIdGenerator implements IdGenerator {
   /**

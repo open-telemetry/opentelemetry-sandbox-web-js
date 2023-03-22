@@ -17,7 +17,7 @@
 import { Sampler, SamplingDecision, SamplingResult } from '@opentelemetry/sandbox-api';
 
 /**
- * @deprecated Use the one defined in @opentelemetry/sandbox-sdk-trace-base instead.
+ * @deprecated Use the one defined in @opentelemetry/sdk-trace-base instead.
  * Sampler that samples no traces.
  */
 export class AlwaysOffSampler implements Sampler {
