@@ -24,7 +24,7 @@ import { ComponentLoggerOptions, DiagLogger, DiagLogFunction } from './types';
  * @example
  * const cLogger = diag.createComponentLogger({ namespace: '@opentelemetry/sandbox-instrumentation-http' });
  * cLogger.debug('test');
- * // @opentelemetry/sandbox-instrumentation-http test
+ * // @opentelemetry/instrumentation-http test
  */
 export class DiagComponentLogger implements DiagLogger {
   private _namespace: string;

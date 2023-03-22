@@ -15,7 +15,7 @@
  */
 
 /**
- * @deprecated Use the one defined in @opentelemetry/sandbox-sdk-trace-base instead.
+ * @deprecated Use the one defined in @opentelemetry/sdk-trace-base instead.
  * IdGenerator provides an interface for generating Trace Id and Span Id.
  */
 export interface IdGenerator {
