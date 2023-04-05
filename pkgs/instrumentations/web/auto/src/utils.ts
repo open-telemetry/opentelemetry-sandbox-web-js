@@ -15,7 +15,10 @@
  */
 
 import { diag } from '@opentelemetry/sandbox-api';
-import { Instrumentation } from '@opentelemetry/sandbox-instrumentation';
+import {
+  Instrumentation,
+  InstrumentationConfig,
+} from '@opentelemetry/sandbox-instrumentation';
 import { DocumentLoadInstrumentation } from '@opentelemetry/sandbox-instrumentation-document-load';
 import { FetchInstrumentation } from '@opentelemetry/sandbox-instrumentation-fetch';
 import { UserInteractionInstrumentation } from '@opentelemetry/sandbox-instrumentation-user-interaction';
@@ -55,7 +58,7 @@ export function getWebAutoInstrumentations(
   >) {
     const Instance = InstrumentationMap[name];
     // Defaults are defined by the instrumentation itself
-    const userConfig = inputConfigs[name] ?? {};
+    const userConfig: InstrumentationConfig = inputConfigs[name] ?? {};
 
     if (userConfig.enabled === false) {
       diag.debug(`Disabling instrumentation for ${name}`);
