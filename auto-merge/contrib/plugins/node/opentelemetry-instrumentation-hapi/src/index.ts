@@ -16,4 +16,3 @@
 
 export * from './instrumentation';
 export * from './enums/AttributeNames';
-export * from './types';
