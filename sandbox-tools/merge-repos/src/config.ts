@@ -131,7 +131,8 @@ export const foldersToMerge: IMergePackageDetail[] = [
     { name: "@opentelemetry/auto-instrumentations-web", destPath: "pkgs/instrumentations/web/auto/", srcPath: "auto-merge/contrib/metapackages/auto-instrumentations-web/", bundleName: "otel-sndbx.instr-auto", bundleNamespace: "opentelemetry.sandbox.instr.web.auto", noWorkerTests: true, noNodeTests: true },
     { name: "@opentelemetry/opentelemetry-browser-detector", destPath: "pkgs/detectors/browser/", srcPath: "auto-merge/js/experimental/packages/opentelemetry-browser-detector/", bundleName: "otel-sndbx.detect-browser", bundleNamespace: "opentelemetry.sandbox.detector.browser", noWorkerTests: true },
     { name: "@opentelemetry/api-logs", destPath: "pkgs/api-logs/", srcPath: "auto-merge/js/experimental/packages/api-logs/", bundleName: "otel-sndbx.api-logs", bundleNamespace: "opentelemetry.sandbox.api-logs", noWorkerTests: true, noBrowserTests: true },
-    { name: "@opentelemetry/api-events", destPath: "pkgs/api-events/", srcPath: "auto-merge/js/experimental/packages/api-events/", bundleName: "otel-sndbx.api-events", bundleNamespace: "opentelemetry.sandbox.api-events", noWorkerTests: true, noBrowserTests: true }
+    { name: "@opentelemetry/api-events", destPath: "pkgs/api-events/", srcPath: "auto-merge/js/experimental/packages/api-events/", bundleName: "otel-sndbx.api-events", bundleNamespace: "opentelemetry.sandbox.api-events", noWorkerTests: true, noBrowserTests: true },
+    { name: "@opentelemetry/sdk-logs", destPath: "pkgs/sdk-logs/", srcPath: "auto-merge/js/experimental/packages/sdk-logs/", bundleName: "otel-sndbx.sdk-logs", bundleNamespace: "opentelemetry.sandbox.sdk-logs" },
 ];
 
 /**
@@ -221,7 +222,7 @@ export let cleanupScripts = {
 };
 
 /**
- * Add these dev depencencies to the root package.json
+ * Add these dev dependencies to the root package.json
  */
 export let initDevDependencyVersions = {
     "@microsoft/rush": "5.93.1",
