@@ -108,6 +108,11 @@
       "packageName": "@opentelemetry/sandbox-semantic-conventions",
       "projectFolder": "pkgs/semantic-conventions",
       "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-instrumentation-web-vitals",
+      "projectFolder": "pkgs/instrumentations/web/web-vitals",
+      "shouldPublish": true
     }
   ]
 }
