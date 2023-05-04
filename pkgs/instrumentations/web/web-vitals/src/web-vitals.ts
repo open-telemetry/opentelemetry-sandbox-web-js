@@ -14,8 +14,58 @@
  * limitations under the License.
  */
 
-import { InstrumentationBase } from '@opentelemetry/instrumentation';
+import {
+  InstrumentationBase,
+  InstrumentationConfig,
+} from '@opentelemetry/instrumentation';
+import {
+  onCLS,
+  onFCP,
+  onFID,
+  onINP,
+  onLCP,
+  onTTFB,
+  ReportOpts,
+  Metric,
+} from 'web-vitals';
+import { events } from '@opentelemetry/sandbox-api-events';
+
+import { VERSION } from './version';
+
+/**
+ * WebVitalsPlugin Config
+ */
+export interface WebVitalsInstrumentationConfig
+  extends InstrumentationConfig,
+    ReportOpts {}
 
 export class WebVitalsInstrumentation extends InstrumentationBase {
+  constructor(config?: WebVitalsInstrumentationConfig) {
+    super('@opentelemetry/sandbox-instrumentation-web-vitals', VERSION, config);
+  }
+
+  private _onReport(metric: Metric) {
+    const eventEmitter = events.getEventEmitter('web-vitals', VERSION);
+    eventEmitter.emit({
+      name: metric.name,
+      attributes: {
+        value: metric.value,
+        delta: metric.delta,
+        id: metric.id,
+        rating: metric.rating,
+        navigationType: metric.navigationType,
+      },
+    });
+  }
+
+  override enable() {
+    onCLS(this._onReport);
+    onFCP(this._onReport);
+    onFID(this._onReport);
+    onINP(this._onReport);
+    onLCP(this._onReport);
+    onTTFB(this._onReport);
+  }
+
   init(): void {}
 }
