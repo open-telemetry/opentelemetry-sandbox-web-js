@@ -108,6 +108,11 @@
       "packageName": "@opentelemetry/sandbox-semantic-conventions",
       "projectFolder": "pkgs/semantic-conventions",
       "shouldPublish": true
+    },
+    {
+      "packageName": "instrumentations-examples",
+      "projectFolder": "examples/instrumentations",
+      "shouldPublish": false
     }
   ]
 }
