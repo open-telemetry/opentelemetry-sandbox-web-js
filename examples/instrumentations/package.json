@@ -1,16 +1,28 @@
 {
-  "name": "instrumentations-examples",
+  "name": "opentelemetry-instrumentations-web-examples",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sandbox repo examples of web instrumentation",
   "main": "index.js",
   
   "scripts": {
-    "start": "webpack serve --progress --color --port 8090 --config webpack.dev.config.js --hot --host 0.0.0.0 --compress",
-    "start-nc": "webpack serve --progress --color --port 8090 --config webpack.dev.config.js --hot --host 0.0.0.0 --no-compress",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "webpack serve --progress --color --port 8090 --config webpack.config.js --hot --host 0.0.0.0 --compress",
+    "start-nc": "webpack serve --progress --color --port 8090 --config webpack.config.js --hot --host 0.0.0.0 --no-compress"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "OpenTelemetry Authors",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/open-telemetry/opentelemetry-sandbox-web-js/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/open-telemetry/opentelemetry-sandbox-web-js.git"
+  },
+  "keywords": [
+    "opentelemetry",
+    "tracing",
+    "metrics",
+    "web"
+  ],
   "devDependencies": {
     "typescript": "~5.0.4",
     "webpack": "~5.82.1",
