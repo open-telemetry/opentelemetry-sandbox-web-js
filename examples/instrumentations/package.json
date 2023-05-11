@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  
   "scripts": {
     "start": "webpack serve --progress --color --port 8090 --config webpack.dev.config.js --hot --host 0.0.0.0 --compress",
     "start-nc": "webpack serve --progress --color --port 8090 --config webpack.dev.config.js --hot --host 0.0.0.0 --no-compress",

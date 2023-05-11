@@ -7,7 +7,7 @@ const directory = path.resolve(__dirname);
 const common = {
   mode: 'development',
   entry: {
-    'document-load': 'document-load/index.js',
+    'document-load': 'examples/document-load/index.js',
     // metrics: 'examples/metrics/index.js',
     // fetch: 'examples/fetch/index.js',
     // 'xml-http-request': 'examples/xml-http-request/index.js',
