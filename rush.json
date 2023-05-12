@@ -110,7 +110,7 @@
       "shouldPublish": true
     },
     {
-      "packageName": "instrumentations-examples",
+      "packageName": "opentelemetry-instrumentations-web-examples",
       "projectFolder": "examples/instrumentations",
       "shouldPublish": false
     }
