@@ -14,23 +14,4 @@
  * limitations under the License.
  */
 
-import { LogAttributes } from './LogRecord';
-
-export interface LoggerOptions {
-  /**
-   * The schemaUrl of the tracer or instrumentation library
-   * @default ''
-   */
-  schemaUrl?: string;
-
-  /**
-   * The instrumentation scope attributes to associate with emitted telemetry
-   */
-  scopeAttributes?: LogAttributes;
-
-  /**
-   * Specifies whether the Trace Context should automatically be passed on to the LogRecords emitted by the Logger.
-   * @default true
-   */
-  includeTraceContext?: boolean;
-}
+export * from './instrumentation';
