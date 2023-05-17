@@ -33,7 +33,7 @@ export class LogRecord implements ReadableLogRecord {
   readonly spanContext?: api.SpanContext;
   readonly resource: IResource;
   readonly instrumentationScope: InstrumentationScope;
-  readonly attributes: Attributes = {};
+  readonly attributes: logsAPI.LogAttributes = {};
   private _severityText?: string;
   private _severityNumber?: logsAPI.SeverityNumber;
   private _body?: string;
@@ -97,12 +97,19 @@ export class LogRecord implements ReadableLogRecord {
     this.setAttributes(attributes);
   }
 
-  public setAttribute(key: string, value?: AttributeValue) {
+  public setAttribute(key: string, value?: Attributes | AttributeValue) {
     if (this._isLogRecordReadonly()) {
       return this;
     }
     if (value === null) {
       return this;
+    }
+    if (
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      Object.keys(value).length > 0
+    ) {
+      this.attributes[key] = value;
     }
     if (key.length === 0) {
       api.diag.warn(`Invalid attribute key: ${key}`);
@@ -123,7 +130,7 @@ export class LogRecord implements ReadableLogRecord {
     return this;
   }
 
-  public setAttributes(attributes: Attributes) {
+  public setAttributes(attributes: logsAPI.LogAttributes) {
     for (const [k, v] of Object.entries(attributes)) {
       this.setAttribute(k, v);
     }

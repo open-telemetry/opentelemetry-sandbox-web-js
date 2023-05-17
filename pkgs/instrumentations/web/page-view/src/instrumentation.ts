@@ -19,26 +19,33 @@ import { InstrumentationBase } from '@opentelemetry/sandbox-instrumentation';
 import { Logger, LogRecord } from '@opentelemetry/sandbox-api-logs';
 
 import { VERSION } from './version';
+import { PageViewInstrumentationConfig } from './types';
 /**
  * This class represents a document load plugin
  */
 
 export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
+  static readonly instrumentationName =
+    '@opentelemetry/instrumentation-page-view';
   readonly component: string = 'page-view-event';
   readonly version: string = '1';
   moduleName = this.component;
-  logger: Logger | null = null;
-  referrer: string = '';
+  logger?: Logger;
+  referrer?: string;
 
   /**
    *
    * @param config
    */
-  constructor(config: any = {}) {
-    super('@opentelemetry/instrumentation-page-view', VERSION, config);
-    this._setLogger(config);
+  constructor(config: PageViewInstrumentationConfig) {
+    super(PageViewEventInstrumentation.instrumentationName, VERSION, config);
+    this.logger = config.loggerProvider.getLogger(
+      PageViewEventInstrumentation.instrumentationName,
+      VERSION
+    );
+
     this._wrapHistory();
-    this.referrer = config.referrer;
+    this.referrer = config.referrer ?? '';
   }
 
   init() {}
@@ -51,7 +58,6 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
       attributes: {
         'event.domain': 'browser',
         'event.name': 'page_view',
-        'event.type': 0,
         'event.data': {
           url: document.documentURI as string,
           referrer: document.referrer,
@@ -61,34 +67,31 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
       },
     };
     this.logger?.emit(pageViewEvent);
-    // console.log('page viewed', pageViewEvent);
   }
 
   /**
    * callback to be executed when page is viewed
    */
   private _onVirtualPageView(changeState: string | null | undefined) {
-    const title = document.title;
-    const referrer = this.referrer;
     const vPageViewEvent: LogRecord = {
       attributes: {
         'event.domain': 'browser',
         'event.name': 'page_view',
-        'event.type': 1,
         'event.data': {
           'http.url': window.location.href,
-          title: title,
+          title: document.title,
           changeSate: changeState || '',
-          referrer,
+          referrer: this.referrer,
           'vp.startTime': Date.now() * 1000000,
+          type: 1,
         },
       },
     };
     this.logger?.emit(vPageViewEvent);
   }
 
-  private _setLogger(config: any) {
-    this.logger = config.loggerProvider.getLogger('page_view_event');
+  public _setLogger(logger: Logger) {
+    this.logger = logger;
   }
 
   /**
@@ -104,7 +107,10 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
   override enable() {
     // remove previously attached load to avoid adding the same event twice
     // in case of multiple enable calling.
-    document.removeEventListener('DOMContentLoaded', this._onPageView);
+    document.removeEventListener(
+      'DOMContentLoaded',
+      this._onPageView.bind(this)
+    );
     this._waitForPageLoad();
   }
 
@@ -112,7 +118,10 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
    * implements disable function
    */
   override disable() {
-    document.removeEventListener('DOMContentLoaded', this._onPageView);
+    document.removeEventListener(
+      'DOMContentLoaded',
+      this._onPageView.bind(this)
+    );
   }
 
   private _wrapHistory(): void {
