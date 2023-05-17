@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { InstrumentationConfig } from '@opentelemetry/sandbox-instrumentation';
-import { LoggerProvider } from '@opentelemetry/sandbox-sdk-logs';
+import { LoggerProvider } from '@opentelemetry/sandbox-api-logs';
 import { LogRecord } from '@opentelemetry/sandbox-api-logs';
 
 /**

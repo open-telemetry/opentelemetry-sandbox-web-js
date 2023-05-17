@@ -80,6 +80,10 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
   private _onVirtualPageView(changeState: string | null | undefined) {
     const title = document.title;
     const referrer = this.oldUrl;
+    // Dont emit an event if the route didn't change
+    if (referrer === location.href) {
+      return;
+    }
     const vPageViewEvent: LogRecord = {
       attributes: {
         'event.domain': 'browser',
