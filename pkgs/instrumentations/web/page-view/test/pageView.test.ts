@@ -24,6 +24,7 @@ import {
 import * as assert from 'assert';
 import * as sinon from 'sinon';
 import { PageViewEventInstrumentation } from '../src';
+import { Attributes } from '@opentelemetry/sandbox-api';
 
 const exporter = new InMemoryLogRecordExporter();
 const provider = new LoggerProvider();
@@ -36,11 +37,6 @@ describe('PageView Instrumentation', () => {
   const sandbox = sinon.createSandbox();
 
   beforeEach(() => {
-    plugin = new PageViewEventInstrumentation({
-      enabled: false,
-      loggerProvider: provider,
-    });
-
     exporter.reset();
   });
 
@@ -51,12 +47,24 @@ describe('PageView Instrumentation', () => {
 
   describe('constructor', () => {
     it('should construct an instance', () => {
+      plugin = new PageViewEventInstrumentation({
+        enabled: false,
+        loggerProvider: provider,
+        applyCustomLogAttributes: logRecord => {},
+      });
+
       assert.ok(plugin instanceof PageViewEventInstrumentation);
     });
   });
 
   describe('export page_view LogRecord', () => {
     it("should export LogRecord for page_view event type 0 when 'DOMContentLoaded' event is fired", done => {
+      plugin = new PageViewEventInstrumentation({
+        enabled: false,
+        loggerProvider: provider,
+        applyCustomLogAttributes: logRecord => {},
+      });
+
       const spy = sandbox.spy(document, 'addEventListener');
       plugin.enable();
 
@@ -88,9 +96,21 @@ describe('PageView Instrumentation', () => {
     });
 
     it('should export LogRecord for page_view event type 1 when history.pushState() is called', done => {
-      const mockNow = 16842729000;
-      const spy = sandbox.stub(Date, 'now');
-      spy.returns(mockNow);
+      const vpStartTime = 16842729000 * 1000000;
+      const referrer = location.href;
+
+      plugin = new PageViewEventInstrumentation({
+        enabled: false,
+        loggerProvider: provider,
+        applyCustomLogAttributes: logRecord => {
+          if (logRecord.attributes && logRecord.attributes['event.data']) {
+            const eventDataAttr = <Attributes>(
+              logRecord.attributes['event.data']
+            );
+            eventDataAttr['vp.startTime'] = vpStartTime;
+          }
+        },
+      });
 
       history.pushState({}, '', '/dummy.html');
 
@@ -110,10 +130,10 @@ describe('PageView Instrumentation', () => {
 
         assert.deepEqual(pageViewLogRecord.attributes['event.data'], {
           'http.url': document.documentURI as string,
-          referrer: '',
+          referrer: referrer,
           title: document.title,
           changeSate: 'pushState',
-          'vp.startTime': mockNow * 1000000,
+          'vp.startTime': vpStartTime,
           type: 1,
         });
         done();
@@ -121,9 +141,21 @@ describe('PageView Instrumentation', () => {
     });
 
     it('should export LogRecord for page_view event type 1 when history.replaceState() is called', done => {
-      const mockNow = 16842729000;
-      const spy = sandbox.stub(Date, 'now');
-      spy.returns(mockNow);
+      const vpStartTime = 16842729000 * 1000000;
+      const referrer = location.href;
+
+      plugin = new PageViewEventInstrumentation({
+        enabled: false,
+        loggerProvider: provider,
+        applyCustomLogAttributes: logRecord => {
+          if (logRecord.attributes && logRecord.attributes['event.data']) {
+            const eventDataAttr = <Attributes>(
+              logRecord.attributes['event.data']
+            );
+            eventDataAttr['vp.startTime'] = vpStartTime;
+          }
+        },
+      });
 
       history.replaceState({}, '', '/dummy.html');
 
@@ -143,10 +175,10 @@ describe('PageView Instrumentation', () => {
 
         assert.deepEqual(pageViewLogRecord.attributes['event.data'], {
           'http.url': document.documentURI as string,
-          referrer: '',
+          referrer: referrer,
           title: document.title,
           changeSate: 'replaceState',
-          'vp.startTime': mockNow * 1000000,
+          'vp.startTime': vpStartTime,
           type: 1,
         });
         done();
