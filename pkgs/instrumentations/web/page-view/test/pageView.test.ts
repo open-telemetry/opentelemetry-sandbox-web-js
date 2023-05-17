@@ -26,11 +26,10 @@ import * as sinon from 'sinon';
 import { PageViewEventInstrumentation } from '../src';
 import { Attributes } from '@opentelemetry/sandbox-api';
 
-let exporter: InMemoryLogRecordExporter;
-let provider: LoggerProvider;
-let logRecordProcessor: SimpleLogRecordProcessor;
-
 describe('PageView Instrumentation', () => {
+  let exporter: InMemoryLogRecordExporter;
+  let provider: LoggerProvider;
+  let logRecordProcessor: SimpleLogRecordProcessor;
   let plugin: PageViewEventInstrumentation;
   const sandbox = sinon.createSandbox();
 
