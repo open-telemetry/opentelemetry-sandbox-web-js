@@ -91,7 +91,7 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
         'event.data': {
           'http.url': window.location.href,
           title,
-          changeSate: changeState || '',
+          changeState: changeState || '',
           referrer,
           type: 1,
         },
