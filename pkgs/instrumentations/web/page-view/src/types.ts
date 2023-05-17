@@ -15,6 +15,7 @@
  */
 import { InstrumentationConfig } from '@opentelemetry/sandbox-instrumentation';
 import { LoggerProvider } from '@opentelemetry/sandbox-sdk-logs';
+import { LogRecord } from '@opentelemetry/sandbox-api-logs';
 
 /**
  * PageViewInstrumentationConfig
@@ -22,6 +23,9 @@ import { LoggerProvider } from '@opentelemetry/sandbox-sdk-logs';
 export interface PageViewInstrumentationConfig extends InstrumentationConfig {
   /** The logger provider to emit logs */
   loggerProvider: LoggerProvider;
+  applyCustomLogAttributes?: ApplyCustomLogAttributesFunction;
+}
 
-  referrer?: string;
+export interface ApplyCustomLogAttributesFunction {
+  (logRecord: LogRecord): void;
 }

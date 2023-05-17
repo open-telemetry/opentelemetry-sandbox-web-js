@@ -19,7 +19,10 @@ import { InstrumentationBase } from '@opentelemetry/sandbox-instrumentation';
 import { Logger, LogRecord } from '@opentelemetry/sandbox-api-logs';
 
 import { VERSION } from './version';
-import { PageViewInstrumentationConfig } from './types';
+import {
+  ApplyCustomLogAttributesFunction,
+  PageViewInstrumentationConfig,
+} from './types';
 /**
  * This class represents a document load plugin
  */
@@ -30,8 +33,10 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
   readonly component: string = 'page-view-event';
   readonly version: string = '1';
   moduleName = this.component;
-  logger?: Logger;
-  referrer?: string;
+  logger: Logger | null = null;
+  oldUrl = location.href;
+  applyCustomLogAttributes: ApplyCustomLogAttributesFunction | undefined =
+    undefined;
 
   /**
    *
@@ -43,9 +48,8 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
       PageViewEventInstrumentation.instrumentationName,
       VERSION
     );
-
+    this.applyCustomLogAttributes = config.applyCustomLogAttributes;
     this._wrapHistory();
-    this.referrer = config.referrer ?? '';
   }
 
   init() {}
@@ -66,6 +70,7 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
         },
       },
     };
+    this._applyCustomAttributes(pageViewEvent, this.applyCustomLogAttributes);
     this.logger?.emit(pageViewEvent);
   }
 
@@ -73,20 +78,22 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
    * callback to be executed when page is viewed
    */
   private _onVirtualPageView(changeState: string | null | undefined) {
+    const title = document.title;
+    const referrer = this.oldUrl;
     const vPageViewEvent: LogRecord = {
       attributes: {
         'event.domain': 'browser',
         'event.name': 'page_view',
         'event.data': {
           'http.url': window.location.href,
-          title: document.title,
+          title,
           changeSate: changeState || '',
-          referrer: this.referrer,
-          'vp.startTime': Date.now() * 1000000,
+          referrer,
           type: 1,
         },
       },
     };
+    this._applyCustomAttributes(vPageViewEvent, this.applyCustomLogAttributes);
     this.logger?.emit(vPageViewEvent);
   }
 
@@ -135,6 +142,7 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
     ) => {
       originalPushState.apply(history, [data, title, url]);
       this._onVirtualPageView('pushState');
+      this.oldUrl = location.href;
     };
 
     history.replaceState = (
@@ -144,6 +152,16 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
     ) => {
       originalReplaceState.apply(history, [data, title, url]);
       this._onVirtualPageView('replaceState');
+      this.oldUrl = location.href;
     };
+  }
+
+  _applyCustomAttributes(
+    logRecord: LogRecord,
+    applyCustomLogAttributes: ApplyCustomLogAttributesFunction | undefined
+  ) {
+    if (applyCustomLogAttributes) {
+      applyCustomLogAttributes(logRecord);
+    }
   }
 }
