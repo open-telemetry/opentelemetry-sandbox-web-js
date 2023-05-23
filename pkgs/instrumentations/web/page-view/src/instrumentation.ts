@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { InstrumentationBase } from '@opentelemetry/sandbox-instrumentation';
+import {
+  InstrumentationBase,
+  isWrapped,
+} from '@opentelemetry/sandbox-instrumentation';
 
 import { Logger, LogRecord } from '@opentelemetry/sandbox-api-logs';
 
@@ -49,7 +52,7 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
       VERSION
     );
     this.applyCustomLogAttributes = config.applyCustomLogAttributes;
-    this._wrapHistory();
+    this._patchHistoryApi();
   }
 
   init() {}
@@ -135,31 +138,49 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
     );
   }
 
-  private _wrapHistory(): void {
-    const originalPushState = history.pushState;
-    const originalReplaceState = history.replaceState;
-
-    history.pushState = (
-      data: any,
-      title: string,
-      url?: string | null | undefined
-    ) => {
-      originalPushState.apply(history, [data, title, url]);
-      this._onVirtualPageView('pushState');
-      this.oldUrl = location.href;
-    };
-
-    history.replaceState = (
-      data: any,
-      title: string,
-      url?: string | null | undefined
-    ) => {
-      originalReplaceState.apply(history, [data, title, url]);
-      this._onVirtualPageView('replaceState');
-      this.oldUrl = location.href;
+  /**
+   * Patches the certain history api method
+   */
+  _patchHistoryMethod(changeState: string) {
+    const plugin = this;
+    return (original: any) => {
+      return function patchHistoryMethod(this: History, ...args: unknown[]) {
+        const result = original.apply(this, args);
+        const url = location.href;
+        const oldUrl = plugin.oldUrl;
+        if (url !== oldUrl) {
+          plugin._onVirtualPageView(changeState);
+          plugin.oldUrl = location.href;
+        }
+        return result;
+      };
     };
   }
 
+  private _patchHistoryApi(): void {
+    this._unpatchHistoryApi();
+
+    this._wrap(
+      history,
+      'replaceState',
+      this._patchHistoryMethod('replaceState')
+    );
+    this._wrap(history, 'pushState', this._patchHistoryMethod('pushState'));
+  }
+  /**
+   * unpatch the history api methods
+   */
+  _unpatchHistoryApi() {
+    if (isWrapped(history.replaceState)) this._unwrap(history, 'replaceState');
+    if (isWrapped(history.pushState)) this._unwrap(history, 'pushState');
+  }
+
+  /**
+   *
+   * @param logRecord
+   * @param applyCustomLogAttributes
+   * Add custom attributes to the log record
+   */
   _applyCustomAttributes(
     logRecord: LogRecord,
     applyCustomLogAttributes: ApplyCustomLogAttributesFunction | undefined
