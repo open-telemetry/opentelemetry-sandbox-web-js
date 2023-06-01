@@ -27,7 +27,7 @@ To work on an existing package here is a recommended workflow:
 
 ## Adding a dependency
 
-To add a dependency, add it with `rush`. First, install `rush` if it hasn't been installed yet.
+To add a dependency, add it with `rush`. First, install `rush` if it hasn't been installed yet (or use `npx`).
 
 ```sh
 npm i -g rush
@@ -37,7 +37,7 @@ Then switch to the directory that the package should be installed in:
 
 ```sh
 cd pkgs/<package-name>
-rush add --package <package-name>
+npx rush add --package <package-name>
 ```
 
 Then switch back to the root directory and run the update command. This will ensure all new dependencies are installed and linked correctly.

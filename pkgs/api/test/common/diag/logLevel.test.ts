@@ -81,6 +81,7 @@ describe('LogLevelFilter DiagLogger', () => {
     ignoreFuncs: Array<keyof DiagLogger>;
   }> = [
     { message: 'ALL', level: DiagLogLevel.ALL, ignoreFuncs: [] },
+    //@ts-expect-error - testing log level edge cases
     { message: 'greater than ALL', level: 32768, ignoreFuncs: [] },
     { message: 'VERBOSE', level: DiagLogLevel.VERBOSE, ignoreFuncs: [] },
     { message: 'DEBUG', level: DiagLogLevel.DEBUG, ignoreFuncs: ['verbose'] },
@@ -101,6 +102,7 @@ describe('LogLevelFilter DiagLogger', () => {
     },
     {
       message: 'between ERROR and NONE',
+      //@ts-expect-error - testing log level edge cases
       level: 1,
       ignoreFuncs: ['verbose', 'debug', 'info', 'warn', 'error'],
     },
@@ -111,6 +113,7 @@ describe('LogLevelFilter DiagLogger', () => {
     },
     {
       message: 'less than NONE',
+      //@ts-expect-error - testing log level edge cases
       level: -1000,
       ignoreFuncs: ['verbose', 'debug', 'info', 'warn', 'error'],
     },
