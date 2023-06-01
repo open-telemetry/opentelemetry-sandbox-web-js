@@ -7,6 +7,7 @@ To get the project started quickly, you can follow these steps.
 ```sh
 git clone https://github.com/open-telemetry/opentelemetry-sandbox-web-js.git
 cd opentelemetry-sandbox-web-js
+npm install
 npm run compile
 ```
 

@@ -1,8 +1,8 @@
-import { ConsoleSpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-web';
+import { ConsoleSpanExporter, SimpleSpanProcessor } from '@opentelemetry/sandbox-sdk-trace-web';
 import { registerInstrumentations } from '@opentelemetry/sandbox-instrumentation';
 import { DocumentLoadInstrumentation } from '@opentelemetry/sandbox-instrumentation-document-load';
 import { ZoneContextManager } from '@opentelemetry/sandbox-context-zone';
-import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
+import { WebTracerProvider } from '@opentelemetry/sandbox-sdk-trace-web';
 
 const provider = new WebTracerProvider();
 
