@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-declare module 'require-in-the-middle' {
-  namespace hook {
-    type Options = {
-      internals?: boolean;
-    };
-    type OnRequireFn = <T>(exports: T, name: string, basedir?: string) => T;
-    type Hooked = { unhook(): void };
-  }
-  function hook(
-    modules: string[] | null,
-    options: hook.Options | null,
-    onRequire: hook.OnRequireFn
-  ): hook.Hooked;
-  function hook(
-    modules: string[] | null,
-    onRequire: hook.OnRequireFn
-  ): hook.Hooked;
-  function hook(onRequire: hook.OnRequireFn): hook.Hooked;
-  export = hook;
-}
+//Used in register.test.ts to mimic a JS app.
+const http = require('http');
+
+const options = {
+  hostname: 'example.com',
+  port: 80,
+  path: '/',
+  method: 'GET'
+};
+
+const req = http.request(options);
+
+req.end();
