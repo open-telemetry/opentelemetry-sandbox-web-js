@@ -1,6 +1,21 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { Attributes } from '@opentelemetry/sandbox-api';
 import { Event } from '@opentelemetry/sandbox-api-events';
-import { logs, LogRecord } from '@opentelemetry/sandbox-api-logs';
+import { logs, Logger, LogRecord } from '@opentelemetry/sandbox-api-logs';
 
 export class EventEmitter {
   private logger: Logger;
@@ -16,8 +31,8 @@ export class EventEmitter {
     this.domain = domain || null;
     const loggerOptions = {
       schemaUrl: schemaUrl || undefined,
-      scopeAttributes: scopeAttributes || undefined
-    }
+      scopeAttributes: scopeAttributes || undefined,
+    };
     this.logger = logs.getLogger(name, version, loggerOptions);
   }
 
@@ -29,12 +44,8 @@ export class EventEmitter {
       attributes['event.domain'] = this.domain;
     }
 
-    if (event.data) {
-      attributes['event.data'] = event.data;
-    }
-
     const logRecord: LogRecord = {
-      attributes: attributes
+      attributes: attributes,
     };
 
     this.logger.emit(logRecord);
