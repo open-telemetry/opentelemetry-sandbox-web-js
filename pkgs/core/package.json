@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-core",
-  "version": "1.13.0",
+  "version": "1.14.0",
   "description": "OpenTelemetry Core provides constants and utilities shared by all OpenTelemetry SDK packages.",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -111,7 +111,7 @@
     "@opentelemetry/sandbox-api": "1.4.1"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-semantic-conventions": "1.13.0"
+    "@opentelemetry/sandbox-semantic-conventions": "1.14.0"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/packages/opentelemetry-core",
   "sideEffects": false

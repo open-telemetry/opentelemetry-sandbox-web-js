@@ -100,11 +100,11 @@
     "webpack-merge": "5.8.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-core": "1.13.0",
-    "@opentelemetry/sandbox-instrumentation": "0.39.1",
-    "@opentelemetry/sandbox-sdk-trace-base": "1.13.0",
-    "@opentelemetry/sandbox-sdk-trace-web": "1.13.0",
-    "@opentelemetry/sandbox-semantic-conventions": "1.13.0"
+    "@opentelemetry/sandbox-core": "1.14.0",
+    "@opentelemetry/sandbox-instrumentation": "0.40.0",
+    "@opentelemetry/sandbox-sdk-trace-base": "1.14.0",
+    "@opentelemetry/sandbox-sdk-trace-web": "1.14.0",
+    "@opentelemetry/sandbox-semantic-conventions": "1.14.0"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js-contrib/tree/main/plugins/web/opentelemetry-instrumentation-document-load#readme"
 }
