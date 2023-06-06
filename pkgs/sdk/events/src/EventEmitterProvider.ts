@@ -1,4 +1,4 @@
-import * as api from '@opentelemetry/api-events';
+import * as api from '@opentelemetry/sandbox-api-events';
 import { EventEmitter } from './EventEmitter';
 
 export class EventEmitterProvider implements api.EventEmitterProvider {
@@ -8,6 +8,6 @@ export class EventEmitterProvider implements api.EventEmitterProvider {
         version?: string | undefined,
         options?: api.EventEmitterOptions | undefined): api.EventEmitter
     {
-        return new EventEmitter(name, version, domain);
+        return new EventEmitter(name, version, domain, options);
     }
 }

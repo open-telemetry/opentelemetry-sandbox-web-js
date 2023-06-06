@@ -1,7 +1,6 @@
-import { Attributes } from '@opentelemetry/api';
-import { Event } from '@opentelemetry/api-events';
-import { Logger, LogRecord } from '@opentelemetry/api-logs';
-import { logs } from '@opentelemetry/api-logs';
+import { Attributes } from '@opentelemetry/sandbox-api';
+import { Event } from '@opentelemetry/sandbox-api-events';
+import { logs, LogRecord } from '@opentelemetry/sandbox-api-logs';
 
 export class EventEmitter {
   private logger: Logger;
@@ -28,6 +27,10 @@ export class EventEmitter {
 
     if (this.domain) {
       attributes['event.domain'] = this.domain;
+    }
+
+    if (event.data) {
+      attributes['event.data'] = event.data;
     }
 
     const logRecord: LogRecord = {
