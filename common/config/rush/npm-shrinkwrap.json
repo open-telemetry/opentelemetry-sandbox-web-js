@@ -804,7 +804,7 @@
     "node_modules/@rush-temp/sandbox-auto-instrumentations-web": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-auto-instrumentations-web.tgz",
-      "integrity": "sha512-aGYLJjk3YqP4QRmAU/Llo5UgDYiB/LnwFDIPycUjKxb9eazqgVgGLyrOnx5A37OhUZ1lMEYWJ9y8ghOJFqpZaQ==",
+      "integrity": "sha512-w9OpqgQgxfjsw6Z37VXHNspiE6JfyQ11hDvgZ4h4d9rpwIedHxUi2qRpxPe4bH2jpE3YvM+b23OM6lWskbW7/g==",
       "dependencies": {
         "@babel/core": "7.15.0",
         "@jsdevtools/coverage-istanbul-loader": "3.0.5",
@@ -851,7 +851,7 @@
     "node_modules/@rush-temp/sandbox-context-zone": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-context-zone.tgz",
-      "integrity": "sha512-QUoP7uRkJDyR8xAFN552ie6TVSyVUuFcwHAtpD3dsVShs1j2PBVBRDO3VOvbSTR82bayZYZG5f4jP8q5N59MMQ==",
+      "integrity": "sha512-JvrIt/SzG4gTVq66jCLxgVxsvolUG7TjbuBpRMH+PYJT/lqc+ITtviaf/tuZBhhDgi8jkf3e3Twmm/ThsIug8Q==",
       "dependencies": {
         "@babel/core": "7.16.0",
         "@types/jquery": "^3.5.14",
@@ -1215,7 +1215,7 @@
     "node_modules/@rush-temp/sandbox-core": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-core.tgz",
-      "integrity": "sha512-u6Pa+fAkiFI4eskfh5TNiP+kVJXySrtry9pbuNUFGKm1GuxO0F5yW1s8I0j4+IEEqgcyxE1LIbRb0aCptIWTdA==",
+      "integrity": "sha512-yrh3WxzYw5Xkk9cFDgwbg9SJXeUcUrSGGpeo0RPOaNKiQ9OeYeV73X5lEPpYwdwJHf7RjH859ei2ocy1D+NmzA==",
       "dependencies": {
         "@types/jquery": "^3.5.14",
         "@types/mocha": "^10.0.0",
@@ -1258,7 +1258,7 @@
     "node_modules/@rush-temp/sandbox-instrumentation": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-instrumentation.tgz",
-      "integrity": "sha512-Fa9OQra7Um+45f/lrLy0T8I2/t52sJh+8jT5ayP3phD9Cp/fwOulSNi8T+lrLdgPVY9uslSxpIz+hoNdrDjOrQ==",
+      "integrity": "sha512-n8fS2SsSK5gO0gXu/gqUElEgU2NKnWBqTnQ62FC47YFFbM9gUxI7Wpj6oE5NXuzYr98hy/yUoebtZpwyqaLCNg==",
       "dependencies": {
         "@babel/core": "7.16.0",
         "@types/jquery": "^3.5.14",
@@ -1312,7 +1312,7 @@
     "node_modules/@rush-temp/sandbox-instrumentation-document-load": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-instrumentation-document-load.tgz",
-      "integrity": "sha512-GHBni9kNwA3vObC2UlVuOQbav/uE+gKpvN1/yVzUcuiRyA5HybcJ+1oW0lkJuo9hCKq7pMytt0oY1ZsE61L1qA==",
+      "integrity": "sha512-ElW7T0JXNsb5mix3+Keeea9UfuNrxfc8xosWojsbKxbrspazvQJDIFsSoKtAQZRbRbEmR/sK7wwmeV4Z4oMOuA==",
       "dependencies": {
         "@babel/core": "7.15.0",
         "@jsdevtools/coverage-istanbul-loader": "3.0.5",
@@ -1359,7 +1359,7 @@
     "node_modules/@rush-temp/sandbox-instrumentation-fetch": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-instrumentation-fetch.tgz",
-      "integrity": "sha512-ZBOEaCNvD4bwvO+H7lR+D2PF0UtZBSz5aFzJYRy7l0v/8QDEegbfFrsCBMwDtPXn3woSuOTO5xA+EW3u2C89vg==",
+      "integrity": "sha512-b0L8yLV0dNCIK0jZ9CyGLyuFFTc59XRv+b5tSWEG918YgOSOLwk9iT5w1THnCDSEzyDmtGvxiZw6ULfxmej1dQ==",
       "dependencies": {
         "@babel/core": "7.16.0",
         "@types/jquery": "^3.5.14",
@@ -1540,7 +1540,7 @@
     "node_modules/@rush-temp/sandbox-instrumentation-long-task": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-instrumentation-long-task.tgz",
-      "integrity": "sha512-Mr0RWCe2kcAp7uEl/MQcIpgQULt/aolSXYZicJpD6503R+jLrOMt5mesmvEq+FefukQky3phH+D3wRjKbYIYNw==",
+      "integrity": "sha512-aPsI7hO3pFM9dD5G8ARlPFDAX8fwkkuhBmY1ksaRylvfjZOCK067fyEPqufcMh08OFklyLTk+ucaMKw7pRffHQ==",
       "dependencies": {
         "@babel/core": "7.15.0",
         "@jsdevtools/coverage-istanbul-loader": "3.0.5",
@@ -1589,7 +1589,7 @@
     "node_modules/@rush-temp/sandbox-instrumentation-user-interaction": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-instrumentation-user-interaction.tgz",
-      "integrity": "sha512-p6eLygjBw9a5hTvNGf+gJQx1w04G/5roKXcnCxkM1qQ7oBN0FeCgwS7Xv8jce+QuBc68rPtkCsVjy38Ex9f6+Q==",
+      "integrity": "sha512-ABdP138KoInV0iuu4M6qF1ycbOMotANrcIa3AqCGYjElJZHO9fq3r3tnsg8EaQ6d08kh8uv+Swi9FCoclidjUQ==",
       "dependencies": {
         "@babel/core": "7.15.0",
         "@jsdevtools/coverage-istanbul-loader": "3.0.5",
@@ -1638,7 +1638,7 @@
     "node_modules/@rush-temp/sandbox-instrumentation-xml-http-request": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-instrumentation-xml-http-request.tgz",
-      "integrity": "sha512-J7em7eRVLAL2TMpq8i87tdxZLBzpCJZOemn5jn2erm7DRowvgGRC2y3mI8aDOaGD5lj9VD2tfJr6qn1sKkqBNg==",
+      "integrity": "sha512-dU3uQan9k1AZgD1rjkxYwaZ1e/nhj+T9HForA2YF9wIsJwBNUqeXKx7rBAlqijkAqlum6EHRLmjzNTjC23BjVA==",
       "dependencies": {
         "@babel/core": "7.16.0",
         "@types/jquery": "^3.5.14",
@@ -1953,7 +1953,7 @@
     "node_modules/@rush-temp/sandbox-opentelemetry-browser-detector": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-opentelemetry-browser-detector.tgz",
-      "integrity": "sha512-wQ+lkxEr1MJaRAKqWXGHb7Pt+PQYdg5HXlYc2pW4Zr0k5URuUDpU7No6GneTEOZ3VWhSZFTL4lha2zwRAknW2Q==",
+      "integrity": "sha512-consAQIk2L/+qvprfZ2NhvBm4O0Kow/SmQz+3HaCXaOa/p0P7FvLCaCUCIzk08HzPwe8TUVyWHBqt4vaBKNwHA==",
       "dependencies": {
         "@babel/core": "7.16.0",
         "@types/jquery": "^3.5.14",
@@ -2034,7 +2034,7 @@
     "node_modules/@rush-temp/sandbox-otlp-exporter-base": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-otlp-exporter-base.tgz",
-      "integrity": "sha512-T40cs3S8Jseys/YupLuLbaKwrPInNMBPjMOzzraaC0r76nS0jv3jTUvdg6Xjg5r1OvtC9GV2zuh+NbNMX1L/tA==",
+      "integrity": "sha512-Fp5n57aIKAi9hVvZg1Dp6A+K1sPHgZNom+o9oq5GQliRwdEnj6EL3MfVLVNvay7Gl1X0xwfAyAXsddw3+3+mKQ==",
       "dependencies": {
         "@types/jquery": "^3.5.14",
         "@types/mocha": "^10.0.0",
@@ -2078,7 +2078,7 @@
     "node_modules/@rush-temp/sandbox-propagator-b3": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-propagator-b3.tgz",
-      "integrity": "sha512-UK1XHqF/AY08Y5/ygy6WHJ0ysHb8DACJwWjfLAoFt5sajAkGDtt0J9+Q3uX2J720YqcBwx5qitxyPidFRGeOiQ==",
+      "integrity": "sha512-cwQHz3plGclxQJ0dklBV2qis2OUnL8TDlpkGAxFtE9s4FCPCmRXPaAtZOd0SqagBvFNlwpVayagDANSCV5LRWA==",
       "dependencies": {
         "@types/jquery": "^3.5.14",
         "@types/mocha": "^10.0.0",
@@ -2121,7 +2121,7 @@
     "node_modules/@rush-temp/sandbox-resources": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-resources.tgz",
-      "integrity": "sha512-mFALN3Kv3fHwGUoy8sbqTOT+zbIqamDMPCbyQghb/BMW9HsK+rysc40nxlghLb7NJbMR1cNRcikAZRcgCWn3Kw==",
+      "integrity": "sha512-8mhjiT1vSsgUBAjZjB1Il6GEQZZEwdUsLpepb/J/4Xhj4KTTeg3uKzZumd/in4o/wKioaVsUGSjZbmMfVO3Zqw==",
       "dependencies": {
         "@opentelemetry/resources": "npm:@opentelemetry/resources@1.9.0",
         "@types/jquery": "^3.5.14",
@@ -2223,7 +2223,7 @@
     "node_modules/@rush-temp/sandbox-sdk-logs": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-sdk-logs.tgz",
-      "integrity": "sha512-N3qUeHKpEpdomHzYI9iAkpJ7g2Y8wlNWeNFjjNXSlYpoG+AYfLqb17hbY9hCFHsLOUbCM5gFbJKhuVpzjYDY9g==",
+      "integrity": "sha512-0P0WDcRsUNw8x/LK/rmk3lyfmLwPjc8WYt9RDYUir9zSailtxXHx2VyiY0C+ynHEIPaEb+bjkqP5V7dzovQfMg==",
       "dependencies": {
         "@types/jquery": "^3.5.14",
         "@types/mocha": "^10.0.0",
@@ -2266,7 +2266,7 @@
     "node_modules/@rush-temp/sandbox-sdk-metrics": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-sdk-metrics.tgz",
-      "integrity": "sha512-HeE7HPMMP13zHinMu2liWVzLRH2DnV+JYsKp4qgwJvijj+Eze1W1Guu9BC67XZRyWGMCYB45Bkwmj66AF8P6RQ==",
+      "integrity": "sha512-l48JYnYPC/BQ1904nFPOGxybYj9NbBAi/fuQJN88gMVo6xvx0CvoTo9anvCsLTFKCtDi/vOZMpMiId0KMG75Rg==",
       "dependencies": {
         "@types/jquery": "^3.5.14",
         "@types/lodash.merge": "4.6.6",
@@ -2311,7 +2311,7 @@
     "node_modules/@rush-temp/sandbox-sdk-trace-base": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-sdk-trace-base.tgz",
-      "integrity": "sha512-Mx9V925H/2lsGKPfQhKmX1zXKiP6L2/F9+RwV1pr2V58yy0h1ggQAjQ7BJTtxg8JWYSfPWR5udZyYs7vrtkbsA==",
+      "integrity": "sha512-7fc7gQMD5brojM84mYOXxphXMq4ryPJ8oJxElUsRfVRE8rpsDcqKRpjF7cl2Gkme6zZjnr0NqYmJopZtwoW0aw==",
       "dependencies": {
         "@opentelemetry/resources": "npm:@opentelemetry/resources@1.9.0",
         "@types/jquery": "^3.5.14",
@@ -2355,7 +2355,7 @@
     "node_modules/@rush-temp/sandbox-sdk-trace-web": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-sdk-trace-web.tgz",
-      "integrity": "sha512-9vYI7A0vgv64EOwqGDuwVeTwe8sp2jXuXgbMnGTm8WGb1cuHg05tzwcUeE1ClhWeUlGtOQVU9mWIKnpFaueOVg==",
+      "integrity": "sha512-r6Odl4RLNhIfbUM52YtgWrYnhZH3oWE9GztZ8w9xu2G+AcZLfIL3xEsPdBhYHeR1E84u47VH6f206cWA08JBfw==",
       "dependencies": {
         "@babel/core": "7.16.0",
         "@types/jquery": "^3.5.14",

@@ -83,10 +83,10 @@
     "webpack-merge": "5.8.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-instrumentation": "0.39.1",
+    "@opentelemetry/sandbox-instrumentation": "0.40.0",
     "@opentelemetry/sandbox-instrumentation-document-load": "0.32.2",
-    "@opentelemetry/sandbox-instrumentation-fetch": "0.39.1",
+    "@opentelemetry/sandbox-instrumentation-fetch": "0.40.0",
     "@opentelemetry/sandbox-instrumentation-user-interaction": "0.32.3",
-    "@opentelemetry/sandbox-instrumentation-xml-http-request": "0.39.1"
+    "@opentelemetry/sandbox-instrumentation-xml-http-request": "0.40.0"
   }
 }
