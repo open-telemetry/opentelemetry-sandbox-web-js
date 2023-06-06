@@ -500,7 +500,7 @@ function shouldProcess(inputFile) {
     return inputFile.indexOf("/src/") !== -1 || inputFile.indexOf("/test/") !== -1;
 }
 
-function isDropPackage(name) {
+function isDropPackage(name: string) {
     if (dropDependencies[name]) {
         return true;
     }
@@ -560,10 +560,12 @@ function updateDependencies(srcPackage: IPackageJson, destPackage: IPackageJson,
                     }
                 }
             } else {
-                if (destDeps[destKey] && dropDependencies[destKey]) {
-                    delete destDeps[destKey];
+                if (destDeps[key] && dropDependencies[key]) {
+                    delete destDeps[key];
                     log(`    -- ${key} -- dropped`);
                     changed = true;
+                } else {
+                    logWarn(`    -- ${key} -- NOT dropped (dest:${!!destDeps[key]}) (drop:${!!dropDependencies[key]})`);
                 }
             }
         });

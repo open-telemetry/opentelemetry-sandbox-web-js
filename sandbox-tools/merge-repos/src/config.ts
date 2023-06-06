@@ -194,7 +194,8 @@ export let addMissingDevDeps = {
  * Remove these dependencies (required or dev)
  */
 export let dropDependencies = {
-    "lerna": ""
+    "lerna": true,
+    "rimraf": true
 };
 
 /**
