@@ -7,7 +7,8 @@
   "scripts": {
     "start": "webpack serve --progress --color --port 8090 --config webpack.config.js --hot --host 0.0.0.0 --compress",
     "start-nc": "webpack serve --progress --color --port 8090 --config webpack.config.js --hot --host 0.0.0.0 --no-compress",
-    "rebuild": ""
+    "rebuild": "",
+    "test": ""
   },
   "author": "OpenTelemetry Authors",
   "license": "Apache-2.0",
