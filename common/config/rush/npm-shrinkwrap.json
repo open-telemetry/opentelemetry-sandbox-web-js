@@ -29,6 +29,7 @@
         "@rush-temp/sandbox-otlp-exporter-base": "file:./projects/sandbox-otlp-exporter-base.tgz",
         "@rush-temp/sandbox-propagator-b3": "file:./projects/sandbox-propagator-b3.tgz",
         "@rush-temp/sandbox-resources": "file:./projects/sandbox-resources.tgz",
+        "@rush-temp/sandbox-sdk-logs": "file:./projects/sandbox-sdk-logs.tgz",
         "@rush-temp/sandbox-sdk-metrics": "file:./projects/sandbox-sdk-metrics.tgz",
         "@rush-temp/sandbox-sdk-trace-base": "file:./projects/sandbox-sdk-trace-base.tgz",
         "@rush-temp/sandbox-sdk-trace-web": "file:./projects/sandbox-sdk-trace-web.tgz",
@@ -74,7 +75,7 @@
         "nyc": "^15.1.0",
         "pako": "^2.0.3",
         "puppeteer": "^14.2.1",
-        "require-in-the-middle": "^6.0.0",
+        "require-in-the-middle": "^7.0.1",
         "rimraf": "4.2.0",
         "semver": "^7.3.2",
         "shimmer": "^1.2.1",
@@ -2713,9 +2714,9 @@
       }
     },
     "node_modules/@octokit/openapi-types": {
-      "version": "17.1.2",
-      "resolved": "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-17.1.2.tgz",
-      "integrity": "sha512-OaS7Ol4Y+U50PbejfzQflGWRMxO04nYWO5ZBv6JerqMKE2WS/tI9VoVDDPXHBlRMGG2fOdKwtVGlFfc7AVIstw=="
+      "version": "17.0.0",
+      "resolved": "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-17.0.0.tgz",
+      "integrity": "sha512-V8BVJGN0ZmMlURF55VFHFd/L92XQQ43KvFjNmY1IYbCN3V/h/uUFV6iQi19WEHM395Nn+1qhUbViCAD/1czzog=="
     },
     "node_modules/@octokit/plugin-enterprise-rest": {
       "version": "6.0.1",
@@ -2811,11 +2812,11 @@
       }
     },
     "node_modules/@octokit/types": {
-      "version": "9.2.2",
-      "resolved": "https://registry.npmjs.org/@octokit/types/-/types-9.2.2.tgz",
-      "integrity": "sha512-9BjDxjgQIvCjNWZsbqyH5QC2Yni16oaE6xL+8SUBMzcYPF4TGQBXGA97Cl3KceK9mwiNMb1mOYCz6FbCCLEL+g==",
+      "version": "9.1.2",
+      "resolved": "https://registry.npmjs.org/@octokit/types/-/types-9.1.2.tgz",
+      "integrity": "sha512-LPbJIuu1WNoRHbN4UMysEdlissRFpTCWyoKT7kHPufI8T+XX33/qilfMWJo3mCOjNIKu0+43oSQPf+HJa0+TTQ==",
       "dependencies": {
-        "@octokit/openapi-types": "^17.1.2"
+        "@octokit/openapi-types": "^17.0.0"
       }
     },
     "node_modules/@opentelemetry/api": {
@@ -4476,7 +4477,7 @@
     "node_modules/@rush-temp/sandbox-instrumentation": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-instrumentation.tgz",
-      "integrity": "sha512-lwgMv9RMQfOXmftbGIveBWNsbb8NOpbH0wFJFNeTfSG+wMnWED7en/F2yOZCA70v63ioAlS2jEpluHumxG0jDw==",
+      "integrity": "sha512-8YCgglTrCDDl4B/vP0aRPmim9YyPvth3DCZdGnQx2YMspX94zj+qRpQRc57L9OsxN0ev2iHj2UXmG9mQWd1sfQ==",
       "dependencies": {
         "@babel/core": "7.16.0",
         "@types/jquery": "^3.5.14",
@@ -4511,7 +4512,7 @@
         "nyc": "^15.1.0",
         "pako": "^2.0.3",
         "puppeteer": "^14.2.1",
-        "require-in-the-middle": "^6.0.0",
+        "require-in-the-middle": "^7.0.1",
         "semver": "^7.3.2",
         "shimmer": "^1.2.1",
         "sinon": "^14.0.0",
@@ -5730,6 +5731,49 @@
         }
       }
     },
+    "node_modules/@rush-temp/sandbox-sdk-logs": {
+      "version": "0.0.0",
+      "resolved": "file:projects/sandbox-sdk-logs.tgz",
+      "integrity": "sha512-4oaiwT9dcXHzmGUMPQpTf7j9Svs96rS6TNX5rLzmswxBj1mPqD+FYWoBA3azhLUVuvownaAKI7xnCwrOQcTu6Q==",
+      "dependencies": {
+        "@types/jquery": "^3.5.14",
+        "@types/mocha": "^10.0.0",
+        "@types/node": "^18.14.2",
+        "@types/sinon": "^10.0.13",
+        "@types/webpack-env": "1.16.3",
+        "@typescript-eslint/eslint-plugin": "5.3.1",
+        "@typescript-eslint/parser": "5.3.1",
+        "chromium": "^3.0.3",
+        "codecov": "^3.8.3",
+        "eslint": "7.32.0",
+        "eslint-config-prettier": "8.5.0",
+        "eslint-plugin-header": "3.1.1",
+        "eslint-plugin-import": "2.25.3",
+        "eslint-plugin-node": "11.1.0",
+        "eslint-plugin-prettier": "4.2.1",
+        "istanbul-instrumenter-loader": "3.0.1",
+        "karma": "6.3.16",
+        "karma-chrome-launcher": "3.1.0",
+        "karma-coverage-istanbul-reporter": "3.0.3",
+        "karma-mocha": "^2.0.1",
+        "karma-mocha-webworker": "1.3.0",
+        "karma-spec-reporter": "^0.0.34",
+        "karma-typescript": "^5.5.3",
+        "karma-webpack": "^4.0.2",
+        "mocha": "10.0.0",
+        "nyc": "^15.1.0",
+        "pako": "^2.0.3",
+        "puppeteer": "^14.2.1",
+        "sinon": "^14.0.0",
+        "ts-loader": "8.4.0",
+        "ts-mocha": "10.0.0",
+        "typedoc": "^0.23.26",
+        "typedoc-plugin-missing-exports": "^1.0.0",
+        "typedoc-plugin-resolve-crossmodule-references": "^0.3.3",
+        "typescript": "^4.7.4",
+        "webpack": "^4.46.0"
+      }
+    },
     "node_modules/@rush-temp/sandbox-sdk-metrics": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-sdk-metrics.tgz",
@@ -6377,9 +6421,9 @@
       "integrity": "sha512-/fvYntiO1GeICvqbQ3doGDIP97vWmvFt83GKguJ6prmQM2iXZfFcq6YE8KteFyRtX2/h5Hf91BYvPodJKFYv5Q=="
     },
     "node_modules/@types/node": {
-      "version": "18.16.7",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-18.16.7.tgz",
-      "integrity": "sha512-MFg7ua/bRtnA1hYE3pVyWxGd/r7aMqjNOdHvlSsXV3n8iaeGKkOaPzpJh6/ovf4bEXWcojkeMJpTsq3mzXW4IQ=="
+      "version": "18.16.0",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-18.16.0.tgz",
+      "integrity": "sha512-BsAaKhB+7X+H4GnSjGhJG9Qi8Tw+inU9nJDwmD5CgOmBLEI6ArdhikpLX7DjbjDRDTbqZzU2LSQNZg8WGPiSZQ=="
     },
     "node_modules/@types/normalize-package-data": {
       "version": "2.4.1",
@@ -7488,9 +7532,9 @@
       }
     },
     "node_modules/axios": {
-      "version": "1.4.0",
-      "resolved": "https://registry.npmjs.org/axios/-/axios-1.4.0.tgz",
-      "integrity": "sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==",
+      "version": "1.3.6",
+      "resolved": "https://registry.npmjs.org/axios/-/axios-1.3.6.tgz",
+      "integrity": "sha512-PEcdkk7JcdPiMDkvM4K6ZBRYq9keuVJsToxm2zQIM70Qqo2WHTdJZMXcG9X+RmRp2VPNUQC8W1RAGbgt6b1yMg==",
       "dependencies": {
         "follow-redirects": "^1.15.0",
         "form-data": "^4.0.0",
@@ -8547,9 +8591,9 @@
       }
     },
     "node_modules/caniuse-lite": {
-      "version": "1.0.30001486",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001486.tgz",
-      "integrity": "sha512-uv7/gXuHi10Whlj0pp5q/tsK/32J2QSqVRKQhs2j8VsDCjgyruAh/eEXHF822VqO9yT6iZKw3nRwZRSPBE9OQg==",
+      "version": "1.0.30001481",
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001481.tgz",
+      "integrity": "sha512-KCqHwRnaa1InZBtqXzP98LPg0ajCVujMKjqKDhZEthIpAsJl/YEIa3YvXjGXPVqzZVguccuu7ga9KOE1J9rKPQ==",
       "funding": [
         {
           "type": "opencollective",
@@ -10690,9 +10734,9 @@
       }
     },
     "node_modules/electron-to-chromium": {
-      "version": "1.4.392",
-      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.392.tgz",
-      "integrity": "sha512-TXQOMW9tnhIms3jGy/lJctLjICOgyueZFJ1KUtm6DTQ+QpxX3p7ZBwB6syuZ9KBuT5S4XX7bgY1ECPgfxKUdOg=="
+      "version": "1.4.372",
+      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.372.tgz",
+      "integrity": "sha512-MrlFq/j+TYHOjeWsWGYfzevc25HNeJdsF6qaLFrqBTRWZQtWkb1myq/Q2veLWezVaa5OcSZ99CFwTT4aF4Mung=="
     },
     "node_modules/elliptic": {
       "version": "6.5.4",
@@ -20960,9 +21004,9 @@
       }
     },
     "node_modules/require-in-the-middle": {
-      "version": "6.0.0",
-      "resolved": "https://registry.npmjs.org/require-in-the-middle/-/require-in-the-middle-6.0.0.tgz",
-      "integrity": "sha512-+dtWQ7l2lqQDxheaG3jjyN1QI37gEwvzACSgjYi4/C2y+ZTUMeRW8BIOm+9NBKvwaMBUSZfPXVOt1skB0vBkRw==",
+      "version": "7.1.0",
+      "resolved": "https://registry.npmjs.org/require-in-the-middle/-/require-in-the-middle-7.1.0.tgz",
+      "integrity": "sha512-6f86Mh0vWCxqKKatRPwgY6VzYmcVay3WUTIpJ1ILBCNh+dTWabMR1swKGKz3XcEZ5mgjndzRu7fQ+44G2H9Gew==",
       "dependencies": {
         "debug": "^4.1.1",
         "module-details-from-path": "^1.0.3",

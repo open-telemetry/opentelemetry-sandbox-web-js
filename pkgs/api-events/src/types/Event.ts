@@ -27,8 +27,16 @@ export interface Event {
    */
   name: string;
 
+
+  /**
+   * Attributes that describe the event. 
+   * Intended to be used by instrumentation libraries.
+   */
+  data?: Attributes;
+
   /**
    * Additional attributes that describe the event.
+   * Intended to be used by end uses adding additional attributes.
    */
   attributes?: Attributes;
 
