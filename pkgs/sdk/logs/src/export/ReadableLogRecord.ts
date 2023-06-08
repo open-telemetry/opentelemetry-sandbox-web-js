@@ -15,17 +15,18 @@
  */
 
 import type { IResource } from '@opentelemetry/sandbox-resources';
-import type { Attributes, HrTime, SpanContext } from '@opentelemetry/sandbox-api';
+import type { HrTime, SpanContext } from '@opentelemetry/sandbox-api';
 import type { InstrumentationScope } from '@opentelemetry/sandbox-core';
-import type { SeverityNumber } from '@opentelemetry/sandbox-api-logs';
+import type { LogAttributes, SeverityNumber } from '@opentelemetry/sandbox-api-logs';
 
 export interface ReadableLogRecord {
   readonly hrTime: HrTime;
+  readonly hrTimeObserved: HrTime;
   readonly spanContext?: SpanContext;
   readonly severityText?: string;
   readonly severityNumber?: SeverityNumber;
   readonly body?: string;
   readonly resource: IResource;
   readonly instrumentationScope: InstrumentationScope;
-  readonly attributes: Attributes;
+  readonly attributes: LogAttributes;
 }
