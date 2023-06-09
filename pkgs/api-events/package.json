@@ -65,7 +65,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-api": "1.4.1"
+    "@opentelemetry/sandbox-api": "1.4.1",
+    "@opentelemetry/sandbox-api-logs": "0.40.0"
   },
   "devDependencies": {
     "@types/jquery": "^3.5.14",

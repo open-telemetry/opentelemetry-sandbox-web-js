@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Attributes } from '@opentelemetry/sandbox-api';
+import { LogAttributes } from '@opentelemetry/sandbox-api-logs';
 
 export interface Event {
   /**
@@ -27,18 +27,17 @@ export interface Event {
    */
   name: string;
 
-
   /**
-   * Attributes that describe the event. 
+   * Attributes that describe the event.
    * Intended to be used by instrumentation libraries.
    */
-  data?: Attributes;
+  data?: LogAttributes;
 
   /**
    * Additional attributes that describe the event.
    * Intended to be used by end uses adding additional attributes.
    */
-  attributes?: Attributes;
+  attributes?: LogAttributes;
 
   /**
    * 8 least significant bits are the trace flags as defined in W3C Trace Context specification.

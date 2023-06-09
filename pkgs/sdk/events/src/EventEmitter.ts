@@ -44,6 +44,10 @@ export class EventEmitter {
       attributes['event.domain'] = this.domain;
     }
 
+    if (event.data) {
+      attributes['event.data'] = event.data;
+    }
+
     const logRecord: LogRecord = {
       attributes: attributes,
     };

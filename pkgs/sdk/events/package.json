@@ -115,7 +115,7 @@
   },
   "peerDependencies": {
     "@opentelemetry/sandbox-api": "^1.4.1",
-    "@opentelemetry/sandbox-api-events": "0.38.0",
-    "@opentelemetry/sandbox-api-logs": "0.38.0"
+    "@opentelemetry/sandbox-api-events": "0.40.0",
+    "@opentelemetry/sandbox-api-logs": "0.40.0"
   }
 }
