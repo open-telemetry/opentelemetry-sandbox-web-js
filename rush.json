@@ -90,6 +90,11 @@
       "shouldPublish": true
     },
     {
+      "packageName": "@opentelemetry/sandbox-sdk-events",
+      "projectFolder": "pkgs/sdk/events",
+      "shouldPublish": true
+    },
+    {
       "packageName": "@opentelemetry/sandbox-sdk-logs",
       "projectFolder": "pkgs/sdk/logs",
       "shouldPublish": true
