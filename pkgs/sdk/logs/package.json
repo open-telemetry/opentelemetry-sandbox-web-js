@@ -88,6 +88,7 @@
     "@typescript-eslint/parser": "5.3.1",
     "chromium": "^3.0.3",
     "codecov": "^3.8.3",
+    "cross-var": "1.1.0",
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-header": "3.1.1",
@@ -118,6 +119,7 @@
   },
   "dependencies": {
     "@opentelemetry/sandbox-core": "1.14.0",
-    "@opentelemetry/sandbox-resources": "1.14.0"
+    "@opentelemetry/sandbox-resources": "1.14.0",
+    "tslib": "^2.3.1"
   }
 }
