@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 import { InstrumentationConfig } from '@opentelemetry/sandbox-instrumentation';
-import { LoggerProvider } from '@opentelemetry/sandbox-api-logs';
-import { LogRecord } from '@opentelemetry/sandbox-api-logs';
+import { Event } from '@opentelemetry/sandbox-api-events';
 
 /**
  * PageViewInstrumentationConfig
  */
 export interface PageViewInstrumentationConfig extends InstrumentationConfig {
-  /** The logger provider to emit logs */
-  loggerProvider: LoggerProvider;
-  applyCustomLogAttributes?: ApplyCustomLogAttributesFunction;
+  applyCustomEventData?: ApplyCustomEventDataFunction;
 }
 
-export interface ApplyCustomLogAttributesFunction {
-  (logRecord: LogRecord): void;
+export interface ApplyCustomEventDataFunction {
+  (event: Event): void;
 }

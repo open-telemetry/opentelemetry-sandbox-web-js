@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { Attributes, AttributeValue, Context } from '@opentelemetry/api';
+import { AttributeValue, Context } from '@opentelemetry/sandbox-api';
 
+export type LogAttributeValue = AttributeValue | LogAttributes;
 export interface LogAttributes {
-  [attributeKey: string]: Attributes | AttributeValue | undefined;
+  [attributeKey: string]: LogAttributeValue | undefined;
 }
 
 export enum SeverityNumber {
@@ -53,6 +54,11 @@ export interface LogRecord {
    * The time when the log record occurred as UNIX Epoch time in nanoseconds.
    */
   timestamp?: number;
+
+  /**
+   * Time when the event was observed by the collection system.
+   */
+  observedTimestamp?: number;
 
   /**
    * Numerical value of the severity.

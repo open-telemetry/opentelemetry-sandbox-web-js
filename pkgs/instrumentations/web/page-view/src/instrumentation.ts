@@ -18,12 +18,12 @@ import {
   InstrumentationBase,
   isWrapped,
 } from '@opentelemetry/sandbox-instrumentation';
-
-import { Logger, LogRecord } from '@opentelemetry/sandbox-api-logs';
+import { Event } from '@opentelemetry/sandbox-api-events';
+import { EventEmitter } from '@opentelemetry/sandbox-sdk-events';
 
 import { VERSION } from './version';
 import {
-  ApplyCustomLogAttributesFunction,
+  ApplyCustomEventDataFunction,
   PageViewInstrumentationConfig,
 } from './types';
 /**
@@ -36,10 +36,9 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
   readonly component: string = 'page-view-event';
   readonly version: string = '1';
   moduleName = this.component;
-  logger: Logger | null = null;
+  emitter: EventEmitter | null = null;
   oldUrl = location.href;
-  applyCustomLogAttributes: ApplyCustomLogAttributesFunction | undefined =
-    undefined;
+  applyCustomEventData: ApplyCustomEventDataFunction | undefined = undefined;
 
   /**
    *
@@ -47,11 +46,12 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
    */
   constructor(config: PageViewInstrumentationConfig) {
     super(PageViewEventInstrumentation.instrumentationName, VERSION, config);
-    this.logger = config.loggerProvider.getLogger(
-      PageViewEventInstrumentation.instrumentationName,
-      VERSION
+    this.emitter = new EventEmitter(
+      PageViewEventInstrumentation.name,
+      VERSION,
+      'browser'
     );
-    this.applyCustomLogAttributes = config.applyCustomLogAttributes;
+    this.applyCustomEventData = config.applyCustomEventData;
     this._patchHistoryApi();
   }
 
@@ -61,20 +61,17 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
    * callback to be executed when page is viewed
    */
   private _onPageView() {
-    const pageViewEvent: LogRecord = {
-      attributes: {
-        'event.domain': 'browser',
-        'event.name': 'page_view',
-        'event.data': {
-          url: document.documentURI as string,
-          referrer: document.referrer,
-          title: document.title,
-          type: 0,
-        },
+    const pageViewEvent: Event = {
+      name: 'page_view',
+      data: {
+        url: document.documentURI as string,
+        referrer: document.referrer,
+        title: document.title,
+        type: 0,
       },
     };
-    this._applyCustomAttributes(pageViewEvent, this.applyCustomLogAttributes);
-    this.logger?.emit(pageViewEvent);
+    this._applyCustomEventData(pageViewEvent, this.applyCustomEventData);
+    this.emitter?.emit(pageViewEvent);
   }
 
   /**
@@ -87,25 +84,22 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
     if (referrer === location.href) {
       return;
     }
-    const vPageViewEvent: LogRecord = {
-      attributes: {
-        'event.domain': 'browser',
-        'event.name': 'page_view',
-        'event.data': {
-          'http.url': window.location.href,
-          title,
-          changeState: changeState || '',
-          referrer,
-          type: 1,
-        },
+    const vPageViewEvent: Event = {
+      name: 'page_view',
+      data: {
+        'http.url': window.location.href,
+        title,
+        changeState: changeState || '',
+        referrer,
+        type: 1,
       },
     };
-    this._applyCustomAttributes(vPageViewEvent, this.applyCustomLogAttributes);
-    this.logger?.emit(vPageViewEvent);
+    this._applyCustomEventData(vPageViewEvent, this.applyCustomEventData);
+    this.emitter?.emit(vPageViewEvent);
   }
 
-  public _setLogger(logger: Logger) {
-    this.logger = logger;
+  public _setEmitter(emitter: EventEmitter) {
+    this.emitter = emitter;
   }
 
   /**
@@ -181,12 +175,12 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
    * @param applyCustomLogAttributes
    * Add custom attributes to the log record
    */
-  _applyCustomAttributes(
-    logRecord: LogRecord,
-    applyCustomLogAttributes: ApplyCustomLogAttributesFunction | undefined
+  _applyCustomEventData(
+    event: Event,
+    applyCustomEventData: ApplyCustomEventDataFunction | undefined
   ) {
-    if (applyCustomLogAttributes) {
-      applyCustomLogAttributes(logRecord);
+    if (applyCustomEventData) {
+      applyCustomEventData(event);
     }
   }
 }

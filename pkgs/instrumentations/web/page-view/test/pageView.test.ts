@@ -50,8 +50,6 @@ describe('PageView Instrumentation', () => {
     it('should construct an instance', () => {
       plugin = new PageViewEventInstrumentation({
         enabled: false,
-        loggerProvider: provider,
-        applyCustomLogAttributes: logRecord => {},
       });
 
       assert.strictEqual(exporter.getFinishedLogRecords().length, 0);
@@ -63,8 +61,6 @@ describe('PageView Instrumentation', () => {
     it("should export LogRecord for page_view event type 0 when 'DOMContentLoaded' event is fired", done => {
       plugin = new PageViewEventInstrumentation({
         enabled: false,
-        loggerProvider: provider,
-        applyCustomLogAttributes: logRecord => {},
       });
 
       const spy = sandbox.spy(document, 'addEventListener');
@@ -101,13 +97,9 @@ describe('PageView Instrumentation', () => {
 
       plugin = new PageViewEventInstrumentation({
         enabled: false,
-        loggerProvider: provider,
-        applyCustomLogAttributes: logRecord => {
-          if (logRecord.attributes && logRecord.attributes['event.data']) {
-            const eventDataAttr = <Attributes>(
-              logRecord.attributes['event.data']
-            );
-            eventDataAttr['vp.startTime'] = vpStartTime;
+        applyCustomEventData: event => {
+          if (event.data) {
+            event.data['vp.startTime'] = vpStartTime;
           }
         },
       });
@@ -144,13 +136,9 @@ describe('PageView Instrumentation', () => {
 
       plugin = new PageViewEventInstrumentation({
         enabled: false,
-        loggerProvider: provider,
-        applyCustomLogAttributes: logRecord => {
-          if (logRecord.attributes && logRecord.attributes['event.data']) {
-            const eventDataAttr = <Attributes>(
-              logRecord.attributes['event.data']
-            );
-            eventDataAttr['vp.startTime'] = vpStartTime;
+        applyCustomEventData: event => {
+          if (event.data) {
+            event.data['vp.startTime'] = vpStartTime;
           }
         },
       });
@@ -186,13 +174,9 @@ describe('PageView Instrumentation', () => {
 
       plugin = new PageViewEventInstrumentation({
         enabled: false,
-        loggerProvider: provider,
-        applyCustomLogAttributes: logRecord => {
-          if (logRecord.attributes && logRecord.attributes['event.data']) {
-            const eventDataAttr = <Attributes>(
-              logRecord.attributes['event.data']
-            );
-            eventDataAttr['vp.startTime'] = vpStartTime;
+        applyCustomEventData: event => {
+          if (event.data) {
+            event.data['vp.startTime'] = vpStartTime;
           }
         },
       });

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Attributes } from '@opentelemetry/api';
-
+import { Attributes } from '@opentelemetry/sandbox-api';
 export interface LoggerOptions {
   /**
    * The schemaUrl of the tracer or instrumentation library
