@@ -103,7 +103,6 @@ export class LogRecord implements ReadableLogRecord {
     this.setAttributes(attributes);
   }
 
-
   public setAttribute(key: string, value?: LogAttributes | AttributeValue) {
     if (this._isLogRecordReadonly()) {
       return this;
