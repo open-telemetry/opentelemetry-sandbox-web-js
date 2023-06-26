@@ -26,6 +26,7 @@ import {
   ApplyCustomEventDataFunction,
   PageViewInstrumentationConfig,
 } from './types';
+import { PageTypes } from './enums/PageTypes';
 /**
  * This class represents a document load plugin
  */
@@ -67,7 +68,7 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
         url: document.documentURI as string,
         referrer: document.referrer,
         title: document.title,
-        type: 0,
+        type: PageTypes.BASE_PAGE,
       },
     };
     this._applyCustomEventData(pageViewEvent, this.applyCustomEventData);
@@ -91,7 +92,7 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
         title,
         changeState: changeState || '',
         referrer,
-        type: 1,
+        type: PageTypes.VIRTUTAL_PAGE,
       },
     };
     this._applyCustomEventData(vPageViewEvent, this.applyCustomEventData);

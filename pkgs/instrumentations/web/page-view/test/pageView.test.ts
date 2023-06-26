@@ -25,6 +25,8 @@ import * as assert from 'assert';
 import * as sinon from 'sinon';
 import { PageViewEventInstrumentation } from '../src';
 import { Attributes } from '@opentelemetry/sandbox-api';
+import { logs } from '@opentelemetry/sandbox-api-logs';
+import { PageTypes } from '../src/enums/PageTypes';
 
 describe('PageView Instrumentation', () => {
   let exporter: InMemoryLogRecordExporter;
@@ -38,6 +40,7 @@ describe('PageView Instrumentation', () => {
     provider = new LoggerProvider();
     logRecordProcessor = new SimpleLogRecordProcessor(exporter);
     provider.addLogRecordProcessor(logRecordProcessor);
+    logs.setGlobalLoggerProvider(provider);
   });
 
   afterEach(async () => {
@@ -83,7 +86,7 @@ describe('PageView Instrumentation', () => {
         'page_view'
       );
       assert.deepEqual(pageViewLogRecord.attributes['event.data'], {
-        type: 0,
+        type: PageTypes.BASE_PAGE,
         url: document.documentURI as string,
         referrer: document.referrer,
         title: document.title,
@@ -125,7 +128,7 @@ describe('PageView Instrumentation', () => {
         title: document.title,
         changeState: 'pushState',
         'vp.startTime': vpStartTime,
-        type: 1,
+        type: PageTypes.VIRTUTAL_PAGE,
       });
       done();
     });
@@ -164,7 +167,7 @@ describe('PageView Instrumentation', () => {
         title: document.title,
         changeState: 'replaceState',
         'vp.startTime': vpStartTime,
-        type: 1,
+        type: PageTypes.VIRTUTAL_PAGE,
       });
       done();
     });
@@ -202,7 +205,7 @@ describe('PageView Instrumentation', () => {
         title: document.title,
         changeState: 'pushState',
         'vp.startTime': vpStartTime,
-        type: 1,
+        type: PageTypes.VIRTUTAL_PAGE,
       });
 
       const secondReferrer = location.href;
@@ -227,7 +230,7 @@ describe('PageView Instrumentation', () => {
         title: document.title,
         changeState: 'pushState',
         'vp.startTime': vpStartTime,
-        type: 1,
+        type: PageTypes.VIRTUTAL_PAGE,
       });
 
       assert.notStrictEqual(
