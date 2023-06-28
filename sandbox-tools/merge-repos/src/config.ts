@@ -150,7 +150,8 @@ export const foldersToMerge: IMergePackageDetail[] = [
     { name: "@opentelemetry/api-events", destPath: "pkgs/api-events/", srcPath: "auto-merge/js/experimental/packages/api-events/", bundleName: "otel-sndbx.api-events", bundleNamespace: "opentelemetry.sandbox.api-events", noWorkerTests: true, noBrowserTests: true },
 
     // Examples
-    //{ name: "web-examples", destPath: "examples/web/contrib/", srcPath: "auto-merge/contrib/examples/web/", bundleName: "otel-sndbx.contrib-examples", bundleNamespace: "opentelemetry.sandbox.contrib.examples", noTests: true, noLint: true, noVersion: true }
+    // Disabling the conversion of the contrib-js examples as there are conflicting version issues with webpack-dev-server that prevents the contrib version from running
+    //{ name: "web-examples", destPath: "examples/web/contrib/", srcPath: "auto-merge/contrib/examples/web/", bundleName: "otel-sndbx.contrib-examples", bundleNamespace: "opentelemetry.sandbox.contrib.examples", noTests: true, noLint: true, noVersion: true, noBuild: true },
     { name: "web-opentelemetry-example", destPath: "examples/web/js/", srcPath: "auto-merge/js/examples/opentelemetry-web/", bundleName: "otel-sndbx.js-examples", bundleNamespace: "opentelemetry.sandbox.js.examples", noTests: true, noLint: true, noVersion: true, noBuild: true }
     
 ];
@@ -187,7 +188,8 @@ export let dependencyVersions = {
     "@types/jquery": "^3.5.14",
     "@typescript-eslint/eslint-plugin": "5.3.1",
     "@typescript-eslint/parser": "5.3.1",
-    "zone.js": "^0.11.4"
+    "zone.js": "^0.11.4",
+    "typescript": "^4.9.5"
 };
 
 /**
@@ -215,9 +217,7 @@ export let addMissingDevDeps = {
  */
 export let dropDependencies = {
     "lerna": true,
-    "rimraf": true,
-    "@opentelemetry/exporter-trace-otlp-http": true,
-    "@opentelemetry/sandbox-exporter-trace-otlp-http": true
+    "rimraf": true
 };
 
 /**
@@ -258,7 +258,8 @@ export let initDevDependencyVersions = {
     "@rollup/plugin-replace": "^5.0.2",
     "rollup-plugin-cleanup": "^3.2.1",
     "rollup-plugin-minify-es": "^1.1.1",
-    "uglify-js": "^3.17.4"
+    "uglify-js": "^3.17.4",
+    "typescript": "^4.9.5"
 };
 
 /**

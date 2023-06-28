@@ -550,7 +550,9 @@ function updateDependencies(srcPackage: IPackageJson, destPackage: IPackageJson,
                     if (rootVersion && rootVersion !== srcVersion) {
                         versionDiff = true;
                         srcVersion = rootVersion;
-                    } else if(dependencyVersions[key] && srcVersion !== dependencyVersions[key]) {
+                    } 
+                    
+                    if(dependencyVersions[key] && srcVersion !== dependencyVersions[key]) {
                         // Always use these versions
                         srcVersion = dependencyVersions[key];
                         versionDiff = true;
