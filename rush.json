@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/json-schemas/rush/v5/rush.schema.json",
   "npmVersion": "9.5.1",
   "rushVersion": "5.93.2",
-  "projectFolderMaxDepth": 4,
+  "projectFolderMaxDepth": 8,
   "projects": [
     {
       "packageName": "@opentelemetry/sandbox-api",

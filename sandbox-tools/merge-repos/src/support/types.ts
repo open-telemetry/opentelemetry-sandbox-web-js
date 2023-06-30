@@ -92,6 +92,11 @@ export interface IMergeDetail {
     optional?: boolean;
 }
 
+export interface ISubModuleDef {
+    path: string,
+    url: string
+}
+
 export interface IMergePackageDetail extends IMergeDetail {
     /**
      * Identifies the package name.
@@ -128,6 +133,46 @@ export interface IMergePackageDetail extends IMergeDetail {
      * Identifies that this package doesn't have any node tests and therefore should not add node test targets or config
      */
     noNodeTests?: boolean;
+
+    /**
+     * Identifies that this package doesn't have any build steps
+     */
+    noBuild?: boolean;
+
+    /**
+     * Identifies that this package doesn't support any linting and therefore should not add eslint targets or config
+     */
+    noLint?: boolean;
+
+    /**
+     * Identifies that this package doesn't support the version.ts and therefore should not add the automatic version targets or config
+     */
+    noVersion?: boolean;
+
+    /**
+     * Additional build targets that should be added to the package.json build step
+     */
+    compileScripts?: {
+        /**
+         * The script names to add before the tsc compile
+         */
+        pre?: string[],
+
+        /**
+         * The script names to add after the tsc compile but before packaging
+         */
+        post?: string[]
+    },
+
+    /**
+     * Optional additional scripts and overrides, applied after the standard conversions
+     */
+    scripts?: { [key: string]: string },
+
+    /**
+     * Optionally defines any submodules that this package requires, each sub-module will be located within a sub-folder of the project
+     */
+    submodules?: ISubModuleDef[],
 }
 
 /**
@@ -135,6 +180,7 @@ export interface IMergePackageDetail extends IMergeDetail {
  */
 export interface IPackageJson {
     name: string,
+    private?: boolean,
     version: string,
     description: string,
     keywords?: string[],

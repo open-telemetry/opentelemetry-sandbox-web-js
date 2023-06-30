@@ -101,7 +101,7 @@ export async function gitHubCreateForkRepo(gitRoot: string, repoToFork: string) 
     }
 }
 
-export async function createPullRequest(git: SimpleGit, gitRoot: string, title: string, body: string, targetRepo: string, targetBranch) {
+export async function createPullRequest(git: SimpleGit, gitRoot: string, title: string, body: string, targetRepo: string, targetBranch, test: boolean) {
     let status = await git.status();
     let branchName = status.current;
     let tempBodyFile: string;
@@ -119,6 +119,12 @@ export async function createPullRequest(git: SimpleGit, gitRoot: string, title: 
             "--repo", targetRepo,
             "--base", targetBranch
         ];
+
+        if (test) {
+            prArgs.push("--draft");
+            prArgs.push("--label");
+            prArgs.push("do-not-merge");
+        }
 
         if (body) {
             if (body.length > 256) {
