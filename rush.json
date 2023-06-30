@@ -40,6 +40,36 @@
       "shouldPublish": true
     },
     {
+      "packageName": "@opentelemetry/sandbox-exporter-logs-otlp-http",
+      "projectFolder": "pkgs/exporters/otlp/logs/http",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-exporter-logs-otlp-proto",
+      "projectFolder": "pkgs/exporters/otlp/logs/proto",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-exporter-metrics-otlp-http",
+      "projectFolder": "pkgs/exporters/otlp/metrics/http",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-exporter-trace-otlp-http",
+      "projectFolder": "pkgs/exporters/otlp/trace/http",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-exporter-trace-otlp-proto",
+      "projectFolder": "pkgs/exporters/otlp/trace/proto",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-exporter-zipkin",
+      "projectFolder": "pkgs/exporters/zipkin",
+      "shouldPublish": true
+    },
+    {
       "packageName": "@opentelemetry/sandbox-instrumentation",
       "projectFolder": "pkgs/instrumentations/instrumentation",
       "shouldPublish": true
@@ -80,6 +110,16 @@
       "shouldPublish": true
     },
     {
+      "packageName": "@opentelemetry/sandbox-otlp-proto-exporter-base",
+      "projectFolder": "pkgs/exporters/otlp/proto-base",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-otlp-transformer",
+      "projectFolder": "pkgs/exporters/otlp/transformer",
+      "shouldPublish": true
+    },
+    {
       "packageName": "@opentelemetry/sandbox-propagator-b3",
       "projectFolder": "pkgs/propagators/b3",
       "shouldPublish": true
@@ -113,6 +153,11 @@
       "packageName": "@opentelemetry/sandbox-semantic-conventions",
       "projectFolder": "pkgs/semantic-conventions",
       "shouldPublish": true
+    },
+    {
+      "packageName": "web-opentelemetry-example",
+      "projectFolder": "examples/web/js",
+      "shouldPublish": false
     }
   ]
 }
