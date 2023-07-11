@@ -5,5 +5,5 @@ module.exports = {
         "node": true,
         "browser": true
     },
-    ...require('../../eslint.base.js')
+    ...require('../../eslint.config.js')
 }

@@ -3,5 +3,5 @@ module.exports = {
         "mocha": true,
         "node": true
     },
-    ...require('../../../eslint.base.js')
+    ...require('../../../eslint.config.js')
 }
