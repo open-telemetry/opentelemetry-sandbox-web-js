@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-context-zone",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "OpenTelemetry Context Zone",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -57,19 +57,19 @@
     "access": "public"
   },
   "devDependencies": {
-    "@babel/core": "7.22.5",
+    "@babel/core": "7.22.8",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
     "@types/sinon": "^10.0.13",
     "@types/webpack-env": "1.16.3",
-    "@typescript-eslint/eslint-plugin": "5.3.1",
-    "@typescript-eslint/parser": "5.3.1",
+    "@typescript-eslint/eslint-plugin": "5.59.11",
+    "@typescript-eslint/parser": "5.59.11",
     "babel-loader": "8.3.0",
     "chromium": "^3.0.3",
     "codecov": "^3.8.3",
     "cross-var": "1.1.0",
-    "eslint": "7.32.0",
+    "eslint": "8.43.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-import": "2.25.3",
@@ -100,7 +100,7 @@
     "webpack-merge": "5.9.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-context-zone-peer-dep": "1.14.0",
+    "@opentelemetry/sandbox-context-zone-peer-dep": "1.15.0",
     "tslib": "^2.3.1",
     "zone.js": "^0.11.4"
   },
