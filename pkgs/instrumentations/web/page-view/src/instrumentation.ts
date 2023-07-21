@@ -92,7 +92,7 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
         title,
         changeState: changeState || '',
         referrer,
-        type: PageTypes.VIRTUTAL_PAGE,
+        type: PageTypes.VIRTUAL_PAGE,
       },
     };
     this._applyCustomEventData(vPageViewEvent, this.applyCustomEventData);

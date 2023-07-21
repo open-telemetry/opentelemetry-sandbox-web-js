@@ -29,22 +29,18 @@ import { logs } from '@opentelemetry/sandbox-api-logs';
 import { PageTypes } from '../src/enums/PageTypes';
 
 describe('PageView Instrumentation', () => {
-  let exporter: InMemoryLogRecordExporter;
-  let provider: LoggerProvider;
-  let logRecordProcessor: SimpleLogRecordProcessor;
-  let plugin: PageViewEventInstrumentation;
-  const sandbox = sinon.createSandbox();
 
-  beforeEach(() => {
-    exporter = new InMemoryLogRecordExporter();
-    provider = new LoggerProvider();
-    logRecordProcessor = new SimpleLogRecordProcessor(exporter);
-    provider.addLogRecordProcessor(logRecordProcessor);
-    logs.setGlobalLoggerProvider(provider);
-  });
+  let plugin: PageViewEventInstrumentation;
+  const sandbox = sinon.createSandbox()
+
+  const exporter = new InMemoryLogRecordExporter();
+  const provider = new LoggerProvider();
+  const logRecordProcessor = new SimpleLogRecordProcessor(exporter);
+  provider.addLogRecordProcessor(logRecordProcessor);
+  logs.setGlobalLoggerProvider(provider);
 
   afterEach(async () => {
-    exporter.shutdown();
+    exporter.reset();
     sandbox.restore();
     plugin.disable();
   });
@@ -99,7 +95,7 @@ describe('PageView Instrumentation', () => {
       const referrer = location.href;
 
       plugin = new PageViewEventInstrumentation({
-        enabled: false,
+        enabled: true,
         applyCustomEventData: event => {
           if (event.data) {
             event.data['vp.startTime'] = vpStartTime;
@@ -128,7 +124,7 @@ describe('PageView Instrumentation', () => {
         title: document.title,
         changeState: 'pushState',
         'vp.startTime': vpStartTime,
-        type: PageTypes.VIRTUTAL_PAGE,
+        type: PageTypes.VIRTUAL_PAGE,
       });
       done();
     });
@@ -138,7 +134,7 @@ describe('PageView Instrumentation', () => {
       const referrer = location.href;
 
       plugin = new PageViewEventInstrumentation({
-        enabled: false,
+        enabled: true,
         applyCustomEventData: event => {
           if (event.data) {
             event.data['vp.startTime'] = vpStartTime;
@@ -167,7 +163,7 @@ describe('PageView Instrumentation', () => {
         title: document.title,
         changeState: 'replaceState',
         'vp.startTime': vpStartTime,
-        type: PageTypes.VIRTUTAL_PAGE,
+        type: PageTypes.VIRTUAL_PAGE,
       });
       done();
     });
@@ -176,7 +172,7 @@ describe('PageView Instrumentation', () => {
       const vpStartTime = 16842729000 * 1000000;
 
       plugin = new PageViewEventInstrumentation({
-        enabled: false,
+        enabled: true,
         applyCustomEventData: event => {
           if (event.data) {
             event.data['vp.startTime'] = vpStartTime;
@@ -205,7 +201,7 @@ describe('PageView Instrumentation', () => {
         title: document.title,
         changeState: 'pushState',
         'vp.startTime': vpStartTime,
-        type: PageTypes.VIRTUTAL_PAGE,
+        type: PageTypes.VIRTUAL_PAGE,
       });
 
       const secondReferrer = location.href;
@@ -230,7 +226,7 @@ describe('PageView Instrumentation', () => {
         title: document.title,
         changeState: 'pushState',
         'vp.startTime': vpStartTime,
-        type: PageTypes.VIRTUTAL_PAGE,
+        type: PageTypes.VIRTUAL_PAGE,
       });
 
       assert.notStrictEqual(
