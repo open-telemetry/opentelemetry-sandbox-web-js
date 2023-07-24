@@ -95,7 +95,6 @@
         "typedoc": "^0.23.26",
         "typedoc-plugin-missing-exports": "^1.0.0",
         "typedoc-plugin-resolve-crossmodule-references": "^0.3.3",
-        "typescript": "^4.9.5",
         "unionfs": "4.5.1",
         "webpack": "^4.46.0",
         "webpack-dev-server": "^4.5.0",
@@ -824,7 +823,7 @@
     "node_modules/@rush-temp/sandbox-api-events": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-api-events.tgz",
-      "integrity": "sha512-YqREk5FnpDSNfQ/9lNOh7Xu6dh2SH7rvNAtnBhdWjUD7MIxrNiSwPcjw8DJGWG6nZKFQz5nWv5LpYk6jssBJog==",
+      "integrity": "sha512-ECcR16PVDJaErfVcPJ00iG3b0crWLl54GQV8Kj+kNzwje6J4aBafbwtDARtMOIfdHEgVZpr+AeQww93z27ooyA==",
       "dependencies": {
         "@types/jquery": "^3.5.14",
         "@types/mocha": "^10.0.0",
@@ -3750,6 +3749,32 @@
         }
       }
     },
+    "node_modules/@rush-temp/sandbox-resources/node_modules/webpack-merge": {
+      "version": "5.9.0",
+      "resolved": "https://registry.npmjs.org/webpack-merge/-/webpack-merge-5.9.0.tgz",
+      "integrity": "sha512-6NbRQw4+Sy50vYNTw7EyOn41OZItPiXB8GNv3INSoe3PSFaHJEz3SHTrYVaRm2LilNGnFUzh0FAwqPEmU/CwDg==",
+      "dependencies": {
+        "clone-deep": "^4.0.1",
+        "wildcard": "^2.0.0"
+      },
+      "engines": {
+        "node": ">=10.0.0"
+      }
+    },
+    "node_modules/@rush-temp/sandbox-resources/node_modules/which": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/which/-/which-2.0.2.tgz",
+      "integrity": "sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==",
+      "dependencies": {
+        "isexe": "^2.0.0"
+      },
+      "bin": {
+        "node-which": "bin/node-which"
+      },
+      "engines": {
+        "node": ">= 8"
+      }
+    },
     "node_modules/@rush-temp/sandbox-sdk-events": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-sdk-events.tgz",
@@ -3791,32 +3816,6 @@
         "typedoc-plugin-resolve-crossmodule-references": "^0.3.3",
         "typescript": "^4.7.4",
         "webpack": "^4.46.0"
-      }
-    },
-    "node_modules/@rush-temp/sandbox-resources/node_modules/webpack-merge": {
-      "version": "5.9.0",
-      "resolved": "https://registry.npmjs.org/webpack-merge/-/webpack-merge-5.9.0.tgz",
-      "integrity": "sha512-6NbRQw4+Sy50vYNTw7EyOn41OZItPiXB8GNv3INSoe3PSFaHJEz3SHTrYVaRm2LilNGnFUzh0FAwqPEmU/CwDg==",
-      "dependencies": {
-        "clone-deep": "^4.0.1",
-        "wildcard": "^2.0.0"
-      },
-      "engines": {
-        "node": ">=10.0.0"
-      }
-    },
-    "node_modules/@rush-temp/sandbox-resources/node_modules/which": {
-      "version": "2.0.2",
-      "resolved": "https://registry.npmjs.org/which/-/which-2.0.2.tgz",
-      "integrity": "sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==",
-      "dependencies": {
-        "isexe": "^2.0.0"
-      },
-      "bin": {
-        "node-which": "bin/node-which"
-      },
-      "engines": {
-        "node": ">= 8"
       }
     },
     "node_modules/@rush-temp/sandbox-sdk-logs": {
