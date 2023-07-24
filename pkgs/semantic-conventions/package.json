@@ -65,6 +65,7 @@
     "@typescript-eslint/parser": "5.3.1",
     "chromium": "^3.0.3",
     "codecov": "^3.8.3",
+    "cross-var": "1.1.0",
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-header": "3.1.1",
@@ -81,7 +82,7 @@
     "karma-typescript": "^5.5.3",
     "karma-webpack": "^4.0.2",
     "mocha": "10.0.0",
-    "nock": "13.0.11",
+    "nock": "13.3.1",
     "nyc": "^15.1.0",
     "pako": "^2.0.3",
     "puppeteer": "^14.2.1",
@@ -91,8 +92,11 @@
     "typedoc": "^0.23.26",
     "typedoc-plugin-missing-exports": "^1.0.0",
     "typedoc-plugin-resolve-crossmodule-references": "^0.3.3",
-    "typescript": "^4.7.4",
+    "typescript": "^4.9.5",
     "webpack": "^4.46.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.1"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/packages/opentelemetry-semantic-conventions",
   "sideEffects": false
