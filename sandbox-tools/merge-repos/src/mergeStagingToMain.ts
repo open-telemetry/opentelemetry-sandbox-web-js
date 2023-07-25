@@ -118,6 +118,11 @@ let _packages: IPackages = {
 };
 
 /**
+ * An array of submodules paths created that should be ignored from validation
+ */
+let _subModules: string[] = [];
+
+/**
  * Show the Help for this tool
  */
 function showHelp() {
@@ -381,6 +386,16 @@ async function getStagingRepo(git: SimpleGit, repoName: string, details: IRepoDe
             await stagingGit.add(destPackage.pkgPath);
         }
 
+        if (packageDetails.submodules) {
+            for (let lp = 0; lp < packageDetails.submodules.length; lp++) {
+                let moduleDef = packageDetails.submodules[lp];
+                let modulePath = path.join(packageDetails.destPath, moduleDef.path).replace(/\\/g, "/");
+                log ("adding submodule " + modulePath + " => " + moduleDef.url);
+                await stagingGit.submoduleAdd(moduleDef.url, modulePath);
+                _subModules.push(modulePath);
+            }
+        }
+
         log("Update package name references");
         await updateFilePackageReferences(stagingDetails, forkDestOrg, packageDetails.destPath);
     });
@@ -427,6 +442,9 @@ async function updateRushJson(git: SimpleGit, thePath: string) {
     }
 
     rushJson.rushVersion = (_packages.dest[SANDBOX_PROJECT_NAME].pkg["devDependencies"]["@microsoft/rush"]).replace(/\^/, "");
+    
+    // Set the rush max project depth
+    rushJson.projectFolderMaxDepth = 8;
 
     Object.keys(_packages.dest).forEach((packageKey) => {
         if (packageKey !== SANDBOX_PROJECT_NAME) {
@@ -444,7 +462,7 @@ async function updateRushJson(git: SimpleGit, thePath: string) {
                 rushJson.projects.push({
                     packageName: packageKey,
                     projectFolder: _packages.dest[packageKey].rPath,
-                    shouldPublish: true
+                    shouldPublish: !_packages.dest[packageKey].pkg.private,
                 });
             }
         }
@@ -532,7 +550,9 @@ function updateDependencies(srcPackage: IPackageJson, destPackage: IPackageJson,
                     if (rootVersion && rootVersion !== srcVersion) {
                         versionDiff = true;
                         srcVersion = rootVersion;
-                    } else if(dependencyVersions[key] && srcVersion !== dependencyVersions[key]) {
+                    } 
+                    
+                    if(dependencyVersions[key] && srcVersion !== dependencyVersions[key]) {
                         // Always use these versions
                         srcVersion = dependencyVersions[key];
                         versionDiff = true;
@@ -624,6 +644,7 @@ function updatePackageJson(basePath: string, dest: string, srcPackage: IPackageJ
 function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IPackageJson, srcPackage: IPackageJson, packageDetails: IMergePackageDetail) {
     let changed = false;
     let versionUpdate = path.relative(dest, path.join(basePath, "./scripts/version-update.js")).replace(/\\/g, "/");
+    let protoGen = path.relative(dest, path.join(basePath, "./scripts/generate-protos.js")).replace(/\\/g, "/");
     log(`Checking for ${path.join(basePath, path.join(packageDetails.destPath, "./tsconfig.all.json")).replace(/\\/g, "/")}`);
     let tsConfigJson =  "tsconfig.all.json";
     if (!fs.existsSync(path.join(basePath, path.join(packageDetails.destPath, "./tsconfig.all.json")).replace(/\\/g, "/"))) {
@@ -660,6 +681,42 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
         "lint:fix-quiet": "npm run lint -- --fix --quiet",
         "version": `node ${versionUpdate}`,
         "watch": "npm run version && tsc --build --watch " + tsConfigJson.trim() + ""
+    };
+
+    // Automatically add "npm run protos" to the prebuild if present
+    if (newPackage.scripts && newPackage.scripts["protos"]) {
+        if (!packageDetails.compileScripts || !packageDetails.compileScripts.pre) {
+            packageDetails.compileScripts = (packageDetails.compileScripts || {});
+            packageDetails.compileScripts.pre = [ "protos" ];
+        }
+    }
+
+    if (packageDetails.compileScripts) {
+        if (packageDetails.compileScripts.pre) {
+            let preBuild = "";
+            packageDetails.compileScripts.pre.forEach((value) => {
+                if (preBuild) {
+                    preBuild += " && ";
+                }
+                preBuild += "npm run " + value;
+            });
+
+            newPackageScripts["pre-build"] = preBuild;
+            newPackageScripts["build"] = newPackageScripts["build"].replace("&& tsc --build ", "&& npm run pre-build && tsc --build ");
+        }
+
+        if (packageDetails.compileScripts.post) {
+            let postBuild = "";
+            packageDetails.compileScripts.post.forEach((value) => {
+                if (postBuild) {
+                    postBuild += " && ";
+                }
+                postBuild += "npm run " + value;
+            });
+
+            newPackageScripts["post-build"] = postBuild;
+            newPackageScripts["build"] = newPackageScripts["build"].replace("&& npm run package", "&& npm run post-build && npm run package");
+        }
     }
 
     if (!hasKarmaBrowserCfg && fs.existsSync(path.join(basePath, path.join(packageDetails.destPath, "./karma.conf.js")).replace(/\\/g, "/"))) {
@@ -667,8 +724,13 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
         hasKarmaBrowserCfg = true;
     }
 
+
     if (!newPackage.scripts) {
         fail(null, JSON.stringify(newPackage));
+    }
+
+    if (newPackage.scripts["protos:generate"]) {
+        newPackage.scripts["protos:generate"] = `node ${protoGen}`;
     }
 
     Object.keys(newPackageScripts).forEach((script) => {
@@ -688,6 +750,12 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
                 if (script.startsWith("test:node")) {
                     addTarget = !packageDetails.noNodeTests;
                 }
+            } else if (script.startsWith("build") || script.startsWith("compile") || script.startsWith("clean")) {
+                addTarget = !packageDetails.noBuild;
+            } else if (script.startsWith("lint")) {
+                addTarget = !packageDetails.noLint;
+            } else if (script.startsWith("version")) {
+                addTarget = !packageDetails.noVersion;
             }
 
             newPackage.scripts[script] = addTarget  ? newPackageScripts[script] : "";
@@ -701,6 +769,13 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
             changed = true;
         }
     });
+
+    if (packageDetails.scripts) {
+        Object.keys(packageDetails.scripts).forEach((script) => {
+            newPackage.scripts[script] = packageDetails.scripts[script];
+            changed = true;
+        });
+    }
 
     return changed;
 }
@@ -835,6 +910,19 @@ async function mergeStagingToMaster(mergeGit: SimpleGit, stagingDetails: IStagin
     function _isVerifyIgnore(repoName: string, destFolder: string, source: string, ignoreOtherRepoFolders: boolean): boolean {
         if (source === "." || source === ".." || source === ".git" || source === ".vs" || source === "node_modules" || source === "auto-merge") {
             // Always ignore these
+            return true;
+        }
+
+        let destPath = path.join(destFolder, source).replace(/\\/g, "/");
+        let isSubmodule = false;
+        _subModules.forEach((subPath) => {
+            if (destPath.indexOf(subPath) !== -1) {
+                log(` - Submodule ignore: ${subPath}`);
+                isSubmodule = true;
+            }
+        });
+
+        if (isSubmodule) {
             return true;
         }
 
@@ -1012,7 +1100,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
         }
 
         if (prRequired && createPr && await pushToBranch(mergeGit)) {
-            await createPullRequest(mergeGit, _mergeGitRoot, prTitle, prBody, originRepo, destBranch);
+            await createPullRequest(mergeGit, _mergeGitRoot, prTitle, prBody, originRepo, destBranch, _theArgs.switches.test);
 
             try {
                 // Attempt to push the tags to the origin

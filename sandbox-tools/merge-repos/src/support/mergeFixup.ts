@@ -127,14 +127,17 @@ export async function checkFixBadMerges(
             let destStats = fs.statSync(destFolder + "/" + destFile);
             if (destStats.isDirectory()) {
                 commitDetails.message = logAppendMessage(mergeGitRoot, commitDetails.message, { index: "*", working_dir: "F", path: destFolder + "/" + destFile } , `Removing extra folder ${destFile}`);
-                await git.raw([
-                    "rm",
-                    "-f",
-                    "-r",
-                    destFolder + "/" + destFile]);
-                // fs.rmdirSync(destFolder + "/" + destFile, {
-                //     recursive: true
-                // });
+                try {
+                    await git.raw([
+                        "rm",
+                        "-f",
+                        "-r",
+                        destFolder + "/" + destFile]);
+                } catch (e) {
+                    fs.rmdirSync(destFolder + "/" + destFile, {
+                        recursive: true
+                    });
+                }
             } else {
                 commitDetails.message = logAppendMessage(mergeGitRoot, commitDetails.message, { index: "*", working_dir: "E", path: destFolder + "/" + destFile } , "Removing extra file");
                 await git.rm(destFolder + "/" + destFile);
