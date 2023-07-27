@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-otlp-proto-exporter-base",
-  "version": "0.40.0",
+  "version": "0.41.1",
   "description": "OpenTelemetry OTLP-HTTP-protobuf Exporter base (for internal use only)",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -14,9 +14,9 @@
     "./build/src/platform/index.js": "./build/src/platform/browser/index.js"
   },
   "scripts": {
-    "build": "npm run lint:fix-quiet && npm run version && npm run pre-build && tsc --build tsconfig.json tsconfig.esm.json tsconfig.esnext.json && npm run package",
+    "build": "npm run compile && npm run package",
     "clean": "tsc --build --clean tsconfig.json tsconfig.esm.json tsconfig.esnext.json",
-    "compile": "npm run build",
+    "compile": "npm run lint:fix-quiet && npm run version && npm run pre-build && tsc --build tsconfig.json tsconfig.esm.json tsconfig.esnext.json",
     "lint": "eslint . --ext .ts",
     "lint:fix": "npm run lint -- --fix",
     "lint:fix-quiet": "npm run lint -- --fix --quiet",
@@ -25,7 +25,7 @@
     "prepublishOnly": "npm run compile",
     "protos": "npm run submodule && npm run protos:generate",
     "protos:generate": "node ../../../../scripts/generate-protos.js",
-    "rebuild": "npm run build",
+    "rebuild": "npm run clean && npm run build",
     "submodule": "git submodule sync --recursive && git submodule update --init --recursive",
     "test": "",
     "test:browser": "",
@@ -67,19 +67,21 @@
     "access": "public"
   },
   "devDependencies": {
-    "@babel/core": "7.22.5",
+    "@babel/core": "7.22.9",
     "@opentelemetry/sandbox-api": "1.4.1",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
     "@types/sinon": "^10.0.13",
     "@types/webpack-env": "1.16.3",
-    "@typescript-eslint/eslint-plugin": "5.3.1",
-    "@typescript-eslint/parser": "5.3.1",
+    "@typescript-eslint/eslint-plugin": "5.59.11",
+    "@typescript-eslint/parser": "5.59.11",
+    "babel-loader": "8.3.0",
+    "babel-plugin-istanbul": "6.1.1",
     "chromium": "^3.0.3",
     "codecov": "^3.8.3",
     "cross-var": "1.1.0",
-    "eslint": "7.32.0",
+    "eslint": "8.44.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-import": "2.25.3",
@@ -97,6 +99,7 @@
     "mocha": "10.0.0",
     "nyc": "^15.1.0",
     "pako": "^2.0.3",
+    "prettier": "2.8.8",
     "protobufjs-cli": "1.1.1",
     "puppeteer": "^14.2.1",
     "sinon": "^14.0.0",
@@ -112,10 +115,9 @@
     "@opentelemetry/sandbox-api": "1.4.1"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-core": "1.14.0",
-    "@opentelemetry/sandbox-otlp-exporter-base": "0.40.0",
-    "protobufjs": "^7.2.3",
-    "tslib": "^2.3.1"
+    "@opentelemetry/sandbox-core": "1.15.1",
+    "@opentelemetry/sandbox-otlp-exporter-base": "0.41.1",
+    "protobufjs": "^7.2.3"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/experimental/packages/otlp-proto-exporter-base",
   "sideEffects": false
