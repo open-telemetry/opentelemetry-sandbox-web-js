@@ -104,7 +104,12 @@
     "@opentelemetry/sandbox-sdk-trace-base": "1.14.0",
     "@opentelemetry/sandbox-sdk-trace-web": "1.14.0",
     "@opentelemetry/sandbox-semantic-conventions": "1.14.0",
-    "tslib": "^2.3.1"
+    "tslib": "^2.3.1",
+    "@opentelemetry/sandbox-api-logs": "~0.40.0",
+    "@opentelemetry/sandbox-sdk-logs": "~0.40.0",
+    "@opentelemetry/sandbox-api-events": "~0.40.0",
+    "@opentelemetry/sandbox-sdk-events": "~0.35.1",
+    "@opentelemetry/sandbox-exporter-logs-otlp-http": "~0.40.0"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/examples/tracer-web"
 }
