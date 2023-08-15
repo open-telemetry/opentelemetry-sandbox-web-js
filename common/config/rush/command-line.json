@@ -32,14 +32,23 @@
         },
         {
             "commandKind": "bulk",
-            "summary": "Run all build for all packages",
+            "summary": "Run all build targets for all packages",
             "name": "build",
+            "enableParallelism": true,
             "allowWarningsInSuccessfulBuild": true
         },
         {
             "commandKind": "bulk",
-            "summary": "Run all build for all packages",
+            "summary": "Run all build targets for all packages",
             "name": "rebuild",
+            "enableParallelism": true,
+            "allowWarningsInSuccessfulBuild": true
+        },
+        {
+            "commandKind": "bulk",
+            "summary": "Run all compile targets for all packages",
+            "name": "compile",
+            "enableParallelism": true,
             "allowWarningsInSuccessfulBuild": true
         }
     ]

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { IRushCommandLine } from "./rush/rush";
 import { IMergeDetail, IMergePackageDetail, IRepoSyncDetails } from "./support/types";
 
 export const LICENSE_HEADER = "/*!\n" +
@@ -161,7 +162,7 @@ export const foldersToMerge: IMergePackageDetail[] = [
  */
 export const filesToMerge: IMergeDetail[] = [
     { srcPath: "auto-merge/js/.markdownlint.json",          destPath: ".markdownlint.json" },
-    { srcPath: "auto-merge/js/eslint.config.js",            destPath: "eslint.config.js" },
+    { srcPath: "auto-merge/js/eslint.base.js",              destPath: "eslint.base.js",             optional: true },
     { srcPath: "auto-merge/js/karma.base.js",               destPath: "karma.base.js" },
     { srcPath: "auto-merge/js/karma.webpack.js",            destPath: "karma.webpack.js" },
     { srcPath: "auto-merge/js/karma.worker.js",             destPath: "karma.worker.js" },
@@ -178,6 +179,28 @@ export const filesToMerge: IMergeDetail[] = [
 ];
 
 /**
+ * Files to remove from staging
+ */
+export const filesToCleanup: IMergeDetail[] = [
+    { destPath: "eslint.config.js" },
+];
+
+
+/**
+ * Files to remove after merging
+ */
+export const mergeFilesToCleanup: IMergeDetail[] = [
+    { destPath: "eslint.config.js" },
+];
+
+/**
+ * Repo root files to check for bad merging
+ */
+export const fixBadMergeRootFiles: string[] = [
+    ".gitmodules"
+];
+
+/**
  * Enforce these versions when specified (required, dev or peer)
  */
 export let dependencyVersions = {
@@ -186,9 +209,10 @@ export let dependencyVersions = {
     "@types/sinon": "^10.0.13",
     "@types/webpack-env": "1.16.3",
     "@types/jquery": "^3.5.14",
-    "@typescript-eslint/eslint-plugin": "5.3.1",
-    "@typescript-eslint/parser": "5.3.1",
+    "@typescript-eslint/eslint-plugin": "5.59.11",
+    "@typescript-eslint/parser": "5.59.11",
     "zone.js": "^0.11.4",
+    "prettier": "2.8.8",
     "typescript": "^4.9.5"
 };
 
@@ -202,11 +226,14 @@ export let addMissingDevDeps = {
     "@types/webpack-env": "1.16.3",
     "@types/jquery": "^3.5.14",
     "karma-mocha-webworker": "1.3.0",
-    "@typescript-eslint/eslint-plugin": "5.3.1",
-    "@typescript-eslint/parser": "5.3.1",
-    "eslint": "7.32.0",
+    "@typescript-eslint/eslint-plugin": "5.59.11",
+    "@typescript-eslint/parser": "5.59.11",
+    "babel-loader": "8.3.0",
+    "babel-plugin-istanbul": "6.1.1",
+    "eslint": "8.46.0",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-node": "11.1.0",
+    "prettier": "2.8.8",
     "typedoc": "^0.23.26",
     "typedoc-plugin-missing-exports": "^1.0.0",
     "typedoc-plugin-resolve-crossmodule-references": "^0.3.3"
@@ -224,9 +251,9 @@ export let dropDependencies = {
  * Add these scripts to the root package.json
  */
 export let initScripts = {
-    "build": "rush rebuild --verbose",
-    "rebuild": "npm run build",
-    "compile": "npm run build",
+    "build": "rush build --verbose",        // This will compile and package (bundle)
+    "rebuild": "rush rebuild --verbose",    // clean, compile and package
+    "compile": "rush compile --verbose",    // Run compile target for all projects -- auto lints and compiles
     "postinstall": "rush update",
     "test": "rush test --verbose",
     "lint": "rush lint --verbose",
@@ -266,9 +293,9 @@ export let initDevDependencyVersions = {
  * Add these dev dependencies to ALL processed package.json files
  */
 export let commonDevDependencyVersions = {
-    "@typescript-eslint/eslint-plugin": "5.3.1",
-    "@typescript-eslint/parser": "5.3.1",
-    "eslint": "7.32.0",
+    "@typescript-eslint/eslint-plugin": "5.59.11",
+    "@typescript-eslint/parser": "5.59.11",
+    "eslint": "8.46.0",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-import": "2.25.3",
     "eslint-plugin-node": "11.1.0",
@@ -284,6 +311,7 @@ export let commonDevDependencyVersions = {
     "karma-typescript": "^5.5.3",
     "mocha": "10.0.0",
     "chromium": "^3.0.3",
+    "prettier": "2.8.8",
     "puppeteer": "^14.2.1",
     "sinon": "^14.0.0",
     "nyc": "^15.1.0",
@@ -292,6 +320,64 @@ export let commonDevDependencyVersions = {
     "typescript": "^4.9.5",
     "webpack": "^4.46.0",
     "pako": "^2.0.3"
+};
+
+export let rootDevDependencies = {
+    "@typescript-eslint/eslint-plugin": "5.59.11",
+    "@typescript-eslint/parser": "5.59.11",
+    "eslint": "8.46.0",
+    "eslint-plugin-header": "3.1.1",
+    "eslint-plugin-import": "2.25.3",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-prettier": "4.2.1"
+};
+
+export const mergeRushCommandLine: { [name: string]: IRushCommandLine } = {
+    build: {
+        commandKind: "bulk",
+        summary: "Run all build targets for all packages",
+        enableParallelism: true,
+        allowWarningsInSuccessfulBuild: true
+    },
+    rebuild: {
+        commandKind: "bulk",
+        summary: "Run all build targets for all packages",
+        enableParallelism: true,
+        allowWarningsInSuccessfulBuild: true
+    },
+    compile: {
+        commandKind: "bulk",
+        summary: "Run all compile targets for all packages",
+        enableParallelism: true,
+        allowWarningsInSuccessfulBuild: true
+    },
+    lint: {
+        commandKind: "bulk",
+        summary: "Run all tslint for all packages",
+        description: "Runs tslint for all projects",
+        safeForSimultaneousRushProcesses: false,
+        enableParallelism: true,
+        ignoreMissingScript: false
+    },
+    "lint:fix": {
+        commandKind: "bulk",
+        summary: "Run all tslint for all packages",
+        description: "Runs tslint for all projects",
+        safeForSimultaneousRushProcesses: false,
+        enableParallelism: true,
+        ignoreMissingScript: false,
+        allowWarningsInSuccessfulBuild: true
+    },
+    test : {
+        commandKind: "bulk",
+        summary: "Run all tests for all packages",
+        description: "Runs tests for all projects",
+        safeForSimultaneousRushProcesses: false,
+        enableParallelism: false,
+        ignoreMissingScript: false,
+        allowWarningsInSuccessfulBuild: true
+    }
 };
 
 /**

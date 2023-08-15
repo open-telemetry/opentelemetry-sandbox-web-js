@@ -79,7 +79,7 @@ export interface IMergeDetail {
     /**
      * Identifies the location in the staging repo
      */
-    srcPath: string;
+    srcPath?: string;
 
     /**
      * Identifies the location in the main repo where to merge this package
