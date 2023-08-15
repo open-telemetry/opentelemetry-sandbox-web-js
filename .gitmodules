@@ -1,0 +1,3 @@
+[submodule "pkgs/exporters/otlp/proto-base/protos"]
+	path = pkgs/exporters/otlp/proto-base/protos
+	url = https://github.com/open-telemetry/opentelemetry-proto.git
