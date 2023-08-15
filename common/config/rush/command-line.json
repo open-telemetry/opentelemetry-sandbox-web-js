@@ -2,8 +2,8 @@
     "$schema": "https://developer.microsoft.com/json-schemas/rush/v5/command-line.schema.json",
     "commands": [
         {
-            "commandKind": "bulk",
             "name": "test",
+            "commandKind": "bulk",
             "summary": "Run all tests for all packages",
             "description": "Runs tests for all projects",
             "safeForSimultaneousRushProcesses": false,
@@ -12,8 +12,8 @@
             "allowWarningsInSuccessfulBuild": true
         },
         {
-            "commandKind": "bulk",
             "name": "lint",
+            "commandKind": "bulk",
             "summary": "Run all tslint for all packages",
             "description": "Runs tslint for all projects",
             "safeForSimultaneousRushProcesses": false,
@@ -21,8 +21,8 @@
             "ignoreMissingScript": false
         },
         {
-            "commandKind": "bulk",
             "name": "lint:fix",
+            "commandKind": "bulk",
             "summary": "Run all tslint for all packages",
             "description": "Runs tslint for all projects",
             "safeForSimultaneousRushProcesses": false,
@@ -31,23 +31,23 @@
             "allowWarningsInSuccessfulBuild": true
         },
         {
-            "commandKind": "bulk",
-            "summary": "Run all build targets for all packages",
             "name": "build",
-            "enableParallelism": true,
-            "allowWarningsInSuccessfulBuild": true
-        },
-        {
             "commandKind": "bulk",
             "summary": "Run all build targets for all packages",
-            "name": "rebuild",
             "enableParallelism": true,
             "allowWarningsInSuccessfulBuild": true
         },
         {
+            "name": "rebuild",
+            "commandKind": "bulk",
+            "summary": "Run all build targets for all packages",
+            "enableParallelism": true,
+            "allowWarningsInSuccessfulBuild": true
+        },
+        {
+            "name": "compile",
             "commandKind": "bulk",
             "summary": "Run all compile targets for all packages",
-            "name": "compile",
             "enableParallelism": true,
             "allowWarningsInSuccessfulBuild": true
         }
