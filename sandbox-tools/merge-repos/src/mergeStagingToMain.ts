@@ -993,8 +993,14 @@ async function mergeStagingToMaster(mergeGit: SimpleGit, stagingDetails: IStagin
 
     log ("Resetting up submodules");
     for (let lp = 0; lp < _subModules.length; lp++) {
-        log ("adding submodule " + _subModules[lp].path + " => " + _subModules[lp].url);
-        await mergeGit.submoduleAdd(_subModules[lp].url, _subModules[lp].path);
+        try {
+            log ("adding submodule " + _subModules[lp].path + " => " + _subModules[lp].url);
+            await mergeGit.submoduleAdd(_subModules[lp].url, _subModules[lp].path);
+        } catch (e) {
+            if (e.message.indexOf("already exists") === -1) {
+                throw e;
+            }
+        }
     }
 
     // Update the root package json
