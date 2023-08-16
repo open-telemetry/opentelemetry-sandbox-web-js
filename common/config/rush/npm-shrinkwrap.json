@@ -922,7 +922,7 @@
     "node_modules/@rush-temp/sandbox-auto-instrumentations-web": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-auto-instrumentations-web.tgz",
-      "integrity": "sha512-1/H3hih5YLg1J9widhpJAOvcaeri3Qji8KVjdKL4vqewmFAkXMRK4g4yDBX2EnuC+zDotpxsNjnC+u7pBVokTg==",
+      "integrity": "sha512-cBjFwubRIpEsoEox1O6ol+hBzfIRoePfL94KtDeVbr/KcIueiepTCUBK+0KXRZ7x1zz1z/Z3/kB1BvkryVz9cw==",
       "dependencies": {
         "@babel/core": "7.22.10",
         "@jsdevtools/coverage-istanbul-loader": "3.0.5",
