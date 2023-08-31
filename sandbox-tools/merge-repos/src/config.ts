@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { IRushCommandLine } from "./rush/rush";
 import { IMergeDetail, IMergePackageDetail, IRepoSyncDetails } from "./support/types";
 
 export const LICENSE_HEADER = "/*!\n" +
@@ -120,9 +121,24 @@ export const foldersToMerge: IMergePackageDetail[] = [
     { name: "@opentelemetry/sdk-metrics", destPath: "pkgs/sdk/metrics/", srcPath: "auto-merge/js/packages/sdk-metrics/", bundleName: "otel-sndbx.sdk-metrics", bundleNamespace: "opentelemetry.sandbox.web.sdk-metrics" },
     { name: "@opentelemetry/sdk-logs", destPath: "pkgs/sdk/logs/", srcPath: "auto-merge/js/experimental/packages/sdk-logs/", bundleName: "otel-sndbx.sdk-logs", bundleNamespace: "opentelemetry.sandbox.sdk-logs" },
     { name: "@opentelemetry/otlp-exporter-base", destPath: "pkgs/exporters/otlp/base/", srcPath: "auto-merge/js/experimental/packages/otlp-exporter-base", bundleName: "otel-exprtr.otlp-base", bundleNamespace: "opentelemetry.sandbox.exporter.otlp-base" },
+    { name: "@opentelemetry/otlp-transformer", destPath: "pkgs/exporters/otlp/transformer", srcPath: "auto-merge/js/experimental/packages/otlp-transformer", bundleName: "otel-exprtr.otlp-transformer", bundleNamespace: "opentelemetry.sandbox.exporter.otlp-transformer" },
+    { name: "@opentelemetry/otlp-proto-exporter-base", destPath: "pkgs/exporters/otlp/proto-base", srcPath: "auto-merge/js/experimental/packages/otlp-proto-exporter-base", bundleName: "otel-exprtr.otlp-proto-base", bundleNamespace: "opentelemetry.sandbox.exporter.otlp-proto-base", noTests: true,
+        submodules: [
+            {
+                path: "protos",
+                url: "https://github.com/open-telemetry/opentelemetry-proto.git"
+            }
+        ]
+    },
+
     // // { name: "@opentelemetry/exporter-trace-otlp-grpc",  destPath: "pkgs/exporters/otlp/trace-grpc/",   srcPath: "auto-merge/js/experimental/packages/exporter-trace-otlp-grpc/" },
     // // { name: "@opentelemetry/exporter-jaeger",  destPath: "pkgs/exporters/jaeger/",   srcPath: "auto-merge/js/packages/opentelemetry-exporter-jaeger/" },
-    // // { name: "@opentelemetry/exporter-zipkin",  destPath: "pkgs/exporters/zipkin/",   srcPath: "auto-merge/js/packages/opentelemetry-exporter-zipkin/" },
+    { name: "@opentelemetry/exporter-zipkin",  destPath: "pkgs/exporters/zipkin/",   srcPath: "auto-merge/js/packages/opentelemetry-exporter-zipkin/", bundleName: "otel-exprtr.zipkin", bundleNamespace: "opentelemetry.sandbox.exporter.zipkin" },
+    { name: "@opentelemetry/exporter-trace-otlp-proto", destPath: "pkgs/exporters/otlp/trace/proto/", srcPath: "auto-merge/js/experimental/packages/exporter-trace-otlp-proto", bundleName: "otel-exprtr.trace-otlp-proto", bundleNamespace: "opentelemetry.sandbox.exporter.trace-otlp-proto", noNodeTests: true },
+    { name: "@opentelemetry/exporter-trace-otlp-http", destPath: "pkgs/exporters/otlp/trace/http/", srcPath: "auto-merge/js/experimental/packages/exporter-trace-otlp-http", bundleName: "otel-exprtr.trace-otlp-http", bundleNamespace: "opentelemetry.sandbox.exporter.trace-otlp-http" },
+    { name: "@opentelemetry/exporter-metrics-otlp-http", destPath: "pkgs/exporters/otlp/metrics/http/", srcPath: "auto-merge/js/experimental/packages/opentelemetry-exporter-metrics-otlp-http", bundleName: "otel-exprtr.metrics-otlp-http", bundleNamespace: "opentelemetry.sandbox.exporter.metrics-otlp-http" },
+    { name: "@opentelemetry/exporter-logs-otlp-proto", destPath: "pkgs/exporters/otlp/logs/proto/", srcPath: "auto-merge/js/experimental/packages/exporter-logs-otlp-proto", bundleName: "otel-exprtr.logs-otlp-proto", bundleNamespace: "opentelemetry.sandbox.exporter.logs-otlp-proto" },
+    { name: "@opentelemetry/exporter-logs-otlp-http", destPath: "pkgs/exporters/otlp/logs/http/", srcPath: "auto-merge/js/experimental/packages/exporter-logs-otlp-http", bundleName: "otel-exprtr.logs-otlp-http", bundleNamespace: "opentelemetry.sandbox.exporter.logs-otlp-http" },
     { name: "@opentelemetry/instrumentation", destPath: "pkgs/instrumentations/instrumentation/", srcPath: "auto-merge/js/experimental/packages/opentelemetry-instrumentation/", bundleName: "otel-sndbx.instrumentation", bundleNamespace: "opentelemetry.sandbox.web.instrumentation" },
     { name: "@opentelemetry/instrumentation-fetch", destPath: "pkgs/instrumentations/web/fetch", srcPath: "auto-merge/js/experimental/packages/opentelemetry-instrumentation-fetch/", bundleName: "otel-sndbx.instr.fetch", bundleNamespace: "opentelemetry.sandbox.instr.web.fetch", noNodeTests: true },
     { name: "@opentelemetry/instrumentation-xml-http-request", destPath: "pkgs/instrumentations/web/xhr", srcPath: "auto-merge/js/experimental/packages/opentelemetry-instrumentation-xml-http-request/", bundleName: "otel-sndbx.instr.xhr", bundleNamespace: "opentelemetry.sandbox.instr.web.xhr", noWorkerTests: true, noNodeTests: true },
@@ -132,7 +148,13 @@ export const foldersToMerge: IMergePackageDetail[] = [
     { name: "@opentelemetry/auto-instrumentations-web", destPath: "pkgs/instrumentations/web/auto/", srcPath: "auto-merge/contrib/metapackages/auto-instrumentations-web/", bundleName: "otel-sndbx.instr-auto", bundleNamespace: "opentelemetry.sandbox.instr.web.auto", noWorkerTests: true, noNodeTests: true },
     { name: "@opentelemetry/opentelemetry-browser-detector", destPath: "pkgs/detectors/browser/", srcPath: "auto-merge/js/experimental/packages/opentelemetry-browser-detector/", bundleName: "otel-sndbx.detect-browser", bundleNamespace: "opentelemetry.sandbox.detector.browser", noWorkerTests: true },
     { name: "@opentelemetry/api-logs", destPath: "pkgs/api-logs/", srcPath: "auto-merge/js/experimental/packages/api-logs/", bundleName: "otel-sndbx.api-logs", bundleNamespace: "opentelemetry.sandbox.api-logs", noWorkerTests: true, noBrowserTests: true },
-    { name: "@opentelemetry/api-events", destPath: "pkgs/api-events/", srcPath: "auto-merge/js/experimental/packages/api-events/", bundleName: "otel-sndbx.api-events", bundleNamespace: "opentelemetry.sandbox.api-events", noWorkerTests: true, noBrowserTests: true }
+    { name: "@opentelemetry/api-events", destPath: "pkgs/api-events/", srcPath: "auto-merge/js/experimental/packages/api-events/", bundleName: "otel-sndbx.api-events", bundleNamespace: "opentelemetry.sandbox.api-events", noWorkerTests: true, noBrowserTests: true },
+
+    // Examples
+    // Disabling the conversion of the contrib-js examples as there are conflicting version issues with webpack-dev-server that prevents the contrib version from running
+    //{ name: "web-examples", destPath: "examples/web/contrib/", srcPath: "auto-merge/contrib/examples/web/", bundleName: "otel-sndbx.contrib-examples", bundleNamespace: "opentelemetry.sandbox.contrib.examples", noTests: true, noLint: true, noVersion: true, noBuild: true },
+    { name: "web-opentelemetry-example", destPath: "examples/web/js/", srcPath: "auto-merge/js/examples/opentelemetry-web/", bundleName: "otel-sndbx.js-examples", bundleNamespace: "opentelemetry.sandbox.js.examples", noTests: true, noLint: true, noVersion: true, noBuild: true }
+    
 ];
 
 /**
@@ -140,7 +162,7 @@ export const foldersToMerge: IMergePackageDetail[] = [
  */
 export const filesToMerge: IMergeDetail[] = [
     { srcPath: "auto-merge/js/.markdownlint.json",          destPath: ".markdownlint.json" },
-    { srcPath: "auto-merge/js/eslint.config.js",            destPath: "eslint.config.js" },
+    { srcPath: "auto-merge/js/eslint.base.js",              destPath: "eslint.base.js",             optional: true },
     { srcPath: "auto-merge/js/karma.base.js",               destPath: "karma.base.js" },
     { srcPath: "auto-merge/js/karma.webpack.js",            destPath: "karma.webpack.js" },
     { srcPath: "auto-merge/js/karma.worker.js",             destPath: "karma.worker.js" },
@@ -157,6 +179,28 @@ export const filesToMerge: IMergeDetail[] = [
 ];
 
 /**
+ * Files to remove from staging
+ */
+export const filesToCleanup: IMergeDetail[] = [
+    { destPath: "eslint.config.js" },
+];
+
+
+/**
+ * Files to remove after merging
+ */
+export const mergeFilesToCleanup: IMergeDetail[] = [
+    { destPath: "eslint.config.js" },
+];
+
+/**
+ * Repo root files to check for bad merging
+ */
+export const fixBadMergeRootFiles: string[] = [
+    ".gitmodules"
+];
+
+/**
  * Enforce these versions when specified (required, dev or peer)
  */
 export let dependencyVersions = {
@@ -165,9 +209,11 @@ export let dependencyVersions = {
     "@types/sinon": "^10.0.13",
     "@types/webpack-env": "1.16.3",
     "@types/jquery": "^3.5.14",
-    "@typescript-eslint/eslint-plugin": "5.3.1",
-    "@typescript-eslint/parser": "5.3.1",
-    "zone.js": "^0.11.4"
+    "@typescript-eslint/eslint-plugin": "5.59.11",
+    "@typescript-eslint/parser": "5.59.11",
+    "zone.js": "^0.11.4",
+    "prettier": "2.8.8",
+    "typescript": "^4.9.5"
 };
 
 /**
@@ -180,11 +226,14 @@ export let addMissingDevDeps = {
     "@types/webpack-env": "1.16.3",
     "@types/jquery": "^3.5.14",
     "karma-mocha-webworker": "1.3.0",
-    "@typescript-eslint/eslint-plugin": "5.3.1",
-    "@typescript-eslint/parser": "5.3.1",
-    "eslint": "7.32.0",
+    "@typescript-eslint/eslint-plugin": "5.59.11",
+    "@typescript-eslint/parser": "5.59.11",
+    "babel-loader": "8.3.0",
+    "babel-plugin-istanbul": "6.1.1",
+    "eslint": "8.46.0",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-node": "11.1.0",
+    "prettier": "2.8.8",
     "typedoc": "^0.23.26",
     "typedoc-plugin-missing-exports": "^1.0.0",
     "typedoc-plugin-resolve-crossmodule-references": "^0.3.3"
@@ -202,9 +251,9 @@ export let dropDependencies = {
  * Add these scripts to the root package.json
  */
 export let initScripts = {
-    "build": "rush rebuild --verbose",
-    "rebuild": "npm run build",
-    "compile": "npm run build",
+    "build": "rush build --verbose",        // This will compile and package (bundle)
+    "rebuild": "rush rebuild --verbose",    // clean, compile and package
+    "compile": "rush compile --verbose",    // Run compile target for all projects -- auto lints and compiles
     "postinstall": "rush update",
     "test": "rush test --verbose",
     "lint": "rush lint --verbose",
@@ -236,16 +285,17 @@ export let initDevDependencyVersions = {
     "@rollup/plugin-replace": "^5.0.2",
     "rollup-plugin-cleanup": "^3.2.1",
     "rollup-plugin-minify-es": "^1.1.1",
-    "uglify-js": "^3.17.4"
+    "uglify-js": "^3.17.4",
+    "typescript": "^4.9.5"
 };
 
 /**
  * Add these dev dependencies to ALL processed package.json files
  */
 export let commonDevDependencyVersions = {
-    "@typescript-eslint/eslint-plugin": "5.3.1",
-    "@typescript-eslint/parser": "5.3.1",
-    "eslint": "7.32.0",
+    "@typescript-eslint/eslint-plugin": "5.59.11",
+    "@typescript-eslint/parser": "5.59.11",
+    "eslint": "8.46.0",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-import": "2.25.3",
     "eslint-plugin-node": "11.1.0",
@@ -261,6 +311,7 @@ export let commonDevDependencyVersions = {
     "karma-typescript": "^5.5.3",
     "mocha": "10.0.0",
     "chromium": "^3.0.3",
+    "prettier": "2.8.8",
     "puppeteer": "^14.2.1",
     "sinon": "^14.0.0",
     "nyc": "^15.1.0",
@@ -269,6 +320,64 @@ export let commonDevDependencyVersions = {
     "typescript": "^4.9.5",
     "webpack": "^4.46.0",
     "pako": "^2.0.3"
+};
+
+export let rootDevDependencies = {
+    "@typescript-eslint/eslint-plugin": "5.59.11",
+    "@typescript-eslint/parser": "5.59.11",
+    "eslint": "8.46.0",
+    "eslint-plugin-header": "3.1.1",
+    "eslint-plugin-import": "2.25.3",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-prettier": "4.2.1"
+};
+
+export const mergeRushCommandLine: { [name: string]: IRushCommandLine } = {
+    build: {
+        commandKind: "bulk",
+        summary: "Run all build targets for all packages",
+        enableParallelism: true,
+        allowWarningsInSuccessfulBuild: true
+    },
+    rebuild: {
+        commandKind: "bulk",
+        summary: "Run all build targets for all packages",
+        enableParallelism: true,
+        allowWarningsInSuccessfulBuild: true
+    },
+    compile: {
+        commandKind: "bulk",
+        summary: "Run all compile targets for all packages",
+        enableParallelism: true,
+        allowWarningsInSuccessfulBuild: true
+    },
+    lint: {
+        commandKind: "bulk",
+        summary: "Run all tslint for all packages",
+        description: "Runs tslint for all projects",
+        safeForSimultaneousRushProcesses: false,
+        enableParallelism: true,
+        ignoreMissingScript: false
+    },
+    "lint:fix": {
+        commandKind: "bulk",
+        summary: "Run all tslint for all packages",
+        description: "Runs tslint for all projects",
+        safeForSimultaneousRushProcesses: false,
+        enableParallelism: true,
+        ignoreMissingScript: false,
+        allowWarningsInSuccessfulBuild: true
+    },
+    test : {
+        commandKind: "bulk",
+        summary: "Run all tests for all packages",
+        description: "Runs tests for all projects",
+        safeForSimultaneousRushProcesses: false,
+        enableParallelism: false,
+        ignoreMissingScript: false,
+        allowWarningsInSuccessfulBuild: true
+    }
 };
 
 /**

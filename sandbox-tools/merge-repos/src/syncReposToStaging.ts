@@ -427,7 +427,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
         const originBranch = _theArgs.switches.originBranch;
         let createPr = !_theArgs.switches.noPr;
         if (_theArgs.switches.test ) {
-            createPr = false;
+            //createPr = false;
             _theArgs.switches.cloneTo = "../" + _theArgs.switches.cloneTo;
         }
 
@@ -526,7 +526,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
         }
 
         if (prRequired && createPr && await pushToBranch(mergeGit)) {
-            await createPullRequest(mergeGit, _mergeGitRoot, prTitle, prBody, originRepo, originBranch);
+            await createPullRequest(mergeGit, _mergeGitRoot, prTitle, prBody, originRepo, originBranch, _theArgs.switches.test);
 
             try {
                 // Attempt to push the tags to the origin

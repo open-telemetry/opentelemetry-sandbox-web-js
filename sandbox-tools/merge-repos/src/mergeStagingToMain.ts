@@ -19,7 +19,7 @@ import * as path from "path";
 import { CleanOptions, SimpleGit } from "simple-git";
 import { 
     MERGE_CLONE_LOCATION, MERGE_DEST_BASE_FOLDER, MERGE_ORIGIN_MERGE_MAIN_BRANCH, MERGE_ORIGIN_REPO, MERGE_ORIGIN_STAGING_BRANCH, SANDBOX_PROJECT_NAME,
-    addMissingDevDeps, dependencyVersions, dropDependencies, foldersToMerge, initDevDependencyVersions, initScripts, cleanupScripts, filesToMerge, commonDevDependencyVersions
+    addMissingDevDeps, dependencyVersions, dropDependencies, foldersToMerge, initDevDependencyVersions, initScripts, cleanupScripts, filesToMerge, commonDevDependencyVersions, filesToCleanup, mergeFilesToCleanup, fixBadMergeRootFiles, mergeRushCommandLine, rootDevDependencies
 } from "./config";
 import { commitChanges, ICommitDetails } from "./git/commit";
 import { createGit } from "./git/createGit";
@@ -32,7 +32,7 @@ import { checkPrExists } from "./github/checkPrExists";
 import { createPullRequest, gitHubCreateForkRepo } from "./github/github";
 import { createPackageKarmaConfig } from "./tests/karma";
 import { createPackageRollupConfig } from "./rollup/rollup";
-import { rushUpdateShrinkwrap } from "./rush/rush";
+import { rushUpdateCommandLine, rushUpdateShrinkwrap } from "./rush/rush";
 import { abort, fail, terminate } from "./support/abort";
 import { addCleanupCallback, doCleanup } from "./support/clean";
 import { isIgnoreFolder } from "./support/isIgnoreFolder";
@@ -42,7 +42,7 @@ import { IMergeDetail, IMergePackageDetail, IPackageJson, IPackages, IRepoDetail
 import { dumpObj, findCurrentRepoRoot, formatIndentLines, log, logError, logWarn, removeTrailingComma, transformContent, transformPackages } from "./support/utils";
 import { createPackageWebpackTestConfig } from "./tests/webpack";
 import { initPackageJson } from "./package/package";
-import { checkFixBadMerges } from "./support/mergeFixup";
+import { checkFixBadMerges, validateFile } from "./support/mergeFixup";
 
 interface IStagingRepoDetails {
     git: SimpleGit,
@@ -116,6 +116,11 @@ let _packages: IPackages = {
     src: {},
     dest: {},
 };
+
+/**
+ * An array of submodules paths created that should be ignored from validation
+ */
+let _subModules: { url: string, path: string }[] = [];
 
 /**
  * Show the Help for this tool
@@ -381,8 +386,36 @@ async function getStagingRepo(git: SimpleGit, repoName: string, details: IRepoDe
             await stagingGit.add(destPackage.pkgPath);
         }
 
+        if (packageDetails.submodules) {
+            for (let lp = 0; lp < packageDetails.submodules.length; lp++) {
+                let moduleDef = packageDetails.submodules[lp];
+                let modulePath = path.join(packageDetails.destPath, moduleDef.path).replace(/\\/g, "/");
+                log ("adding submodule " + modulePath + " => " + moduleDef.url);
+                await stagingGit.submoduleAdd(moduleDef.url, modulePath);
+                _subModules.push({
+                    url: moduleDef.url,
+                    path: modulePath
+                });
+            }
+        }
+
         log("Update package name references");
         await updateFilePackageReferences(stagingDetails, forkDestOrg, packageDetails.destPath);
+    });
+
+    log ("Cleaning up Files");
+    await processMergeDetail(filesToCleanup, async (fileDetails) => {
+        let dest = path.join(_mergeGitRoot, fileDetails.destPath).replace(/\\/g, "/");
+
+        if (fs.existsSync(dest)) {
+            log(` - (Removing) ${fileDetails.destPath}`);
+            try {
+                await stagingGit.rm(fileDetails.destPath);
+            } catch (e) {
+                log(` - (Git rm failed Removing) ${fileDetails.destPath} -  ${e}`);
+                fs.rmSync(dest);
+            }
+        }
     });
 
     await commitChanges(stagingGit, stagingDetails.commitDetails);
@@ -418,7 +451,7 @@ async function updateRushJson(git: SimpleGit, thePath: string) {
         projectFolderMaxDepth: 8,
         projects: []
     };
-    let rushJsonPath = path.join(thePath, "rush.json");
+    let rushJsonPath = path.join(thePath, "rush.json").replace(/\\/g, "/");
     log(`Loading package ${rushJsonPath}`);
     if (fs.existsSync(rushJsonPath)) {
         // Reading file vs using require(packagePath) as some package.json have a trailing "," which doesn't load via require()
@@ -427,6 +460,9 @@ async function updateRushJson(git: SimpleGit, thePath: string) {
     }
 
     rushJson.rushVersion = (_packages.dest[SANDBOX_PROJECT_NAME].pkg["devDependencies"]["@microsoft/rush"]).replace(/\^/, "");
+    
+    // Set the rush max project depth
+    rushJson.projectFolderMaxDepth = 8;
 
     Object.keys(_packages.dest).forEach((packageKey) => {
         if (packageKey !== SANDBOX_PROJECT_NAME) {
@@ -444,7 +480,7 @@ async function updateRushJson(git: SimpleGit, thePath: string) {
                 rushJson.projects.push({
                     packageName: packageKey,
                     projectFolder: _packages.dest[packageKey].rPath,
-                    shouldPublish: true
+                    shouldPublish: !_packages.dest[packageKey].pkg.private,
                 });
             }
         }
@@ -532,7 +568,9 @@ function updateDependencies(srcPackage: IPackageJson, destPackage: IPackageJson,
                     if (rootVersion && rootVersion !== srcVersion) {
                         versionDiff = true;
                         srcVersion = rootVersion;
-                    } else if(dependencyVersions[key] && srcVersion !== dependencyVersions[key]) {
+                    } 
+                    
+                    if(dependencyVersions[key] && srcVersion !== dependencyVersions[key]) {
                         // Always use these versions
                         srcVersion = dependencyVersions[key];
                         versionDiff = true;
@@ -572,6 +610,12 @@ function updateDependencies(srcPackage: IPackageJson, destPackage: IPackageJson,
     }
 
     return changed;
+}
+
+function updateRootPackage(packageJson: IPackageJson) {
+    Object.keys(rootDevDependencies).forEach((key) => {
+        packageJson.devDependencies[key] = rootDevDependencies[key];
+    });
 }
 
 function sortPackageJson(packageJson: IPackageJson) {
@@ -624,6 +668,7 @@ function updatePackageJson(basePath: string, dest: string, srcPackage: IPackageJ
 function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IPackageJson, srcPackage: IPackageJson, packageDetails: IMergePackageDetail) {
     let changed = false;
     let versionUpdate = path.relative(dest, path.join(basePath, "./scripts/version-update.js")).replace(/\\/g, "/");
+    let protoGen = path.relative(dest, path.join(basePath, "./scripts/generate-protos.js")).replace(/\\/g, "/");
     log(`Checking for ${path.join(basePath, path.join(packageDetails.destPath, "./tsconfig.all.json")).replace(/\\/g, "/")}`);
     let tsConfigJson =  "tsconfig.all.json";
     if (!fs.existsSync(path.join(basePath, path.join(packageDetails.destPath, "./tsconfig.all.json")).replace(/\\/g, "/"))) {
@@ -645,9 +690,9 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
     let hasKarmaWorkerCfg = fs.existsSync(path.join(basePath, path.join(packageDetails.destPath, "./karma.worker.conf.js")).replace(/\\/g, "/"));
 
     let newPackageScripts = {
-        "build": "npm run lint:fix-quiet && npm run version && tsc --build " + tsConfigJson.trim() + " && npm run package",
-        "rebuild": "npm run build",
-        "compile": "npm run build",
+        "build": "npm run compile && npm run package",
+        "rebuild": "npm run clean && npm run build",
+        "compile": "npm run lint:fix-quiet && npm run version && tsc --build " + tsConfigJson.trim(),
         "clean": "tsc --build --clean " + tsConfigJson.trim() + "",
         "package": "npx rollup -c ./rollup.config.js --bundleConfigAsCjs",
         "test": "npm run test:node && npm run test:browser && npm run test:webworker",
@@ -656,10 +701,46 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
         "test:webworker": "nyc karma start karma.worker.js --single-run",
         "test:debug": "nyc karma start ./karma.debug.conf.js --wait",
         "lint": "eslint . --ext .ts",
-        "lint:fix": "npm run lint -- --fix",
-        "lint:fix-quiet": "npm run lint -- --fix --quiet",
+        "lint:fix": "eslint . --ext .ts --fix",
+        "lint:fix-quiet": "eslint . --ext .ts --fix --quiet",
         "version": `node ${versionUpdate}`,
         "watch": "npm run version && tsc --build --watch " + tsConfigJson.trim() + ""
+    };
+
+    // Automatically add "npm run protos" to the prebuild if present
+    if (newPackage.scripts && newPackage.scripts["protos"]) {
+        if (!packageDetails.compileScripts || !packageDetails.compileScripts.pre) {
+            packageDetails.compileScripts = (packageDetails.compileScripts || {});
+            packageDetails.compileScripts.pre = [ "protos" ];
+        }
+    }
+
+    if (packageDetails.compileScripts) {
+        if (packageDetails.compileScripts.pre) {
+            let preBuild = "";
+            packageDetails.compileScripts.pre.forEach((value) => {
+                if (preBuild) {
+                    preBuild += " && ";
+                }
+                preBuild += "npm run " + value;
+            });
+
+            newPackageScripts["pre-build"] = preBuild;
+            newPackageScripts["compile"] = newPackageScripts["compile"].replace("&& tsc --build ", "&& npm run pre-build && tsc --build ");
+        }
+
+        if (packageDetails.compileScripts.post) {
+            let postBuild = "";
+            packageDetails.compileScripts.post.forEach((value) => {
+                if (postBuild) {
+                    postBuild += " && ";
+                }
+                postBuild += "npm run " + value;
+            });
+
+            newPackageScripts["post-build"] = postBuild;
+            newPackageScripts["compile"] = (newPackageScripts["compile"] + " && npm run post-build");
+        }
     }
 
     if (!hasKarmaBrowserCfg && fs.existsSync(path.join(basePath, path.join(packageDetails.destPath, "./karma.conf.js")).replace(/\\/g, "/"))) {
@@ -667,8 +748,13 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
         hasKarmaBrowserCfg = true;
     }
 
+
     if (!newPackage.scripts) {
         fail(null, JSON.stringify(newPackage));
+    }
+
+    if (newPackage.scripts["protos:generate"]) {
+        newPackage.scripts["protos:generate"] = `node ${protoGen}`;
     }
 
     Object.keys(newPackageScripts).forEach((script) => {
@@ -688,6 +774,12 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
                 if (script.startsWith("test:node")) {
                     addTarget = !packageDetails.noNodeTests;
                 }
+            } else if (script.startsWith("build") || script.startsWith("compile") || script.startsWith("clean")) {
+                addTarget = !packageDetails.noBuild;
+            } else if (script.startsWith("lint")) {
+                addTarget = !packageDetails.noLint;
+            } else if (script.startsWith("version")) {
+                addTarget = !packageDetails.noVersion;
             }
 
             newPackage.scripts[script] = addTarget  ? newPackageScripts[script] : "";
@@ -701,6 +793,13 @@ function updatePackageJsonScripts(basePath: string, dest: string, newPackage: IP
             changed = true;
         }
     });
+
+    if (packageDetails.scripts) {
+        Object.keys(packageDetails.scripts).forEach((script) => {
+            newPackage.scripts[script] = packageDetails.scripts[script];
+            changed = true;
+        });
+    }
 
     return changed;
 }
@@ -732,7 +831,7 @@ async function updateConfigFileRelativePaths(stagingDetails: IStagingRepoDetails
     let dest = path.join(basePath, destPath).replace(/\\/g, "/");
     let relativePath = path.relative(dest, path.join(basePath, "$$$temp$$$")).replace(/\\/g, "/").replace("/$$$temp$$$", "/");
 
-    const baseEsLintConfig = path.relative(dest, path.join(basePath, "eslint.config.js")).replace(/\\/g, "/");
+    const baseEsLintConfig = path.relative(dest, path.join(basePath, "eslint.base.js")).replace(/\\/g, "/");
 
     const files = fs.readdirSync(dest);
     log(`Updating relative paths: ${files.length} file(s) in ${dest}`);
@@ -783,9 +882,14 @@ async function updateConfigFileRelativePaths(stagingDetails: IStagingRepoDetails
             }
 
         } else if (name === ".eslintrc.js") {
-            // update paths to base eslint.config.js
+            // update paths to base eslint.config.js to eslint.base.js (contrib)
             content = fs.readFileSync(theFilename, "utf-8");
             newContent = content.replace(/require\(['"](.*eslint\.config\.js)['"]\)/gm, function(match, group) {
+                log(` -- replacing ${group} => ${baseEsLintConfig}`);
+                return match.replace(group, baseEsLintConfig);
+            });
+            // update paths to base eslint.base.js
+            newContent = newContent.replace(/require\(['"](.*eslint\.base\.js)['"]\)/gm, function(match, group) {
                 log(` -- replacing ${group} => ${baseEsLintConfig}`);
                 return match.replace(group, baseEsLintConfig);
             });
@@ -809,6 +913,22 @@ async function updateConfigFileRelativePaths(stagingDetails: IStagingRepoDetails
     }
 }
 
+async function cleanupMergeFiles(mergeGit: SimpleGit) {
+    await processMergeDetail(mergeFilesToCleanup, async (fileDetails) => {
+        let dest = path.join(_mergeGitRoot, fileDetails.destPath).replace(/\\/g, "/");
+
+        if (fs.existsSync(dest)) {
+            log(` - (Removing) ${fileDetails.destPath}`);
+            try {
+                await mergeGit.rm(fileDetails.destPath);
+            } catch (e) {
+                log(` - (Git rm failed Removing) ${fileDetails.destPath} - ${e}`);
+                fs.rmSync(dest);
+            }
+        }
+    });
+}
+
 async function mergeStagingToMaster(mergeGit: SimpleGit, stagingDetails: IStagingRepoDetails) {
     let mergeCommitMessage: ICommitDetails = {
         committed: false,
@@ -824,6 +944,8 @@ async function mergeStagingToMaster(mergeGit: SimpleGit, stagingDetails: IStagin
         "--no-ff",
         "--no-edit",
         "staging/" + stagingDetails.branch]).catch(async (reason) => {
+            log (`Remove cleanup merge files in ${_mergeGitRoot} first`);
+            await cleanupMergeFiles(mergeGit);
             commitPerformed = await resolveConflictsToTheirs(mergeGit, _mergeGitRoot, mergeCommitMessage, false);
         });
 
@@ -838,18 +960,59 @@ async function mergeStagingToMaster(mergeGit: SimpleGit, stagingDetails: IStagin
             return true;
         }
 
+        let destPath = path.join(destFolder, source).replace(/\\/g, "/");
+        let isSubmodule = false;
+        _subModules.forEach((subPath) => {
+            if (destPath.indexOf(subPath.path) !== -1) {
+                log(` - Submodule ignore: ${subPath}`);
+                isSubmodule = true;
+            }
+        });
+
+        if (isSubmodule) {
+            return true;
+        }
+
         return false;
     }
 
     // Validate and fixup any bad merges that may have occurred -- make sure the source and new merged repo contain the same files
     await checkFixBadMerges(mergeGit, _mergeGitRoot, _isVerifyIgnore, stagingDetails.branch, stagingDetails.path + "/pkgs", _mergeGitRoot + "/pkgs", mergeCommitMessage, 0);
-    
+
+    for (let lp = 0; lp < fixBadMergeRootFiles.length; lp++) {
+        let mergeFileChk = fixBadMergeRootFiles[lp];
+
+        if (validateFile(_mergeGitRoot, stagingDetails.path + "/" + mergeFileChk,  _mergeGitRoot + "/" + mergeFileChk, mergeCommitMessage)) {
+
+            await mergeGit.raw([
+                "add",
+                "-f",
+                _mergeGitRoot + "/" + mergeFileChk]);
+        }
+    }
+
+    log ("Resetting up submodules");
+    for (let lp = 0; lp < _subModules.length; lp++) {
+        try {
+            log ("adding submodule " + _subModules[lp].path + " => " + _subModules[lp].url);
+            await mergeGit.submoduleAdd(_subModules[lp].url, _subModules[lp].path);
+        } catch (e) {
+            if (e.message.indexOf("already exists") === -1) {
+                throw e;
+            }
+        }
+    }
+
     // Update the root package json
     if (!checkPackageName(_mergeGitRoot, SANDBOX_PROJECT_NAME, _mergeGitRoot, true)) {
         fail(mergeGit, "Current repo folder does not appear to be the sandbox");
     }
 
+    log (`Cleaning up merge files in ${_mergeGitRoot}`);
+    await cleanupMergeFiles(mergeGit);
+
     let rootPackage = _packages.dest[SANDBOX_PROJECT_NAME];
+    updateRootPackage(rootPackage.pkg);
     sortPackageJson(rootPackage.pkg);
 
     let newRushText = JSON.stringify(rootPackage.pkg, null, 2);
@@ -865,6 +1028,11 @@ async function mergeStagingToMaster(mergeGit: SimpleGit, stagingDetails: IStagin
     let shrinkWrapFile = await rushUpdateShrinkwrap(_mergeGitRoot);
     if (shrinkWrapFile) {
         await mergeGit.add(shrinkWrapFile);
+    }
+
+    let commandLineJson = rushUpdateCommandLine(_mergeGitRoot, mergeRushCommandLine);
+    if (commandLineJson) {
+        await mergeGit.add(commandLineJson);
     }
 
     mergeCommitMessage.committed = await commitChanges(mergeGit, mergeCommitMessage) || commitPerformed;
@@ -1012,7 +1180,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
         }
 
         if (prRequired && createPr && await pushToBranch(mergeGit)) {
-            await createPullRequest(mergeGit, _mergeGitRoot, prTitle, prBody, originRepo, destBranch);
+            await createPullRequest(mergeGit, _mergeGitRoot, prTitle, prBody, originRepo, destBranch, _theArgs.switches.test);
 
             try {
                 // Attempt to push the tags to the origin

@@ -19,6 +19,59 @@ import { SimpleGit } from "simple-git";
 import { ICommitDetails } from "../git/commit";
 import { log, logAppendMessage } from "./utils";
 
+export async function validateFile(
+    mergeGitRoot: string,
+    masterFile: string,
+    destFile: string,
+    commitDetails: ICommitDetails) {
+
+    let changed = false;
+    if (fs.existsSync(destFile)) {
+        // Compare contents
+        let destStats = fs.statSync(destFile);
+        let masterStats = fs.statSync(masterFile);
+        if (destStats.size !== masterStats.size) {
+            // File size is different so was not moved / merged correctly
+            commitDetails.message = logAppendMessage(mergeGitRoot, commitDetails.message, { index: "x", working_dir: "S", path: destFile } , `Re-Copying master file as size mismatch ${destStats.size} !== ${masterStats.size}`);
+            fs.copyFileSync(masterFile, destFile);
+            changed = true;
+        } else {
+            // Same file size, so compare contents
+            let masterContent = fs.readFileSync(masterFile);
+            let destContent = fs.readFileSync(destFile);
+            if (masterContent.length !== destContent.length) {
+                // File content is different so was not moved / merged correctly
+                commitDetails.message = logAppendMessage(mergeGitRoot, commitDetails.message, { index: "x", working_dir: "C", path: destFile } , "Re-Copying master file as content mismatch");
+                fs.copyFileSync(masterFile, destFile);
+                changed = true;
+            } else {
+                let isSame = true;
+                let lp = 0;
+                while (isSame && lp < masterContent.length) {
+                    if (masterContent[lp] !== destContent[lp]) {
+                        isSame = false;
+                    }
+                    lp++;
+                }
+
+                if (!isSame) {
+                    // File content is different so was not moved / merged correctly
+                    commitDetails.message = logAppendMessage(mergeGitRoot, commitDetails.message, { index: "x", working_dir: "C", path: destFile } , "Re-Copying master file as content is different");
+                    fs.copyFileSync(masterFile, destFile);
+                    changed = true;
+                }
+            }
+        }
+    } else {
+        // Missing dest so was not moved / merged correctly
+        commitDetails.message = logAppendMessage(mergeGitRoot, commitDetails.message, { index: "x", working_dir: "M", path: destFile } , "Re-Copying master file");
+        fs.copyFileSync(masterFile, destFile);
+        changed = true;
+    }
+
+    return changed;
+}
+
 export async function checkFixBadMerges(
     git: SimpleGit, 
     mergeGitRoot: string, 
@@ -32,54 +85,6 @@ export async function checkFixBadMerges(
     // Get master source files
     const masterFiles = fs.readdirSync(baseFolder);
     const destFiles = fs.readdirSync(destFolder);
-
-    async function validateFile(masterFile: string, destFile: string) {
-        let changed = false;
-        if (fs.existsSync(destFile)) {
-            // Compare contents
-            let destStats = fs.statSync(destFile);
-            let masterStats = fs.statSync(masterFile);
-            if (destStats.size !== masterStats.size) {
-                // File size is different so was not moved / merged correctly
-                commitDetails.message = logAppendMessage(mergeGitRoot, commitDetails.message, { index: "x", working_dir: "S", path: destFile } , `Re-Copying master file as size mismatch ${destStats.size} !== ${masterStats.size}`);
-                fs.copyFileSync(masterFile, destFile);
-                changed = true;
-            } else {
-                // Same file size, so compare contents
-                let masterContent = fs.readFileSync(masterFile);
-                let destContent = fs.readFileSync(destFile);
-                if (masterContent.length !== destContent.length) {
-                    // File content is different so was not moved / merged correctly
-                    commitDetails.message = logAppendMessage(mergeGitRoot, commitDetails.message, { index: "x", working_dir: "C", path: destFile } , "Re-Copying master file as content mismatch");
-                    fs.copyFileSync(masterFile, destFile);
-                    changed = true;
-                } else {
-                    let isSame = true;
-                    let lp = 0;
-                    while (isSame && lp < masterContent.length) {
-                        if (masterContent[lp] !== destContent[lp]) {
-                            isSame = false;
-                        }
-                        lp++;
-                    }
-
-                    if (!isSame) {
-                        // File content is different so was not moved / merged correctly
-                        commitDetails.message = logAppendMessage(mergeGitRoot, commitDetails.message, { index: "x", working_dir: "C", path: destFile } , "Re-Copying master file as content is different");
-                        fs.copyFileSync(masterFile, destFile);
-                        changed = true;
-                    }
-                }
-            }
-        } else {
-            // Missing dest so was not moved / merged correctly
-            commitDetails.message = logAppendMessage(mergeGitRoot, commitDetails.message, { index: "x", working_dir: "M", path: destFile } , "Re-Copying master file");
-            fs.copyFileSync(masterFile, destFile);
-            changed = true;
-        }
-
-        return changed;
-    }
 
     log(` - (Verifying) ${baseFolder} <=> ${destFolder}`);
     for (let mLp = 0; mLp < masterFiles.length; mLp++) {
@@ -107,7 +112,7 @@ export async function checkFixBadMerges(
                 }
             } else {
                 // Assume file
-                if (validateFile(baseFolder + "/" +  theFile,  destFolder + "/" +  theFile)) {
+                if (validateFile(mergeGitRoot, baseFolder + "/" +  theFile,  destFolder + "/" +  theFile, commitDetails)) {
 
                     await git.raw([
                         "add",
@@ -127,14 +132,17 @@ export async function checkFixBadMerges(
             let destStats = fs.statSync(destFolder + "/" + destFile);
             if (destStats.isDirectory()) {
                 commitDetails.message = logAppendMessage(mergeGitRoot, commitDetails.message, { index: "*", working_dir: "F", path: destFolder + "/" + destFile } , `Removing extra folder ${destFile}`);
-                await git.raw([
-                    "rm",
-                    "-f",
-                    "-r",
-                    destFolder + "/" + destFile]);
-                // fs.rmdirSync(destFolder + "/" + destFile, {
-                //     recursive: true
-                // });
+                try {
+                    await git.raw([
+                        "rm",
+                        "-f",
+                        "-r",
+                        destFolder + "/" + destFile]);
+                } catch (e) {
+                    fs.rmdirSync(destFolder + "/" + destFile, {
+                        recursive: true
+                    });
+                }
             } else {
                 commitDetails.message = logAppendMessage(mergeGitRoot, commitDetails.message, { index: "*", working_dir: "E", path: destFolder + "/" + destFile } , "Removing extra file");
                 await git.rm(destFolder + "/" + destFile);

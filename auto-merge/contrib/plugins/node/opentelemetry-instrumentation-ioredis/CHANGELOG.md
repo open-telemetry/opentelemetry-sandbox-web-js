@@ -1,5 +1,57 @@
 # Changelog
 
+## [0.35.1](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-ioredis-v0.35.0...instrumentation-ioredis-v0.35.1) (2023-08-14)
+
+
+### Bug Fixes
+
+* **deps:** update otel core experimental to v0.41.2 ([#1628](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1628)) ([4f11245](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/4f1124524aee565c3cfbf3975aa5d3d039377621))
+* Revert "feat(minification): Add importHelpers and tslib as a dependency ([#1545](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1545))" ([#1611](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1611)) ([e5bca5f](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/e5bca5fe5b27adc59c8de8fe4087d38b69d93bd4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @opentelemetry/redis-common bumped from ^0.36.0 to ^0.36.1
+  * devDependencies
+    * @opentelemetry/contrib-test-utils bumped from ^0.34.0 to ^0.34.1
+
+## [0.35.0](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-ioredis-v0.34.3...instrumentation-ioredis-v0.35.0) (2023-07-12)
+
+
+### Features
+
+* **minification:** Add importHelpers and tslib as a dependency ([#1545](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1545)) ([65f612e](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/65f612e35c4d67b9935dc3a9155588b35d915482))
+
+
+### Bug Fixes
+
+* **deps:** update otel core experimental to ^0.41.0 ([#1566](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1566)) ([84a2377](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/84a2377845c313f0ca68b4de7f3e7a464be68885))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @opentelemetry/redis-common bumped from ^0.35.1 to ^0.36.0
+  * devDependencies
+    * @opentelemetry/contrib-test-utils bumped from ^0.33.4 to ^0.34.0
+
+## [0.34.3](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-ioredis-v0.34.2...instrumentation-ioredis-v0.34.3) (2023-06-12)
+
+
+### Bug Fixes
+
+* **deps:** update otel core experimental to ^0.40.0 ([#1527](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1527)) ([4e18a46](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/4e18a46396eb2f06e86790dbbd68075c4c2dc83b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @opentelemetry/contrib-test-utils bumped from ^0.33.3 to ^0.33.4
+
 ## [0.34.2](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-ioredis-v0.34.1...instrumentation-ioredis-v0.34.2) (2023-05-16)
 
 
