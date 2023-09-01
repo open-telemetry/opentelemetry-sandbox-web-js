@@ -76,9 +76,8 @@
   ],
   "sideEffects": false,
   "devDependencies": {
-    "@babel/core": "7.22.10",
+    "@babel/core": "7.22.11",
     "@opentelemetry/sandbox-api": "1.4.1",
-    "@opentelemetry/sandbox-api-logs": "0.41.2",
     "@opentelemetry/sandbox-resources": "1.15.2",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
@@ -126,9 +125,10 @@
     "webpack-merge": "5.9.0"
   },
   "peerDependencies": {
-    "@opentelemetry/sandbox-api-logs": "0.41.2"
+    "@opentelemetry/sandbox-api": "1.4.1"
   },
   "dependencies": {
+    "@opentelemetry/sandbox-api-logs": "0.41.2",
     "@opentelemetry/sandbox-core": "1.15.2",
     "@opentelemetry/sandbox-otlp-exporter-base": "0.41.2",
     "@opentelemetry/sandbox-otlp-transformer": "0.41.2",
