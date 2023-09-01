@@ -55,6 +55,7 @@
     "mocha": "10.0.0",
     "nyc": "^15.1.0",
     "pako": "^2.0.3",
+    "prettier": "2.8.8",
     "puppeteer": "^14.2.1",
     "rollup": "^3.10.0",
     "rollup-plugin-cleanup": "^3.2.1",
