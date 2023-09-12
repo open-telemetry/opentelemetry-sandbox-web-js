@@ -18,9 +18,7 @@ import {
   InstrumentationBase,
   isWrapped,
 } from '@opentelemetry/sandbox-instrumentation';
-import { Event } from '@opentelemetry/sandbox-api-events';
-import { EventEmitter } from '@opentelemetry/sandbox-sdk-events';
-
+import { Event, events, EventEmitter } from '@opentelemetry/sandbox-api-events';
 import { VERSION } from './version';
 import {
   ApplyCustomEventDataFunction,
@@ -28,7 +26,7 @@ import {
 } from './types';
 import { PageTypes } from './enums/PageTypes';
 /**
- * This class represents a document load plugin
+ * This class represents a page view instrumentation plugin
  */
 
 export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
@@ -47,7 +45,7 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
    */
   constructor(config: PageViewInstrumentationConfig) {
     super(PageViewEventInstrumentation.instrumentationName, VERSION, config);
-    this.emitter = new EventEmitter(
+    this.emitter =events.getEventEmitter(
       PageViewEventInstrumentation.name,
       VERSION,
       'browser'
@@ -153,7 +151,8 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
   }
 
   private _patchHistoryApi(): void {
-    this._unpatchHistoryApi();
+    // unpatching here disables other instrumentation that use the same api to wrap history, commenting it out
+    // this._unpatchHistoryApi();
 
     this._wrap(
       history,

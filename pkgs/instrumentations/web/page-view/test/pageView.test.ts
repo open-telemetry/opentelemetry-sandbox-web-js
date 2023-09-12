@@ -20,24 +20,28 @@ import {
   SimpleLogRecordProcessor,
   ReadableLogRecord,
 } from '@opentelemetry/sandbox-sdk-logs';
-
+import {
+  EventEmitterProvider
+} from '@opentelemetry/sandbox-sdk-events';
 import * as assert from 'assert';
 import * as sinon from 'sinon';
 import { PageViewEventInstrumentation } from '../src';
 import { Attributes } from '@opentelemetry/sandbox-api';
 import { logs } from '@opentelemetry/sandbox-api-logs';
+import { events } from '@opentelemetry/sandbox-api-events';
 import { PageTypes } from '../src/enums/PageTypes';
 
 describe('PageView Instrumentation', () => {
-
   let plugin: PageViewEventInstrumentation;
-  const sandbox = sinon.createSandbox()
+  const sandbox = sinon.createSandbox();
 
   const exporter = new InMemoryLogRecordExporter();
   const provider = new LoggerProvider();
   const logRecordProcessor = new SimpleLogRecordProcessor(exporter);
   provider.addLogRecordProcessor(logRecordProcessor);
   logs.setGlobalLoggerProvider(provider);
+  const eventEmitterProvider = new EventEmitterProvider();
+  events.setGlobalEventEmitterProvider(eventEmitterProvider);
 
   afterEach(async () => {
     exporter.reset();
