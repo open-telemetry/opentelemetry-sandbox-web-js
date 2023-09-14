@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-instrumentation",
-  "version": "0.41.2",
+  "version": "0.43.0",
   "description": "Base class for node which OpenTelemetry instrumentation modules extend",
   "author": "OpenTelemetry Authors",
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/experimental/packages/opentelemetry-instrumentation",
@@ -83,12 +83,12 @@
     "shimmer": "^1.2.1"
   },
   "peerDependencies": {
-    "@opentelemetry/sandbox-api": "1.4.1"
+    "@opentelemetry/sandbox-api": "1.6.0"
   },
   "devDependencies": {
-    "@babel/core": "7.22.11",
-    "@opentelemetry/sandbox-api": "1.4.1",
-    "@opentelemetry/sandbox-sdk-metrics": "1.15.2",
+    "@babel/core": "7.22.17",
+    "@opentelemetry/sandbox-api": "1.6.0",
+    "@opentelemetry/sandbox-sdk-metrics": "1.17.0",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",

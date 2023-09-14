@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-sdk-metrics",
-  "version": "1.15.2",
+  "version": "1.17.0",
   "description": "OpenTelemetry metrics SDK",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -59,8 +59,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "@babel/core": "7.22.11",
-    "@opentelemetry/sandbox-api": "1.4.1",
+    "@babel/core": "7.22.17",
+    "@opentelemetry/sandbox-api": "1.6.0",
     "@types/jquery": "^3.5.14",
     "@types/lodash.merge": "4.6.7",
     "@types/mocha": "^10.0.0",
@@ -107,11 +107,11 @@
     "webpack-merge": "5.9.0"
   },
   "peerDependencies": {
-    "@opentelemetry/sandbox-api": "1.4.1"
+    "@opentelemetry/sandbox-api": "1.6.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-core": "1.15.2",
-    "@opentelemetry/sandbox-resources": "1.15.2",
+    "@opentelemetry/sandbox-core": "1.17.0",
+    "@opentelemetry/sandbox-resources": "1.17.0",
     "lodash.merge": "^4.6.2"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/packages/sdk-metrics",
