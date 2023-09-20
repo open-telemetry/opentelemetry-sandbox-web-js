@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.41.2",
+  "version": "0.43.0",
   "description": "Transform OpenTelemetry SDK data into OTLP",
   "module": "build/esm/index.js",
   "esnext": "build/esnext/index.js",
@@ -60,10 +60,10 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@opentelemetry/sandbox-api": "1.4.1"
+    "@opentelemetry/sandbox-api": "1.6.0"
   },
   "devDependencies": {
-    "@opentelemetry/sandbox-api": "1.4.1",
+    "@opentelemetry/sandbox-api": "1.6.0",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
@@ -107,12 +107,12 @@
     "webpack": "^4.46.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-api-logs": "0.41.2",
-    "@opentelemetry/sandbox-core": "1.15.2",
-    "@opentelemetry/sandbox-resources": "1.15.2",
-    "@opentelemetry/sandbox-sdk-logs": "0.41.2",
-    "@opentelemetry/sandbox-sdk-metrics": "1.15.2",
-    "@opentelemetry/sandbox-sdk-trace-base": "1.15.2"
+    "@opentelemetry/sandbox-api-logs": "0.43.0",
+    "@opentelemetry/sandbox-core": "1.17.0",
+    "@opentelemetry/sandbox-resources": "1.17.0",
+    "@opentelemetry/sandbox-sdk-logs": "0.43.0",
+    "@opentelemetry/sandbox-sdk-metrics": "1.17.0",
+    "@opentelemetry/sandbox-sdk-trace-base": "1.17.0"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/experimental/packages/otlp-transformer",
   "sideEffects": false
