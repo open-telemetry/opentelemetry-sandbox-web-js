@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/json-schemas/rush/v5/rush.schema.json",
   "npmVersion": "9.5.1",
   "rushVersion": "5.93.2",
-  "projectFolderMaxDepth": 4,
+  "projectFolderMaxDepth": 8,
   "projects": [
     {
       "packageName": "@opentelemetry/sandbox-api",
@@ -37,6 +37,36 @@
     {
       "packageName": "@opentelemetry/sandbox-core",
       "projectFolder": "pkgs/core",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-exporter-logs-otlp-http",
+      "projectFolder": "pkgs/exporters/otlp/logs/http",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-exporter-logs-otlp-proto",
+      "projectFolder": "pkgs/exporters/otlp/logs/proto",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-exporter-metrics-otlp-http",
+      "projectFolder": "pkgs/exporters/otlp/metrics/http",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-exporter-trace-otlp-http",
+      "projectFolder": "pkgs/exporters/otlp/trace/http",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-exporter-trace-otlp-proto",
+      "projectFolder": "pkgs/exporters/otlp/trace/proto",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-exporter-zipkin",
+      "projectFolder": "pkgs/exporters/zipkin",
       "shouldPublish": true
     },
     {
@@ -77,6 +107,16 @@
     {
       "packageName": "@opentelemetry/sandbox-otlp-exporter-base",
       "projectFolder": "pkgs/exporters/otlp/base",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-otlp-proto-exporter-base",
+      "projectFolder": "pkgs/exporters/otlp/proto-base",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@opentelemetry/sandbox-otlp-transformer",
+      "projectFolder": "pkgs/exporters/otlp/transformer",
       "shouldPublish": true
     },
     {
@@ -123,6 +163,11 @@
       "packageName": "@opentelemetry/sandbox-instrumentation-page-view",
       "projectFolder": "pkgs/instrumentations/web/page-view",
       "shouldPublish": true
+    },
+    {
+      "packageName": "web-opentelemetry-example",
+      "projectFolder": "examples/web/js",
+      "shouldPublish": false
     }
   ]
 }
