@@ -3984,7 +3984,7 @@
     "node_modules/@rush-temp/sandbox-sdk-events": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-sdk-events.tgz",
-      "integrity": "sha512-ku8Sn7waYIBcO3UisfehQIRKbNiwj5gNzsEpp6b7GSVPl5LEW0hbLzCmlS2VjdPNL4H31sGOqZzSafonGOXxHQ==",
+      "integrity": "sha512-yumqxri8QHMADQczpphZG8zOJtWhJ4HaW3BAxk/cRdPFoSpr0Z/Nl0FF2pWdMR/2Zwg5lAIJhWdxsQLuII5AsA==",
       "dependencies": {
         "@types/jquery": "^3.5.14",
         "@types/mocha": "^10.0.0",
