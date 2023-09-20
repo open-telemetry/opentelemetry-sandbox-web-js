@@ -30,7 +30,7 @@ import { getEnv, baggageUtils } from '@opentelemetry/sandbox-core';
  */
 export abstract class OTLPExporterNodeBase<
   ExportItem,
-  ServiceRequest
+  ServiceRequest,
 > extends OTLPExporterBase<
   OTLPExporterNodeConfigBase,
   ExportItem,
