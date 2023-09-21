@@ -427,7 +427,7 @@ localGit.checkIsRepo().then(async (isRepo) => {
         const originBranch = _theArgs.switches.originBranch;
         let createPr = !_theArgs.switches.noPr;
         if (_theArgs.switches.test ) {
-            createPr = false;
+            //createPr = false;
             _theArgs.switches.cloneTo = "../" + _theArgs.switches.cloneTo;
         }
 

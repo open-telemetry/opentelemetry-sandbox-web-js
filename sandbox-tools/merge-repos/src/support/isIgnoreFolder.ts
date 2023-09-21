@@ -26,7 +26,7 @@ import { IRepoSyncDetails } from "./types";
  * @returns 
  */
 export function isIgnoreFolder(theRepos: IRepoSyncDetails, source: string, isRoot: boolean) {
-    if (source === "." || source === ".." || source === ".git" || source === ".vs") {
+    if (source === "." || source === ".." || source === ".git" || source === ".vs" || source === "protos") {
         return true;
     }
 
