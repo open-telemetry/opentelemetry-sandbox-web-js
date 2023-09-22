@@ -45,10 +45,10 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
    */
   constructor(config: PageViewInstrumentationConfig) {
     super(PageViewEventInstrumentation.instrumentationName, VERSION, config);
-    this.emitter =events.getEventEmitter(
+    this.emitter = events.getEventEmitter(
       PageViewEventInstrumentation.name,
-      VERSION,
-      'browser'
+      'browser',
+      VERSION
     );
     this.applyCustomEventData = config.applyCustomEventData;
     this._patchHistoryApi();

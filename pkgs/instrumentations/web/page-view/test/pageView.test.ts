@@ -20,9 +20,7 @@ import {
   SimpleLogRecordProcessor,
   ReadableLogRecord,
 } from '@opentelemetry/sandbox-sdk-logs';
-import {
-  EventEmitterProvider
-} from '@opentelemetry/sandbox-sdk-events';
+import { EventEmitterProvider } from '@opentelemetry/sandbox-sdk-events';
 import * as assert from 'assert';
 import * as sinon from 'sinon';
 import { PageViewEventInstrumentation } from '../src';
@@ -43,7 +41,7 @@ describe('PageView Instrumentation', () => {
   const eventEmitterProvider = new EventEmitterProvider();
   events.setGlobalEventEmitterProvider(eventEmitterProvider);
 
-  afterEach(async () => {
+  afterEach(() => {
     exporter.reset();
     sandbox.restore();
     plugin.disable();
