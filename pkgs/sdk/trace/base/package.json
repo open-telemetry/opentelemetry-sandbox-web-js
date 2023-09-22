@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-sdk-trace-base",
-  "version": "1.15.2",
+  "version": "1.17.0",
   "description": "OpenTelemetry Tracing",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -30,6 +30,7 @@
     "tdd:browser": "karma start",
     "tdd:node": "npm run test -- --watch-extensions ts --watch",
     "test": "npm run test:node && npm run test:browser && npm run test:webworker",
+    "test:bench": "node test/performance/benchmark/index.js",
     "test:browser": "nyc karma start ./karma.conf.js --single-run",
     "test:debug": "nyc karma start ./karma.debug.conf.js --wait",
     "test:node": "",
@@ -69,7 +70,7 @@
   },
   "devDependencies": {
     "@opentelemetry/resources": "npm:@opentelemetry/resources@1.9.0",
-    "@opentelemetry/sandbox-api": "1.4.1",
+    "@opentelemetry/sandbox-api": "1.6.0",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
@@ -113,12 +114,12 @@
     "webpack": "^4.46.0"
   },
   "peerDependencies": {
-    "@opentelemetry/sandbox-api": "1.4.1"
+    "@opentelemetry/sandbox-api": "1.6.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-core": "1.15.2",
-    "@opentelemetry/sandbox-resources": "1.15.2",
-    "@opentelemetry/sandbox-semantic-conventions": "1.15.2"
+    "@opentelemetry/sandbox-core": "1.17.0",
+    "@opentelemetry/sandbox-resources": "1.17.0",
+    "@opentelemetry/sandbox-semantic-conventions": "1.17.0"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/packages/opentelemetry-sdk-trace-base",
   "sideEffects": false
