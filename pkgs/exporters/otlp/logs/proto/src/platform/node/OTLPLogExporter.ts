@@ -37,7 +37,7 @@ const DEFAULT_COLLECTOR_URL = `http://localhost:4318/${DEFAULT_COLLECTOR_RESOURC
 /**
  * Collector Trace Exporter for Node
  */
-export class OTLPLogsExporter
+export class OTLPLogExporter
   extends OTLPProtoExporterNodeBase<
     ReadableLogRecord,
     IExportLogsServiceRequest
