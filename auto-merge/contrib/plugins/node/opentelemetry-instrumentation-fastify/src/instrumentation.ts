@@ -96,8 +96,7 @@ export class FastifyInstrumentation extends InstrumentationBase {
       const rpcMetadata = getRPCMetadata(context.active());
       const routeName = request.routerPath;
       if (routeName && rpcMetadata?.type === RPCType.HTTP) {
-        rpcMetadata.span.setAttribute(SemanticAttributes.HTTP_ROUTE, routeName);
-        rpcMetadata.span.updateName(`${request.method} ${routeName}`);
+        rpcMetadata.route = routeName;
       }
       done();
     };
@@ -198,14 +197,14 @@ export class FastifyInstrumentation extends InstrumentationBase {
     };
   }
 
-  private _patchConstructor(
-    original: () => FastifyInstance
-  ): () => FastifyInstance {
+  private _patchConstructor(moduleExports: {
+    fastify: () => FastifyInstance;
+  }): () => FastifyInstance {
     const instrumentation = this;
     this._diag.debug('Patching fastify constructor function');
 
     function fastify(this: FastifyInstance, ...args: any) {
-      const app: FastifyInstance = original.apply(this, args);
+      const app: FastifyInstance = moduleExports.fastify.apply(this, args);
       app.addHook('onRequest', instrumentation._hookOnRequest());
       app.addHook('preHandler', instrumentation._hookPreHandler());
 

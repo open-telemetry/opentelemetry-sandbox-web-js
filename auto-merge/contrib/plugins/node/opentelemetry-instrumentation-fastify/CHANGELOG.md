@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.32.2](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-fastify-v0.32.1...instrumentation-fastify-v0.32.2) (2023-08-30)
+
+
+### Bug Fixes
+
+* **fastify:** Make sure consturctor patching works with esm ([#1624](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1624)) ([67f66d2](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/67f66d2e0e8ea9f5d9b46819d4f736fa1e0666b6))
+
+## [0.32.1](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-fastify-v0.32.0...instrumentation-fastify-v0.32.1) (2023-08-14)
+
+
+### Bug Fixes
+
+* **deps:** update otel core experimental to v0.41.2 ([#1628](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1628)) ([4f11245](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/4f1124524aee565c3cfbf3975aa5d3d039377621))
+* **fastify:** readme option table format ([#1619](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1619)) ([3d6c7be](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/3d6c7beffd7c1cc0ef99c7560bc21e01db28b431))
+* Revert "feat(minification): Add importHelpers and tslib as a dependency ([#1545](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1545))" ([#1611](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1611)) ([e5bca5f](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/e5bca5fe5b27adc59c8de8fe4087d38b69d93bd4))
+
+## [0.32.0](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-fastify-v0.31.4...instrumentation-fastify-v0.32.0) (2023-07-12)
+
+
+### Features
+
+* **fastify:** Skip update HTTP's span name and update RpcMetadata's route instead ([#1569](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1569)) ([8d9687d](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/8d9687d89e4a80dbf2a5e8be6fb027ff20824593))
+* **minification:** Add importHelpers and tslib as a dependency ([#1545](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1545)) ([65f612e](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/65f612e35c4d67b9935dc3a9155588b35d915482))
+
+
+### Bug Fixes
+
+* **deps:** update otel core experimental to ^0.41.0 ([#1566](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1566)) ([84a2377](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/84a2377845c313f0ca68b4de7f3e7a464be68885))
+* **instrumentation-fastify:** fix fastify typescript compilation issue ([#1556](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1556)) ([784a422](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/784a4225182037b4233aefb43c7a104eab1ac818))
+
 ## [0.31.4](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-fastify-v0.31.3...instrumentation-fastify-v0.31.4) (2023-06-12)
 
 
