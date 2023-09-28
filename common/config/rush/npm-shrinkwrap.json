@@ -7935,7 +7935,7 @@
     "node_modules/@rush-temp/sandbox-instrumentation-page-view": {
       "version": "0.0.0",
       "resolved": "file:projects/sandbox-instrumentation-page-view.tgz",
-      "integrity": "sha512-jhpyz6v9CF4M4RPNd6d8CITNJRncTey9Ad9W8vlvFGPfNeSZKBJEBnxKLUxYKoqyGijlnPvJJalPGiwdEhwCsg==",
+      "integrity": "sha512-1cGkWOIAYi/680dMamOiCOUhTRaFBPiNTH6B5nfXvK0t1wprMBzOIq6KPIrbXGBH355B3QZxG+AjguPjct5Ghw==",
       "dependencies": {
         "@babel/core": "7.15.0",
         "@jsdevtools/coverage-istanbul-loader": "3.0.5",
@@ -7947,6 +7947,7 @@
         "@typescript-eslint/eslint-plugin": "5.3.1",
         "@typescript-eslint/parser": "5.3.1",
         "babel-loader": "8.2.2",
+        "babel-plugin-istanbul": "6.1.1",
         "chromium": "^3.0.3",
         "eslint": "7.32.0",
         "eslint-config-prettier": "8.5.0",
@@ -19436,9 +19437,9 @@
       "integrity": "sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow=="
     },
     "node_modules/electron-to-chromium": {
-      "version": "1.4.535",
-      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.535.tgz",
-      "integrity": "sha512-4548PpR4S5X5dlvX8NUIw0njH7btQtBoJWcgzpq7n2F9NQ5gMXOPP/6p6iVx6+YT3FVioNhEGa14WJj1k+2SfA=="
+      "version": "1.4.536",
+      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.536.tgz",
+      "integrity": "sha512-L4VgC/76m6y8WVCgnw5kJy/xs7hXrViCFdNKVG8Y7B2isfwrFryFyJzumh3ugxhd/oB1uEaEEvRdmeLrnd7OFA=="
     },
     "node_modules/elliptic": {
       "version": "6.5.4",
