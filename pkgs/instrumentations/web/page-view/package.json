@@ -59,9 +59,9 @@
   "devDependencies": {
     "@babel/core": "7.15.0",
     "@jsdevtools/coverage-istanbul-loader": "3.0.5",
-    "@opentelemetry/sandbox-api": "1.4.1",
-    "@opentelemetry/sandbox-sdk-logs": "0.40.0",
-    "@opentelemetry/sandbox-sdk-events": "0.40.0",
+    "@opentelemetry/sandbox-api": "1.6.0",
+    "@opentelemetry/sandbox-sdk-logs": "0.43.0",
+    "@opentelemetry/sandbox-sdk-events": "0.43.0",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
@@ -104,8 +104,8 @@
     "webpack-merge": "5.8.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-instrumentation": "0.40.0",
-    "@opentelemetry/sandbox-api-events": "0.40.0"
+    "@opentelemetry/sandbox-instrumentation": "0.43.0",
+    "@opentelemetry/sandbox-api-events": "0.43.0"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js-contrib/tree/main/plugins/web/opentelemetry-instrumentation-page-view#readme"
 }
