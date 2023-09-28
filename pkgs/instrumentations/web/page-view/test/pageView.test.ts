@@ -43,7 +43,6 @@ describe('PageView Instrumentation', () => {
 
   afterEach(() => {
     exporter.reset();
-    sandbox.restore();
     plugin.disable();
   });
 
