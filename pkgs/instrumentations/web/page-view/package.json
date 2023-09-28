@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-instrumentation-page-view",
-  "version": "0.38.0",
+  "version": "0.43.0",
   "description": "OpenTelemetry Page View Event instrumentation package.",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -60,6 +60,7 @@
     "@babel/core": "7.15.0",
     "@jsdevtools/coverage-istanbul-loader": "3.0.5",
     "@opentelemetry/sandbox-api": "1.6.0",
+    "@opentelemetry/sandbox-api-logs": "0.43.0",
     "@opentelemetry/sandbox-sdk-logs": "0.43.0",
     "@opentelemetry/sandbox-sdk-events": "0.43.0",
     "@types/jquery": "^3.5.14",
