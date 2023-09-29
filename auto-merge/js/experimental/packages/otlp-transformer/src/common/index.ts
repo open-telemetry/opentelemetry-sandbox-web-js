@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Middleware, DefaultState } from 'koa';
-import { KoaContext } from './types';
-import type * as Router from '@koa/router';
 
-export type KoaMiddleware = Middleware<DefaultState, KoaContext> & {
-  router?: Router;
-};
+import type { IFixed64 } from './types';
+import { HrTime } from '@opentelemetry/api';
+import { UnsignedLong } from './unsigned_long';
 
-/**
- * This symbol is used to mark a Koa layer as being already instrumented
- * since its possible to use a given layer multiple times (ex: middlewares)
- */
-export const kLayerPatched: unique symbol = Symbol('koa-layer-patched');
+export * from './unsigned_long';
 
-export type KoaPatchedMiddleware = KoaMiddleware & {
-  [kLayerPatched]?: boolean;
-};
+const NANOSECONDS = UnsignedLong.fromU32(1_000_000_000);
+
+export function hrTimeToFixed64Nanos(hrTime: HrTime): IFixed64 {
+  return UnsignedLong.fromU32(hrTime[0])
+    .multiply(NANOSECONDS)
+    .add(UnsignedLong.fromU32(hrTime[1]));
+}
