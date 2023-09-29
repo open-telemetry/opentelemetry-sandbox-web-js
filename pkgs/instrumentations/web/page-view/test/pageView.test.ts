@@ -29,7 +29,6 @@ import { logs } from '@opentelemetry/sandbox-api-logs';
 import { events } from '@opentelemetry/sandbox-api-events';
 import { PageTypes } from '../src/enums/PageTypes';
 
-
 describe('PageView Instrumentation', () => {
   let plugin: PageViewEventInstrumentation;
   const sandbox = sinon.createSandbox();

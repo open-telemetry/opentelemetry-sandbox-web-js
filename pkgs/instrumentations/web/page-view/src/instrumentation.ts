@@ -50,7 +50,7 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
       'browser',
       VERSION
     );
-    this.applyCustomEventData = config.applyCustomEventData;
+    this.applyCustomEventData = config?.applyCustomEventData;
   }
 
   init() {}
