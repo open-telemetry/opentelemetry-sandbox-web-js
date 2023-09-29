@@ -29,6 +29,7 @@ import { logs } from '@opentelemetry/sandbox-api-logs';
 import { events } from '@opentelemetry/sandbox-api-events';
 import { PageTypes } from '../src/enums/PageTypes';
 
+
 describe('PageView Instrumentation', () => {
   let plugin: PageViewEventInstrumentation;
   const sandbox = sinon.createSandbox();
@@ -42,7 +43,9 @@ describe('PageView Instrumentation', () => {
   events.setGlobalEventEmitterProvider(eventEmitterProvider);
 
   afterEach(() => {
+    console.log("Running afterEach");
     exporter.reset();
+    console.log("Records after reset: ", exporter.getFinishedLogRecords());
     plugin.disable();
   });
 
@@ -105,7 +108,6 @@ describe('PageView Instrumentation', () => {
       });
 
       history.pushState({}, '', '/dummy1.html');
-
       assert.strictEqual(exporter.getFinishedLogRecords().length, 1);
 
       const pageViewLogRecord =
@@ -234,7 +236,6 @@ describe('PageView Instrumentation', () => {
         (<Attributes>pageViewLogRecord2.attributes['event.data'])['referrer'],
         secondReferrer
       );
-
       done();
     });
   });
