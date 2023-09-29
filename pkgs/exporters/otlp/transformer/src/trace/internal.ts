@@ -1,0 +1,78 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import type { Link } from '@opentelemetry/sandbox-api';
+import type { ReadableSpan, TimedEvent } from '@opentelemetry/sandbox-sdk-trace-base';
+import { hrTimeToFixed64Nanos } from '../common';
+import { toAttributes } from '../common/internal';
+import { EStatusCode, IEvent, ILink, ISpan } from './types';
+import * as core from '@opentelemetry/sandbox-core';
+
+export function sdkSpanToOtlpSpan(span: ReadableSpan, useHex?: boolean): ISpan {
+  const ctx = span.spanContext();
+  const status = span.status;
+  const parentSpanId = useHex
+    ? span.parentSpanId
+    : span.parentSpanId != null
+    ? core.hexToBase64(span.parentSpanId)
+    : undefined;
+  return {
+    traceId: useHex ? ctx.traceId : core.hexToBase64(ctx.traceId),
+    spanId: useHex ? ctx.spanId : core.hexToBase64(ctx.spanId),
+    parentSpanId: parentSpanId,
+    traceState: ctx.traceState?.serialize(),
+    name: span.name,
+    // Span kind is offset by 1 because the API does not define a value for unset
+    kind: span.kind == null ? 0 : span.kind + 1,
+    startTimeUnixNano: hrTimeToFixed64Nanos(span.startTime),
+    endTimeUnixNano: hrTimeToFixed64Nanos(span.endTime),
+    attributes: toAttributes(span.attributes),
+    droppedAttributesCount: span.droppedAttributesCount,
+    events: span.events.map(toOtlpSpanEvent),
+    droppedEventsCount: span.droppedEventsCount,
+    status: {
+      // API and proto enums share the same values
+      code: status.code as unknown as EStatusCode,
+      message: status.message,
+    },
+    links: span.links.map(link => toOtlpLink(link, useHex)),
+    droppedLinksCount: span.droppedLinksCount,
+  };
+}
+
+export function toOtlpLink(link: Link, useHex?: boolean): ILink {
+  return {
+    attributes: link.attributes ? toAttributes(link.attributes) : [],
+    spanId: useHex
+      ? link.context.spanId
+      : core.hexToBase64(link.context.spanId),
+    traceId: useHex
+      ? link.context.traceId
+      : core.hexToBase64(link.context.traceId),
+    traceState: link.context.traceState?.serialize(),
+    droppedAttributesCount: link.droppedAttributesCount || 0,
+  };
+}
+
+export function toOtlpSpanEvent(timedEvent: TimedEvent): IEvent {
+  return {
+    attributes: timedEvent.attributes
+      ? toAttributes(timedEvent.attributes)
+      : [],
+    name: timedEvent.name,
+    timeUnixNano: hrTimeToFixed64Nanos(timedEvent.time),
+    droppedAttributesCount: timedEvent.droppedAttributesCount || 0,
+  };
+}
