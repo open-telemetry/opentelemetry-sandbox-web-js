@@ -51,7 +51,6 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
       VERSION
     );
     this.applyCustomEventData = config.applyCustomEventData;
-    this._patchHistoryApi();
   }
 
   init() {}
@@ -112,6 +111,7 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
    * implements enable function
    */
   override enable() {
+    this._patchHistoryApi();
     // remove previously attached load to avoid adding the same event twice
     // in case of multiple enable calling.
     document.removeEventListener(
@@ -125,6 +125,7 @@ export class PageViewEventInstrumentation extends InstrumentationBase<unknown> {
    * implements disable function
    */
   override disable() {
+    this._unpatchHistoryApi();
     document.removeEventListener(
       'DOMContentLoaded',
       this._onPageView.bind(this)
