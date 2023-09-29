@@ -43,9 +43,7 @@ describe('PageView Instrumentation', () => {
   events.setGlobalEventEmitterProvider(eventEmitterProvider);
 
   afterEach(() => {
-    console.log("Running afterEach");
     exporter.reset();
-    console.log("Records after reset: ", exporter.getFinishedLogRecords());
     plugin.disable();
   });
 
