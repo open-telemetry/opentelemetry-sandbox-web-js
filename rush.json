@@ -160,6 +160,11 @@
       "shouldPublish": true
     },
     {
+      "packageName": "@opentelemetry/sandbox-instrumentation-page-view",
+      "projectFolder": "pkgs/instrumentations/web/page-view",
+      "shouldPublish": true
+    },
+    {
       "packageName": "web-opentelemetry-example",
       "projectFolder": "examples/web/js",
       "shouldPublish": false
