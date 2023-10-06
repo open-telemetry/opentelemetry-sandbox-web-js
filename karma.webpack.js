@@ -31,13 +31,15 @@ module.exports = {
         exclude: /(node_modules|\.test\.[tj]sx?$)/,
         test: /\.ts$/,
         use: {
-          loader: 'istanbul-instrumenter-loader',
-          options: { esModules: true }
-        }
+          loader: 'babel-loader',
+          options: {
+            plugins: ['babel-plugin-istanbul'],
+          }
+        },
       },
       // This setting configures Node polyfills for the browser that will be
       // added to the webpack bundle for Karma tests.
-      { parser: { node: webpackNodePolyfills } }
-    ]
-  }
+      { parser: { node: webpackNodePolyfills } },
+    ],
+  },
 };

@@ -131,10 +131,19 @@ function getFileStatus(status: StatusResult, name: string): FileStatusResult {
                     conflicted
                 ]);
 
-                await git.raw([
-                    "add",
-                    "-f",
-                    conflicted]);
+                try {
+                    await git.raw([
+                        "add",
+                        "-f",
+                        conflicted]);
+                } catch (e) {
+                    if (!conflicted.endsWith("/protos")) {
+                        throw e;
+                    } else {
+                        log(` - !! Ignoring git add for known submodule folder - ${conflicted}`);
+                        await git.rm(conflicted);
+                    }
+                }
             } else {
                 commitMessage = logAppendMessage(gitRoot, commitMessage, fileStatus, `Removed from ${fileStatus.working_dir === "D" ? "both" : "theirs"}`);
                 await git.rm(conflicted);
@@ -158,10 +167,19 @@ function getFileStatus(status: StatusResult, name: string): FileStatusResult {
                     conflicted
                 ]);
 
-                await git.raw([
-                    "add",
-                    "-f",
-                    conflicted]);
+                try {
+                    await git.raw([
+                        "add",
+                        "-f",
+                        conflicted]);
+                } catch (e) {
+                    if (!conflicted.endsWith("/protos")) {
+                        throw e;
+                    } else {
+                        log(` - !! Ignoring git add for known submodule folder - ${conflicted}`);
+                        await git.rm(conflicted);
+                    }
+                }
             } else if (fileStatus.working_dir === "M") {
                 commitMessage = logAppendMessage(gitRoot, commitMessage, fileStatus, "Added in theirs, modified in ours => checkout theirs");
                 await git.checkout([

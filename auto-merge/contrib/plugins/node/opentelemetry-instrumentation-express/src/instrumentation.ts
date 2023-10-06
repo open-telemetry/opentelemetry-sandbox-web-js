@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { setRPCMetadata, getRPCMetadata, RPCType } from '@opentelemetry/core';
+import { getRPCMetadata, RPCType } from '@opentelemetry/core';
 import { trace, context, diag, SpanAttributes } from '@opentelemetry/api';
 import type * as express from 'express';
 import { ExpressInstrumentationConfig, ExpressRequestInfo } from './types';
@@ -186,6 +186,7 @@ export class ExpressInstrumentation extends InstrumentationBase<
         const route = (req[_LAYERS_STORE_PROPERTY] as string[])
           .filter(path => path !== '/' && path !== '/*')
           .join('');
+
         const attributes: SpanAttributes = {
           [SemanticAttributes.HTTP_ROUTE]: route.length > 0 ? route : '/',
         };
@@ -194,22 +195,9 @@ export class ExpressInstrumentation extends InstrumentationBase<
           AttributeNames.EXPRESS_TYPE
         ] as ExpressLayerType;
 
-        // Rename the root http span in case we haven't done it already
-        // once we reach the request handler
         const rpcMetadata = getRPCMetadata(context.active());
-        if (
-          metadata.attributes[AttributeNames.EXPRESS_TYPE] ===
-            ExpressLayerType.REQUEST_HANDLER &&
-          rpcMetadata?.type === RPCType.HTTP
-        ) {
-          const name = instrumentation._getSpanName(
-            {
-              request: req,
-              route,
-            },
-            `${req.method} ${route.length > 0 ? route : '/'}`
-          );
-          rpcMetadata.span.updateName(name);
+        if (rpcMetadata?.type === RPCType.HTTP) {
+          rpcMetadata.route = route || '/';
         }
 
         // verify against the config if the layer should be ignored
@@ -219,6 +207,7 @@ export class ExpressInstrumentation extends InstrumentationBase<
           }
           return original.apply(this, arguments);
         }
+
         if (trace.getSpan(context.active()) === undefined) {
           return original.apply(this, arguments);
         }
@@ -267,16 +256,10 @@ export class ExpressInstrumentation extends InstrumentationBase<
             span.end();
           }
         };
+
         // verify we have a callback
         const args = Array.from(arguments);
         const callbackIdx = args.findIndex(arg => typeof arg === 'function');
-        const newContext =
-          rpcMetadata?.type === RPCType.HTTP
-            ? setRPCMetadata(
-                context.active(),
-                Object.assign(rpcMetadata, { route: route })
-              )
-            : context.active();
         if (callbackIdx >= 0) {
           arguments[callbackIdx] = function () {
             if (spanHasEnded === false) {
@@ -288,7 +271,7 @@ export class ExpressInstrumentation extends InstrumentationBase<
               (req[_LAYERS_STORE_PROPERTY] as string[]).pop();
             }
             const callback = args[callbackIdx] as Function;
-            return context.bind(newContext, callback).apply(this, arguments);
+            return callback.apply(this, arguments);
           };
         }
         const result = original.apply(this, arguments);

@@ -49,6 +49,10 @@ class DummySpanExporter implements tracing.SpanExporter {
   shutdown() {
     return Promise.resolve();
   }
+
+  forceFlush(): Promise<void> {
+    return Promise.resolve();
+  }
 }
 
 const getData = (url: string, method?: string) => {
@@ -135,6 +139,19 @@ function createFakePerformanceObs(url: string) {
   return FakePerfObs;
 }
 
+function testForCorrectEvents(
+  events: tracing.TimedEvent[],
+  eventNames: string[]
+) {
+  for (let i = 0; i < events.length; i++) {
+    assert.strictEqual(
+      events[i].name,
+      eventNames[i],
+      `event ${eventNames[i]} is not defined`
+    );
+  }
+}
+
 describe('fetch', () => {
   let contextManager: ZoneContextManager;
   let lastResponse: any | undefined;
@@ -148,6 +165,7 @@ describe('fetch', () => {
   let fetchInstrumentation: FetchInstrumentation;
 
   const url = 'http://localhost:8090/get';
+  const secureUrl = 'https://localhost:8090/get';
   const badUrl = 'http://foo.bar.com/get';
 
   const clearData = () => {
@@ -395,53 +413,17 @@ describe('fetch', () => {
     it('span should have correct events', () => {
       const span: tracing.ReadableSpan = exportSpy.args[1][0][0];
       const events = span.events;
-      assert.strictEqual(events.length, 9, 'number of events is wrong');
-
-      assert.strictEqual(
-        events[0].name,
+      assert.strictEqual(events.length, 8, 'number of events is wrong');
+      testForCorrectEvents(events, [
         PTN.FETCH_START,
-        `event ${PTN.FETCH_START} is not defined`
-      );
-      assert.strictEqual(
-        events[1].name,
         PTN.DOMAIN_LOOKUP_START,
-        `event ${PTN.DOMAIN_LOOKUP_START} is not defined`
-      );
-      assert.strictEqual(
-        events[2].name,
         PTN.DOMAIN_LOOKUP_END,
-        `event ${PTN.DOMAIN_LOOKUP_END} is not defined`
-      );
-      assert.strictEqual(
-        events[3].name,
         PTN.CONNECT_START,
-        `event ${PTN.CONNECT_START} is not defined`
-      );
-      assert.strictEqual(
-        events[4].name,
-        PTN.SECURE_CONNECTION_START,
-        `event ${PTN.SECURE_CONNECTION_START} is not defined`
-      );
-      assert.strictEqual(
-        events[5].name,
         PTN.CONNECT_END,
-        `event ${PTN.CONNECT_END} is not defined`
-      );
-      assert.strictEqual(
-        events[6].name,
         PTN.REQUEST_START,
-        `event ${PTN.REQUEST_START} is not defined`
-      );
-      assert.strictEqual(
-        events[7].name,
         PTN.RESPONSE_START,
-        `event ${PTN.RESPONSE_START} is not defined`
-      );
-      assert.strictEqual(
-        events[8].name,
         PTN.RESPONSE_END,
-        `event ${PTN.RESPONSE_END} is not defined`
-      );
+      ]);
     });
 
     it('should create a span for preflight request', () => {
@@ -475,53 +457,17 @@ describe('fetch', () => {
     it('preflight request span should have correct events', () => {
       const span: tracing.ReadableSpan = exportSpy.args[0][0][0];
       const events = span.events;
-      assert.strictEqual(events.length, 9, 'number of events is wrong');
-
-      assert.strictEqual(
-        events[0].name,
+      assert.strictEqual(events.length, 8, 'number of events is wrong');
+      testForCorrectEvents(events, [
         PTN.FETCH_START,
-        `event ${PTN.FETCH_START} is not defined`
-      );
-      assert.strictEqual(
-        events[1].name,
         PTN.DOMAIN_LOOKUP_START,
-        `event ${PTN.DOMAIN_LOOKUP_START} is not defined`
-      );
-      assert.strictEqual(
-        events[2].name,
         PTN.DOMAIN_LOOKUP_END,
-        `event ${PTN.DOMAIN_LOOKUP_END} is not defined`
-      );
-      assert.strictEqual(
-        events[3].name,
         PTN.CONNECT_START,
-        `event ${PTN.CONNECT_START} is not defined`
-      );
-      assert.strictEqual(
-        events[4].name,
-        PTN.SECURE_CONNECTION_START,
-        `event ${PTN.SECURE_CONNECTION_START} is not defined`
-      );
-      assert.strictEqual(
-        events[5].name,
         PTN.CONNECT_END,
-        `event ${PTN.CONNECT_END} is not defined`
-      );
-      assert.strictEqual(
-        events[6].name,
         PTN.REQUEST_START,
-        `event ${PTN.REQUEST_START} is not defined`
-      );
-      assert.strictEqual(
-        events[7].name,
         PTN.RESPONSE_START,
-        `event ${PTN.RESPONSE_START} is not defined`
-      );
-      assert.strictEqual(
-        events[8].name,
         PTN.RESPONSE_END,
-        `event ${PTN.RESPONSE_END} is not defined`
-      );
+      ]);
     });
 
     it('should set trace headers', () => {
@@ -632,6 +578,51 @@ describe('fetch', () => {
           'headers inject skipped due to CORS policy'
         );
       });
+    });
+  });
+
+  describe('when request is secure and successful', () => {
+    beforeEach(async () => {
+      const propagateTraceHeaderCorsUrls = [secureUrl];
+      await prepareData(secureUrl, { propagateTraceHeaderCorsUrls });
+    });
+
+    afterEach(() => {
+      clearData();
+    });
+
+    it('span should have correct events', () => {
+      const span: tracing.ReadableSpan = exportSpy.args[1][0][0];
+      const events = span.events;
+      assert.strictEqual(events.length, 9, 'number of events is wrong');
+      testForCorrectEvents(events, [
+        PTN.FETCH_START,
+        PTN.DOMAIN_LOOKUP_START,
+        PTN.DOMAIN_LOOKUP_END,
+        PTN.CONNECT_START,
+        PTN.SECURE_CONNECTION_START,
+        PTN.CONNECT_END,
+        PTN.REQUEST_START,
+        PTN.RESPONSE_START,
+        PTN.RESPONSE_END,
+      ]);
+    });
+
+    it('preflight request span should have correct events', () => {
+      const span: tracing.ReadableSpan = exportSpy.args[0][0][0];
+      const events = span.events;
+      assert.strictEqual(events.length, 9, 'number of events is wrong');
+      testForCorrectEvents(events, [
+        PTN.FETCH_START,
+        PTN.DOMAIN_LOOKUP_START,
+        PTN.DOMAIN_LOOKUP_END,
+        PTN.CONNECT_START,
+        PTN.SECURE_CONNECTION_START,
+        PTN.CONNECT_END,
+        PTN.REQUEST_START,
+        PTN.RESPONSE_START,
+        PTN.RESPONSE_END,
+      ]);
     });
   });
 
@@ -811,13 +802,18 @@ describe('fetch', () => {
         `Wrong number of spans: ${exportSpy.args.length}`
       );
 
-      assert.strictEqual(events.length, 9, 'number of events is wrong');
+      assert.strictEqual(events.length, 8, 'number of events is wrong');
 
-      assert.strictEqual(
-        events[6].name,
+      testForCorrectEvents(events, [
+        PTN.FETCH_START,
+        PTN.DOMAIN_LOOKUP_START,
+        PTN.DOMAIN_LOOKUP_END,
+        PTN.CONNECT_START,
+        PTN.CONNECT_END,
         PTN.REQUEST_START,
-        `event ${PTN.REQUEST_START} is not defined`
-      );
+        PTN.RESPONSE_START,
+        PTN.RESPONSE_END,
+      ]);
     });
   });
 
@@ -840,12 +836,17 @@ describe('fetch', () => {
         `Wrong number of spans: ${exportSpy.args.length}`
       );
 
-      assert.strictEqual(events.length, 9, 'number of events is wrong');
-      assert.strictEqual(
-        events[6].name,
+      assert.strictEqual(events.length, 8, 'number of events is wrong');
+      testForCorrectEvents(events, [
+        PTN.FETCH_START,
+        PTN.DOMAIN_LOOKUP_START,
+        PTN.DOMAIN_LOOKUP_END,
+        PTN.CONNECT_START,
+        PTN.CONNECT_END,
         PTN.REQUEST_START,
-        `event ${PTN.REQUEST_START} is not defined`
-      );
+        PTN.RESPONSE_START,
+        PTN.RESPONSE_END,
+      ]);
     });
 
     it('should have an absolute http.url attribute', () => {
@@ -878,12 +879,17 @@ describe('fetch', () => {
         2,
         `Wrong number of spans: ${exportSpy.args.length}`
       );
-      assert.strictEqual(events.length, 9, 'number of events is wrong');
-      assert.strictEqual(
-        events[6].name,
+      assert.strictEqual(events.length, 8, 'number of events is wrong');
+      testForCorrectEvents(events, [
+        PTN.FETCH_START,
+        PTN.DOMAIN_LOOKUP_START,
+        PTN.DOMAIN_LOOKUP_END,
+        PTN.CONNECT_START,
+        PTN.CONNECT_END,
         PTN.REQUEST_START,
-        `event ${PTN.REQUEST_START} is not defined`
-      );
+        PTN.RESPONSE_START,
+        PTN.RESPONSE_END,
+      ]);
     });
   });
 
