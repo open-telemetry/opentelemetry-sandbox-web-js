@@ -1,75 +1,46 @@
-# OpenTelemetry Fetch Instrumentation for web
+# OpenTelemetry Web Vitals Instrumentation for web
 
 [![NPM Published Version][npm-img]][npm-url]
 [![Apache License][license-image]][license-image]
 
 **Note: This is an experimental package under active development. New releases may include breaking changes.**
 
-This module provides auto instrumentation for web using fetch.
+This module provides auto instrumentation for web using google core web vitals
 
 ## Installation
 
 ```bash
-npm install --save @opentelemetry/instrumentation-fetch
+npm install --save @opentelemetry/instrumentation-web-vitals
 ```
 
 ## Usage
 
 ```js
 import {
-  ConsoleSpanExporter,
-  SimpleSpanProcessor,
-  WebTracerProvider,
-} from '@opentelemetry/sandbox-sdk-trace-web';
-import { FetchInstrumentation } from '@opentelemetry/sandbox-instrumentation-fetch';
-import { ZoneContextManager } from '@opentelemetry/sandbox-context-zone';
+    LoggerProvider,
+    ConsoleLogRecordExporter,
+    SimpleLogRecordProcessor,
+} from '@opentelemetry/sandbox-sdk-logs';
+import {
+    EventEmitterProvider
+} from '@opentelemetry/sandbox-sdk-events';
+import { WebVitalsInstrumentation } from '@opentelemetry/sandbox-instrumentation-web-vitals';
 import { registerInstrumentations } from '@opentelemetry/sandbox-instrumentation';
+import { logs } from '@opentelemetry/sandbox-api-logs';
+import { logs } from '@opentelemetry/sandbox-api-events';
 
-const provider = new WebTracerProvider();
-
-provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
-
-provider.register({
-  contextManager: new ZoneContextManager(),
-});
+const exporter = new ConsoleLogRecordExporter();
+const provider = new LoggerProvider();
+const logRecordProcessor = new SimpleLogRecordProcessor(exporter);
+provider.addLogRecordProcessor(logRecordProcessor);
+logs.setGlobalLoggerProvider(provider);
+const eventEmitterProvider = new EventEmitterProvider();
+events.setGlobalEventEmitterProvider(eventEmitterProvider);
 
 registerInstrumentations({
-  instrumentations: [new FetchInstrumentation()],
+  instrumentations: [new WebVitalsInstrumentation()],
 });
-
-// or plugin can be also initialised separately and then set the tracer provider or meter provider
-const fetchInstrumentation = new FetchInstrumentation();
-const provider = new WebTracerProvider();
-provider.register({
-  contextManager: new ZoneContextManager(),
-});
-fetchInstrumentation.setTracerProvider(provider);
-
-provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
-
-
-// and some test
-
-fetch('http://localhost:8090/fetch.js');
-
 ```
-
-## Example Screenshots
-
-![Screenshot of the running example](images/trace1.png)
-![Screenshot of the running example](images/trace2.png)
-![Screenshot of the running example](images/trace3.png)
-
-See [examples/tracer-web/fetch](https://github.com/open-telemetry/opentelemetry-js/tree/main/examples/tracer-web) for a short example.
-
-### Fetch Instrumentation options
-
-Fetch instrumentation plugin has few options available to choose from. You can set the following:
-
-| Options                                                                                                                                                                  | Type                          | Description                                                                             |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|-----------------------------------------------------------------------------------------|
-| [`applyCustomAttributesOnSpan`](https://github.com/open-telemetry/opentelemetry-js/blob/main/experimental/packages/opentelemetry-instrumentation-fetch/src/fetch.ts#L64) | `HttpCustomAttributeFunction` | Function for adding custom attributes                                                   |
-| [`ignoreNetworkEvents`](https://github.com/open-telemetry/opentelemetry-js/blob/main/experimental/packages/opentelemetry-instrumentation-fetch/src/fetch.ts#L67)                      | `boolean`                     | Disable network events being added as span events (network events are added by default) |
 
 ## Useful links
 
@@ -84,5 +55,5 @@ Apache 2.0 - See [LICENSE][license-url] for more information.
 [discussions-url]: https://github.com/open-telemetry/opentelemetry-js/discussions
 [license-url]: https://github.com/open-telemetry/opentelemetry-js/blob/main/LICENSE
 [license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat
-[npm-url]: https://www.npmjs.com/package/@opentelemetry/instrumentation-fetch
-[npm-img]: https://badge.fury.io/js/%40opentelemetry%2Finstrumentation-fetch.svg
+[npm-url]: https://www.npmjs.com/package/@opentelemetry/instrumentation-web-vitals
+[npm-img]: https://badge.fury.io/js/%40opentelemetry%2Finstrumentation-web-vitals.svg

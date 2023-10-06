@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-instrumentation-web-vitals",
-  "version": "0.38.0",
+  "version": "0.43.0",
   "description": "OpenTelemetry web vitals automatic instrumentation package.",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -8,25 +8,24 @@
   "types": "build/src/index.d.ts",
   "repository": "open-telemetry/opentelemetry-js",
   "scripts": {
-    "build": "npm run lint:fix-quiet && npm run version && tsc --build tsconfig.json tsconfig.esm.json tsconfig.esnext.json && npm run package",
-    "clean": "tsc --build --clean tsconfig.json tsconfig.esm.json tsconfig.esnext.json",
-    "codecov:browser": "nyc report --reporter=json && codecov -f coverage/*.json -p ../../../",
-    "compile": "npm run build",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "npm run lint -- --fix",
-    "lint:fix-quiet": "npm run lint -- --fix --quiet",
-    "package": "npx rollup -c ./rollup.config.js --bundleConfigAsCjs",
-    "peer-api-check": "node ../../../scripts/peer-api-check.js",
-    "prepublishOnly": "npm run compile",
-    "rebuild": "npm run build",
-    "tdd": "karma start",
-    "test": "npm run test:node && npm run test:browser && npm run test:webworker",
-    "test:browser": "nyc karma start ./karma.conf.js --single-run",
-    "test:debug": "nyc karma start ./karma.debug.conf.js --wait",
-    "test:node": "",
-    "test:webworker": "",
-    "version": "node ../../../../scripts/version-update.js",
-    "watch": "npm run version && tsc --build --watch tsconfig.json tsconfig.esm.json tsconfig.esnext.json"
+      "build": "npm run compile && npm run package",
+      "clean": "tsc --build --clean tsconfig.json tsconfig.esm.json",
+      "compile": "npm run lint:fix-quiet && npm run version && tsc --build tsconfig.json tsconfig.esm.json",
+      "lint": "eslint . --ext .ts",
+      "lint:fix": "eslint . --ext .ts --fix",
+      "lint:fix-quiet": "eslint . --ext .ts --fix --quiet",
+      "package": "npx rollup -c ./rollup.config.js --bundleConfigAsCjs",
+      "prepare": "npm run compile",
+      "rebuild": "npm run clean && npm run build",
+      "tdd": "karma start",
+      "test": "npm run test:node && npm run test:browser && npm run test:webworker",
+      "test:browser": "nyc karma start ./karma.conf.js --single-run",
+      "test:debug": "nyc karma start ./karma.debug.conf.js --wait",
+      "test:node": "",
+      "test:webworker": "",
+      "version": "node ../../../../scripts/version-update.js",
+      "version:update": "node ../../../scripts/version-update.js",
+      "watch": "npm run version && tsc --build --watch tsconfig.json tsconfig.esm.json"
   },
   "keywords": [
     "web-vitals",
@@ -61,10 +60,6 @@
   },
   "devDependencies": {
     "@babel/core": "7.16.0",
-    "@opentelemetry/sandbox-api": "1.4.1",
-    "@opentelemetry/sandbox-context-zone": "1.12.0",
-    "@opentelemetry/sandbox-propagator-b3": "1.12.0",
-    "@opentelemetry/sandbox-sdk-trace-base": "1.12.0",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
@@ -73,6 +68,7 @@
     "@typescript-eslint/eslint-plugin": "5.3.1",
     "@typescript-eslint/parser": "5.3.1",
     "babel-loader": "8.2.3",
+    "babel-plugin-istanbul": "6.1.1",
     "chromium": "^3.0.3",
     "codecov": "^3.8.3",
     "eslint": "7.32.0",
@@ -106,13 +102,12 @@
     "webpack-merge": "5.8.0"
   },
   "peerDependencies": {
-    "@opentelemetry/sandbox-api": "1.4.1"
+    "@opentelemetry/sandbox-api": "1.6.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-core": "1.12.0",
-    "@opentelemetry/sandbox-instrumentation": "0.38.0",
-    "@opentelemetry/sandbox-sdk-trace-web": "1.12.0",
-    "@opentelemetry/sandbox-semantic-conventions": "1.12.0"
+    "@opentelemetry/sandbox-api-events": "0.43.0",
+    "@opentelemetry/sandbox-instrumentation": "0.43.0",
+    "web-vitals": "^3.5.0"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/experimental/packages/opentelemetry-instrumentation-fetch",
   "sideEffects": false
