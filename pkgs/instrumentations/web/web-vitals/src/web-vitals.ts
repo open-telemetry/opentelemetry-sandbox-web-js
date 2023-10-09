@@ -41,6 +41,9 @@ export class WebVitalsInstrumentation extends InstrumentationBase {
     this._durationThreshold = config?.durationThreshold;
     this.applyCustomEventData = config?.applyCustomEventData;
     this.emitter = events.getEventEmitter('web-vitals', VERSION, 'browser');
+    if (config?.enabled !== false) {
+      this.enable();
+    }
   }
 
   private _onReport = (metric: Metric) => {
@@ -67,12 +70,14 @@ export class WebVitalsInstrumentation extends InstrumentationBase {
   }
 
   override enable() {
-    this._metricsToTrack.forEach(metric => {
-      webVitals[`on${metric}`](this._onReport, {
-        reportAllChanges: this._reportAllChanges,
-        durationThreshold: this._durationThreshold,
+    if (this._metricsToTrack) {
+      this._metricsToTrack.forEach(metric => {
+        webVitals[`on${metric}`](this._onReport, {
+          reportAllChanges: this._reportAllChanges,
+          durationThreshold: this._durationThreshold,
+        });
       });
-    });
+    }
   }
 
   init(): void {}

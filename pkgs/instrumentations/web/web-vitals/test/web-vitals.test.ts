@@ -17,7 +17,6 @@ import * as assert from 'assert';
 import * as sinon from 'sinon';
 import { registerInstrumentations } from '@opentelemetry/sandbox-instrumentation';
 import { WebVitalsInstrumentation } from '../src';
-// import * as webVitals from 'web-vitals';
 // import { events } from '@opentelemetry/sandbox-api-events';
 // import { VERSION } from '../src/version';
 
@@ -50,10 +49,10 @@ describe('WebVitalsInstrumentation', () => {
 
   // it('should register CLS metric when enabled', () => {
   //   webVitalsInstrumentation.enable();
-  //   const clsSpy = sandbox.stub(webVitals, 'onCLS').returns();
+  //   const clsSpy = sandbox.spy(webVitals, 'onCLS');
   //   assert(clsSpy.calledOnce);
   // });
-  //
+
   // it('should register FID metric when enabled', () => {
   //   const fidspy = sandbox.spy(webVitals, 'onFID');
   //   webVitalsInstrumentation.enable();
