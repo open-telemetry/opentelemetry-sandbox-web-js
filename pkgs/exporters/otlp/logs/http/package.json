@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-exporter-logs-otlp-http",
-  "version": "0.43.0",
+  "version": "0.44.0",
   "publishConfig": {
     "access": "public"
   },
@@ -78,7 +78,7 @@
   "devDependencies": {
     "@babel/core": "7.22.20",
     "@opentelemetry/sandbox-api": "1.6.0",
-    "@opentelemetry/sandbox-resources": "1.17.0",
+    "@opentelemetry/sandbox-resources": "1.17.1",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
@@ -128,10 +128,10 @@
     "@opentelemetry/sandbox-api": "1.6.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-api-logs": "0.43.0",
-    "@opentelemetry/sandbox-core": "1.17.0",
-    "@opentelemetry/sandbox-otlp-exporter-base": "0.43.0",
-    "@opentelemetry/sandbox-otlp-transformer": "0.43.0",
-    "@opentelemetry/sandbox-sdk-logs": "0.43.0"
+    "@opentelemetry/sandbox-api-logs": "0.44.0",
+    "@opentelemetry/sandbox-core": "1.17.1",
+    "@opentelemetry/sandbox-otlp-exporter-base": "0.44.0",
+    "@opentelemetry/sandbox-otlp-transformer": "0.44.0",
+    "@opentelemetry/sandbox-sdk-logs": "0.44.0"
   }
 }
