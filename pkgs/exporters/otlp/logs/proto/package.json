@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-exporter-logs-otlp-proto",
-  "version": "0.43.0",
+  "version": "0.44.0",
   "description": "An OTLP exporter to send logs using protobuf over HTTP",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -119,14 +119,14 @@
     "@opentelemetry/sandbox-api": "1.6.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-api-logs": "0.43.0",
-    "@opentelemetry/sandbox-core": "1.17.0",
-    "@opentelemetry/sandbox-otlp-exporter-base": "0.43.0",
-    "@opentelemetry/sandbox-otlp-proto-exporter-base": "0.43.0",
-    "@opentelemetry/sandbox-otlp-transformer": "0.43.0",
-    "@opentelemetry/sandbox-resources": "1.17.0",
-    "@opentelemetry/sandbox-sdk-logs": "0.43.0",
-    "@opentelemetry/sandbox-sdk-trace-base": "1.17.0"
+    "@opentelemetry/sandbox-api-logs": "0.44.0",
+    "@opentelemetry/sandbox-core": "1.17.1",
+    "@opentelemetry/sandbox-otlp-exporter-base": "0.44.0",
+    "@opentelemetry/sandbox-otlp-proto-exporter-base": "0.44.0",
+    "@opentelemetry/sandbox-otlp-transformer": "0.44.0",
+    "@opentelemetry/sandbox-resources": "1.17.1",
+    "@opentelemetry/sandbox-sdk-logs": "0.44.0",
+    "@opentelemetry/sandbox-sdk-trace-base": "1.17.1"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/experimental/packages/exporter-logs-otlp-proto",
   "sideEffects": false

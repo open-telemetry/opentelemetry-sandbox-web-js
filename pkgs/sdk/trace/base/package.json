@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-sdk-trace-base",
-  "version": "1.17.0",
+  "version": "1.17.1",
   "description": "OpenTelemetry Tracing",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -30,7 +30,7 @@
     "tdd:browser": "karma start",
     "tdd:node": "npm run test -- --watch-extensions ts --watch",
     "test": "npm run test:node && npm run test:browser && npm run test:webworker",
-    "test:bench": "node test/performance/benchmark/index.js",
+    "test:bench": "node test/performance/benchmark/index.js | tee .benchmark-results.txt",
     "test:browser": "nyc karma start ./karma.conf.js --single-run",
     "test:debug": "nyc karma start ./karma.debug.conf.js --wait",
     "test:node": "",
@@ -117,9 +117,9 @@
     "@opentelemetry/sandbox-api": "1.6.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-core": "1.17.0",
-    "@opentelemetry/sandbox-resources": "1.17.0",
-    "@opentelemetry/sandbox-semantic-conventions": "1.17.0"
+    "@opentelemetry/sandbox-core": "1.17.1",
+    "@opentelemetry/sandbox-resources": "1.17.1",
+    "@opentelemetry/sandbox-semantic-conventions": "1.17.1"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/packages/opentelemetry-sdk-trace-base",
   "sideEffects": false
