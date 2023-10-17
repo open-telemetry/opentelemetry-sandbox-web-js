@@ -165,6 +165,11 @@
       "shouldPublish": true
     },
     {
+      "packageName": "@opentelemetry/sandbox-instrumentation-web-vitals",
+      "projectFolder": "pkgs/instrumentations/web/web-vitals",
+      "shouldPublish": true
+    },
+    {
       "packageName": "web-opentelemetry-example",
       "projectFolder": "examples/web/js",
       "shouldPublish": false

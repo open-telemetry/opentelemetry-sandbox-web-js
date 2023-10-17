@@ -37,7 +37,12 @@ const banner = `/*
     */
 `;
 
+let cleanupOverride = null
 function doCleanup() {
+    if (cleanupOverride) {
+        return cleanupOverride();
+    }
+
     return cleanup({
         comments: [
             'some', 
@@ -205,7 +210,11 @@ const nodeUmdRollupConfigFactory = (name, entryInputName, outputName, version, i
 };
 
 
-export function createConfig(name, entryInputName, outputName, version) {
+export function createConfig(name, entryInputName, outputName, version, cleanupPlugin) {
+    if (cleanupPlugin) {
+        cleanupOverride = cleanupPlugin;
+    }
+    
     return [
         browserRollupConfigFactory(name, entryInputName, outputName, version, true),                    // umd
         browserRollupConfigFactory(name, entryInputName, outputName, version, true, false),             // umd
