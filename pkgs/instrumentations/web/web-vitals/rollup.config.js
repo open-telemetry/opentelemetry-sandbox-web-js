@@ -18,4 +18,13 @@ import { createConfig } from "../../../../rollup.base.config";
 const version = require("./package.json").version;
 const inputName = "build/esm/index.js";
 
-export default createConfig("opentelemetry.sandbox.instr.web.instrumentation-web-vitals", inputName, "otel-sndbx.instr-web-vitals", version);
+export default createConfig("opentelemetry.sandbox.instr.web.instrumentation-web-vitals", inputName, "otel-sndbx.instr-web-vitals", version, noopCleanup);
+
+function noopCleanup() {
+    return {
+        name: 'cleanup',
+        transform(code, id) {
+            return null
+        }
+    }
+}
