@@ -69,7 +69,6 @@
     "access": "public"
   },
   "devDependencies": {
-    "@opentelemetry/resources": "npm:@opentelemetry/resources@1.9.0",
     "@opentelemetry/sandbox-api": "1.6.0",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
