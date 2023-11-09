@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-sdk-trace-base",
-  "version": "1.17.1",
+  "version": "1.18.1",
   "description": "OpenTelemetry Tracing",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -69,8 +69,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@opentelemetry/resources": "npm:@opentelemetry/resources@1.9.0",
-    "@opentelemetry/sandbox-api": "1.6.0",
+    "@opentelemetry/sandbox-api": "1.7.0",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
@@ -114,12 +113,12 @@
     "webpack": "^4.46.0"
   },
   "peerDependencies": {
-    "@opentelemetry/sandbox-api": "1.6.0"
+    "@opentelemetry/sandbox-api": "1.7.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-core": "1.17.1",
-    "@opentelemetry/sandbox-resources": "1.17.1",
-    "@opentelemetry/sandbox-semantic-conventions": "1.17.1"
+    "@opentelemetry/sandbox-core": "1.18.1",
+    "@opentelemetry/sandbox-resources": "1.18.1",
+    "@opentelemetry/sandbox-semantic-conventions": "1.18.1"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/packages/opentelemetry-sdk-trace-base",
   "sideEffects": false

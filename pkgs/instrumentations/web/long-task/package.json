@@ -56,8 +56,8 @@
   "devDependencies": {
     "@babel/core": "7.22.17",
     "@jsdevtools/coverage-istanbul-loader": "3.0.5",
-    "@opentelemetry/sandbox-api": "1.6.0",
-    "@opentelemetry/sandbox-sdk-trace-base": "1.17.1",
+    "@opentelemetry/sandbox-api": "1.7.0",
+    "@opentelemetry/sandbox-sdk-trace-base": "1.18.1",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
@@ -102,12 +102,12 @@
     "zone.js": "^0.11.4"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-core": "1.17.1",
-    "@opentelemetry/sandbox-instrumentation": "0.44.0",
-    "@opentelemetry/sandbox-sdk-trace-web": "1.17.1"
+    "@opentelemetry/sandbox-core": "1.18.1",
+    "@opentelemetry/sandbox-instrumentation": "0.45.1",
+    "@opentelemetry/sandbox-sdk-trace-web": "1.18.1"
   },
   "peerDependencies": {
-    "@opentelemetry/sandbox-api": "1.6.0"
+    "@opentelemetry/sandbox-api": "1.7.0"
   },
   "sideEffects": false,
   "homepage": "https://github.com/open-telemetry/opentelemetry-js-contrib/tree/main/plugins/web/opentelemetry-instrumentation-long-task#readme"

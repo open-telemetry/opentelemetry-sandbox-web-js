@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-exporter-trace-otlp-proto",
-  "version": "0.44.0",
+  "version": "0.45.1",
   "description": "OpenTelemetry Collector Exporter allows user to send collected traces to the OpenTelemetry Collector using protobuf over HTTP",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -68,7 +68,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.22.20",
-    "@opentelemetry/sandbox-api": "1.6.0",
+    "@opentelemetry/sandbox-api": "1.7.0",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
@@ -115,15 +115,15 @@
     "webpack-merge": "5.9.0"
   },
   "peerDependencies": {
-    "@opentelemetry/sandbox-api": "1.6.0"
+    "@opentelemetry/sandbox-api": "1.7.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-core": "1.17.1",
-    "@opentelemetry/sandbox-otlp-exporter-base": "0.44.0",
-    "@opentelemetry/sandbox-otlp-proto-exporter-base": "0.44.0",
-    "@opentelemetry/sandbox-otlp-transformer": "0.44.0",
-    "@opentelemetry/sandbox-resources": "1.17.1",
-    "@opentelemetry/sandbox-sdk-trace-base": "1.17.1"
+    "@opentelemetry/sandbox-core": "1.18.1",
+    "@opentelemetry/sandbox-otlp-exporter-base": "0.45.1",
+    "@opentelemetry/sandbox-otlp-proto-exporter-base": "0.45.1",
+    "@opentelemetry/sandbox-otlp-transformer": "0.45.1",
+    "@opentelemetry/sandbox-resources": "1.18.1",
+    "@opentelemetry/sandbox-sdk-trace-base": "1.18.1"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/experimental/packages/exporter-trace-otlp-proto",
   "sideEffects": false

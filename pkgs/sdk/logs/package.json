@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-sdk-logs",
-  "version": "0.44.0",
+  "version": "0.45.1",
   "publishConfig": {
     "access": "public"
   },
@@ -73,13 +73,13 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@opentelemetry/sandbox-api": "1.6.0",
-    "@opentelemetry/sandbox-api-logs": "0.44.0"
+    "@opentelemetry/sandbox-api": "1.7.0",
+    "@opentelemetry/sandbox-api-logs": "0.45.1"
   },
   "devDependencies": {
     "@babel/core": "7.22.20",
-    "@opentelemetry/sandbox-api": "1.6.0",
-    "@opentelemetry/sandbox-api-logs": "0.44.0",
+    "@opentelemetry/sandbox-api": "1.7.0",
+    "@opentelemetry/sandbox-api-logs": "0.45.1",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",
@@ -125,7 +125,7 @@
     "webpack-merge": "5.9.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-core": "1.17.1",
-    "@opentelemetry/sandbox-resources": "1.17.1"
+    "@opentelemetry/sandbox-core": "1.18.1",
+    "@opentelemetry/sandbox-resources": "1.18.1"
   }
 }
