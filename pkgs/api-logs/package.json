@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-api-logs",
-  "version": "0.44.0",
+  "version": "0.45.1",
   "description": "Public logs API for OpenTelemetry",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -65,7 +65,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-api": "1.6.0"
+    "@opentelemetry/sandbox-api": "1.7.0"
   },
   "devDependencies": {
     "@types/jquery": "^3.5.14",

@@ -1,7 +1,7 @@
 {
   "name": "web-opentelemetry-example",
   "private": true,
-  "version": "0.44.0",
+  "version": "0.45.1",
   "description": "Example of using @opentelemetry/sdk-trace-web and @opentelemetry/sdk-metrics in browser",
   "main": "index.js",
   "scripts": {
@@ -91,21 +91,21 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-api": "1.6.0",
-    "@opentelemetry/sandbox-context-zone": "1.17.1",
-    "@opentelemetry/sandbox-core": "1.17.1",
-    "@opentelemetry/sandbox-exporter-metrics-otlp-http": "0.44.0",
-    "@opentelemetry/sandbox-exporter-trace-otlp-http": "0.44.0",
-    "@opentelemetry/sandbox-exporter-trace-otlp-proto": "0.44.0",
-    "@opentelemetry/sandbox-exporter-zipkin": "1.17.1",
-    "@opentelemetry/sandbox-instrumentation": "0.44.0",
-    "@opentelemetry/sandbox-instrumentation-fetch": "0.44.0",
-    "@opentelemetry/sandbox-instrumentation-xml-http-request": "0.44.0",
-    "@opentelemetry/sandbox-propagator-b3": "1.17.1",
-    "@opentelemetry/sandbox-sdk-metrics": "1.17.1",
-    "@opentelemetry/sandbox-sdk-trace-base": "1.17.1",
-    "@opentelemetry/sandbox-sdk-trace-web": "1.17.1",
-    "@opentelemetry/sandbox-semantic-conventions": "1.17.1"
+    "@opentelemetry/sandbox-api": "1.7.0",
+    "@opentelemetry/sandbox-context-zone": "1.18.1",
+    "@opentelemetry/sandbox-core": "1.18.1",
+    "@opentelemetry/sandbox-exporter-metrics-otlp-http": "0.45.1",
+    "@opentelemetry/sandbox-exporter-trace-otlp-http": "0.45.1",
+    "@opentelemetry/sandbox-exporter-trace-otlp-proto": "0.45.1",
+    "@opentelemetry/sandbox-exporter-zipkin": "1.18.1",
+    "@opentelemetry/sandbox-instrumentation": "0.45.1",
+    "@opentelemetry/sandbox-instrumentation-fetch": "0.45.1",
+    "@opentelemetry/sandbox-instrumentation-xml-http-request": "0.45.1",
+    "@opentelemetry/sandbox-propagator-b3": "1.18.1",
+    "@opentelemetry/sandbox-sdk-metrics": "1.18.1",
+    "@opentelemetry/sandbox-sdk-trace-base": "1.18.1",
+    "@opentelemetry/sandbox-sdk-trace-web": "1.18.1",
+    "@opentelemetry/sandbox-semantic-conventions": "1.18.1"
   },
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/examples/tracer-web"
 }
