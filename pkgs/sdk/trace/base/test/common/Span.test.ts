@@ -15,6 +15,7 @@
  */
 
 import {
+  diag,
   SpanStatusCode,
   Exception,
   ROOT_CONTEXT,
@@ -786,6 +787,10 @@ describe('Span', () => {
       spanContext,
       SpanKind.CLIENT
     );
+
+    const debugStub = sinon.spy(diag, 'debug');
+    const warnStub = sinon.spy(diag, 'warn');
+
     for (let i = 0; i < 150; i++) {
       span.addEvent('sent' + i);
     }
@@ -793,6 +798,12 @@ describe('Span', () => {
 
     assert.strictEqual(span.events.length, 100);
     assert.strictEqual(span.events[span.events.length - 1].name, 'sent149');
+
+    sinon.assert.calledOnceWithExactly(debugStub, 'Dropping extra events.');
+    sinon.assert.calledOnceWithExactly(
+      warnStub,
+      'Dropped 50 events because eventCountLimit reached'
+    );
   });
 
   it('should store the count of dropped events in droppedEventsCount', () => {
@@ -1054,6 +1065,27 @@ describe('Span', () => {
       assert.ok(started);
     });
 
+    it('should include attributes in onStart', () => {
+      let attributes;
+      const processor: SpanProcessor = {
+        onStart: span => {
+          attributes = { ...span.attributes };
+        },
+        forceFlush: () => Promise.resolve(),
+        onEnd() {},
+        shutdown: () => Promise.resolve(),
+      };
+
+      const provider = new BasicTracerProvider();
+
+      provider.addSpanProcessor(processor);
+
+      provider
+        .getTracer('default')
+        .startSpan('test', { attributes: { foo: 'bar' } });
+      assert.deepStrictEqual(attributes, { foo: 'bar' });
+    });
+
     it('should call onEnd synchronously when span is ended', () => {
       let ended = false;
       const processor: SpanProcessor = {
@@ -1220,6 +1252,24 @@ describe('Span', () => {
         assert.deepStrictEqual(event.attributes, {
           [SemanticAttributes.EXCEPTION_TYPE]: '12',
         });
+      });
+    });
+
+    describe('when attributes are specified', () => {
+      it('should store specified attributes', () => {
+        const span = new Span(
+          tracer,
+          ROOT_CONTEXT,
+          name,
+          spanContext,
+          SpanKind.CLIENT,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          { foo: 'bar' }
+        );
+        assert.deepStrictEqual(span.attributes, { foo: 'bar' });
       });
     });
   });

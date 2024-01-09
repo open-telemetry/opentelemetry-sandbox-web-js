@@ -39,16 +39,20 @@ export class OTLPLogExporter
       timeoutMillis: getEnv().OTEL_EXPORTER_OTLP_LOGS_TIMEOUT,
       ...config,
     });
-    this.headers = {
-      ...this.headers,
-      ...baggageUtils.parseKeyPairsIntoRecord(
+    this.headers = Object.assign(
+      this.headers,
+      baggageUtils.parseKeyPairsIntoRecord(
         getEnv().OTEL_EXPORTER_OTLP_LOGS_HEADERS
       ),
-    };
+      config.headers
+    );
   }
 
   convert(logRecords: ReadableLogRecord[]): IExportLogsServiceRequest {
-    return createExportLogsServiceRequest(logRecords, true);
+    return createExportLogsServiceRequest(logRecords, {
+      useHex: true,
+      useLongBits: false,
+    });
   }
 
   getDefaultUrl(config: OTLPExporterNodeConfigBase): string {
