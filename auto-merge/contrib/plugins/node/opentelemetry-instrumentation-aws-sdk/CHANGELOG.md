@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.37.2](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-aws-sdk-v0.37.1...instrumentation-aws-sdk-v0.37.2) (2024-01-04)
+
+
+### Bug Fixes
+
+* **deps:** update otel core experimental ([#1866](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1866)) ([9366543](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/9366543f5572e1e976ce176ddeb0b438f6c16c45))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @opentelemetry/propagation-utils bumped from ^0.30.4 to ^0.30.5
+  * devDependencies
+    * @opentelemetry/contrib-test-utils bumped from ^0.35.0 to ^0.35.1
+
+## [0.37.1](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-aws-sdk-v0.37.0...instrumentation-aws-sdk-v0.37.1) (2023-12-07)
+
+
+### Bug Fixes
+
+* **instrumentation-aws-sdk:** remove un-sanitised db.statement span attribute from DynamoDB spans ([#1748](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1748)) ([cdbb29f](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/cdbb29f034218ca14d45d60ab77f33546a37dbaa))
+
 ## [0.37.0](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-aws-sdk-v0.36.2...instrumentation-aws-sdk-v0.37.0) (2023-11-22)
 
 
