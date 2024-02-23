@@ -4,6 +4,9 @@ components:
     - legendecas
   detectors/node/opentelemetry-resource-detector-aws:
     - carolabadeer
+  detectors/node/opentelemetry-resource-detector-azure:
+    - jacksonweber
+    - hectorhdzg
   detectors/node/opentelemetry-resource-detector-container:
     - abhee11
   detectors/node/opentelemetry-resource-detector-gcp:
@@ -60,6 +63,7 @@ components:
     - blumamir
   plugins/node/opentelemetry-instrumentation-bunyan:
     - seemk
+    - trentm
   plugins/node/opentelemetry-instrumentation-cassandra:
     - seemk
   plugins/node/opentelemetry-instrumentation-connect: []
@@ -96,6 +100,8 @@ components:
     - rauno56
   plugins/node/opentelemetry-instrumentation-net:
     - seemk
+  plugins/node/opentelemetry-instrumentation-perf-hooks:
+    - d4nyll
   plugins/node/opentelemetry-instrumentation-pg:
     - rauno56
   plugins/node/opentelemetry-instrumentation-pino:
@@ -112,14 +118,14 @@ components:
     - seemk
   plugins/web/opentelemetry-instrumentation-document-load:
     - pkanal
-    - martinkuba 
+    - martinkuba
   plugins/web/opentelemetry-instrumentation-long-task:
     - mhennoch
     - t2t2
   plugins/web/opentelemetry-instrumentation-user-interaction:
     - obecny
-  plugins/web/opentelemetry-plugin-react-load: []
-    # Unmaintained?
+  plugins/web/opentelemetry-plugin-react-load:
+    - martinkuba
   propagators/opentelemetry-propagator-aws-xray:
     - carolabadeer
   propagators/opentelemetry-propagator-grpc-census-binary: []
