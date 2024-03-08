@@ -13,8 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const testsContext = require.context('.', true, /test$/);
-testsContext.keys().forEach(testsContext);
 
-const srcContext = require.context('.', true, /src$/);
-srcContext.keys().forEach(srcContext);
+// A small example that shows using OpenTelemetry's instrumentation of
+// Bunyan loggers. Usage:
+//    node --require ./telemetry.js app.js
+
+const otel = require('@opentelemetry/api');
+const bunyan = require('bunyan');
+
+const log = bunyan.createLogger({name: 'myapp', level: 'debug'});
+
+log.debug({foo: 'bar'}, 'hi');
+
+const tracer = otel.trace.getTracer('example');
+tracer.startActiveSpan('manual-span', span => {
+  log.info('this record will have trace_id et al fields for the current span');
+  span.end();
+});
