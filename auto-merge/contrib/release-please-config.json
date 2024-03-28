@@ -8,6 +8,7 @@
   "packages": {
     "detectors/node/opentelemetry-resource-detector-alibaba-cloud": {},
     "detectors/node/opentelemetry-resource-detector-aws": {},
+    "detectors/node/opentelemetry-resource-detector-azure": {},
     "detectors/node/opentelemetry-resource-detector-container": {},
     "detectors/node/opentelemetry-resource-detector-gcp": {},
     "detectors/node/opentelemetry-resource-detector-github": {},
@@ -26,6 +27,7 @@
     "plugins/node/instrumentation-fs": {},
     "plugins/node/instrumentation-lru-memoizer": {},
     "plugins/node/instrumentation-mongoose": {},
+    "plugins/node/instrumentation-runtime-node": {},
     "plugins/node/instrumentation-socket.io": {},
     "plugins/node/instrumentation-tedious": {},
     "plugins/node/opentelemetry-instrumentation-aws-lambda": {},
