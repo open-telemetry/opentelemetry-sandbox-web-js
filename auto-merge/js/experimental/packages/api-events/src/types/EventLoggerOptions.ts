@@ -16,7 +16,7 @@
 
 import { Attributes } from '@opentelemetry/api';
 
-export interface EventEmitterOptions {
+export interface EventLoggerOptions {
   /**
    * The schemaUrl of the tracer or instrumentation library
    * @default ''
