@@ -6,11 +6,23 @@ All notable changes to experimental packages in this project will be documented 
 
 ### :boom: Breaking Change
 
+* feat(sdk-node)!: remove long deprecated methods in favor of constructor options [#4606](https://github.com/open-telemetry/opentelemetry-js/pull/4606) @pichlermarc
+  * `NodeSDK.configureTracerProvider()`, please use constructor options instead
+  * `NodeSDK.configureMeterProvider()`, please use constructor options instead
+  * `NodeSDK.configureLoggerProvider()`, please use constructor options instead
+  * `NodeSDK.addResource()`, please use constructor options instead
+  * `NodeSDK.detectResources()`, this is not necessary anymore, resources are now auto-detected on `NodeSDK.start()` if the constructor option `autoDetectResources` is unset, `undefined` or `true`.
+
 ### :rocket: (Enhancement)
 
+* refactor(instrumentation-grpc): move to use SEMATTRS [#4633](https://github.com/open-telemetry/opentelemetry-js/pull/4633)
 * feat(otlp-transformer): consolidate scope/resource creation in transformer [#4600](https://github.com/open-telemetry/opentelemetry-js/pull/4600)
+* feat(sdk-logs): print message when attributes are dropped due to attribute count limit [#4614](https://github.com/open-telemetry/opentelemetry-js/pull/4614) @HyunnoH
 
 ### :bug: (Bug Fix)
+
+* fix(otlp-grpc-exporter-base): avoid TypeError on exporter shutdown [#4612](https://github.com/open-telemetry/opentelemetry-js/pull/4612)
+* fix(instrumentation): Don't use `require` to load `package.json` files
 
 ### :books: (Refine Doc)
 
