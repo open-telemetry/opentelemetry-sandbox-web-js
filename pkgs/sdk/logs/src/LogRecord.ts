@@ -26,7 +26,7 @@ import type { IResource } from '@opentelemetry/sandbox-resources';
 
 import type { ReadableLogRecord } from './export/ReadableLogRecord';
 import type { LogRecordLimits } from './types';
-import { LogAttributes } from '@opentelemetry/sandbox-api-logs';
+import { LogAttributes, LogBody } from '@opentelemetry/sandbox-api-logs';
 import { LoggerProviderSharedState } from './internal/LoggerProviderSharedState';
 
 export class LogRecord implements ReadableLogRecord {
@@ -38,7 +38,8 @@ export class LogRecord implements ReadableLogRecord {
   readonly attributes: logsAPI.LogAttributes = {};
   private _severityText?: string;
   private _severityNumber?: logsAPI.SeverityNumber;
-  private _body?: string;
+  private _body?: LogBody;
+  private totalAttributesCount: number = 0;
 
   private _isReadonly: boolean = false;
   private readonly _logRecordLimits: Required<LogRecordLimits>;
@@ -63,14 +64,18 @@ export class LogRecord implements ReadableLogRecord {
     return this._severityNumber;
   }
 
-  set body(body: string | undefined) {
+  set body(body: LogBody | undefined) {
     if (this._isLogRecordReadonly()) {
       return;
     }
     this._body = body;
   }
-  get body(): string | undefined {
+  get body(): LogBody | undefined {
     return this._body;
+  }
+
+  get droppedAttributesCount(): number {
+    return this.totalAttributesCount - Object.keys(this.attributes).length;
   }
 
   constructor(
@@ -114,29 +119,38 @@ export class LogRecord implements ReadableLogRecord {
     if (value === null) {
       return this;
     }
-    if (
-      typeof value === 'object' &&
-      !Array.isArray(value) &&
-      Object.keys(value).length > 0
-    ) {
-      this.attributes[key] = value;
-    }
     if (key.length === 0) {
       api.diag.warn(`Invalid attribute key: ${key}`);
       return this;
     }
-    if (!isAttributeValue(value)) {
+    if (
+      !isAttributeValue(value) &&
+      !(
+        typeof value === 'object' &&
+        !Array.isArray(value) &&
+        Object.keys(value).length > 0
+      )
+    ) {
       api.diag.warn(`Invalid attribute value set for key: ${key}`);
       return this;
     }
+    this.totalAttributesCount += 1;
     if (
       Object.keys(this.attributes).length >=
         this._logRecordLimits.attributeCountLimit &&
       !Object.prototype.hasOwnProperty.call(this.attributes, key)
     ) {
+      // This logic is to create drop message at most once per LogRecord to prevent excessive logging.
+      if (this.droppedAttributesCount === 1) {
+        api.diag.warn('Dropping extra attributes.');
+      }
       return this;
     }
-    this.attributes[key] = this._truncateToSize(value);
+    if (isAttributeValue(value)) {
+      this.attributes[key] = this._truncateToSize(value);
+    } else {
+      this.attributes[key] = value;
+    }
     return this;
   }
 
@@ -147,7 +161,7 @@ export class LogRecord implements ReadableLogRecord {
     return this;
   }
 
-  public setBody(body: string) {
+  public setBody(body: LogBody) {
     this.body = body;
     return this;
   }

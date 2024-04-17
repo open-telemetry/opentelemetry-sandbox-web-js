@@ -15,6 +15,7 @@
  */
 
 import { trace, metrics } from '@opentelemetry/sandbox-api';
+import { logs } from '@opentelemetry/sandbox-api-logs';
 import {
   disableInstrumentations,
   enableInstrumentations,
@@ -36,8 +37,14 @@ export function registerInstrumentations(
   );
   const tracerProvider = options.tracerProvider || trace.getTracerProvider();
   const meterProvider = options.meterProvider || metrics.getMeterProvider();
+  const loggerProvider = options.loggerProvider || logs.getLoggerProvider();
 
-  enableInstrumentations(instrumentations, tracerProvider, meterProvider);
+  enableInstrumentations(
+    instrumentations,
+    tracerProvider,
+    meterProvider,
+    loggerProvider
+  );
 
   return () => {
     disableInstrumentations(instrumentations);

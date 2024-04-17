@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/sandbox-propagator-b3",
-  "version": "1.17.1",
+  "version": "1.23.0",
   "description": "OpenTelemetry B3 propagator provides context propagation for systems that are using the B3 header format",
   "main": "build/src/index.js",
   "module": "build/esm/index.js",
@@ -57,13 +57,13 @@
     "access": "public"
   },
   "dependencies": {
-    "@opentelemetry/sandbox-core": "1.17.1"
+    "@opentelemetry/sandbox-core": "1.23.0"
   },
   "peerDependencies": {
-    "@opentelemetry/sandbox-api": "1.6.0"
+    "@opentelemetry/sandbox-api": "1.8.0"
   },
   "devDependencies": {
-    "@opentelemetry/sandbox-api": "1.6.0",
+    "@opentelemetry/sandbox-api": "1.8.0",
     "@types/jquery": "^3.5.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.14.2",

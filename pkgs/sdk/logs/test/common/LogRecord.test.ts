@@ -177,17 +177,59 @@ describe('LogRecord', () => {
 
     describe('when logRecordLimits options set', () => {
       describe('when "attributeCountLimit" option defined', () => {
-        const { logRecord } = setup({ attributeCountLimit: 100 });
-        for (let i = 0; i < 150; i++) {
-          logRecord.setAttribute(`foo${i}`, `bar${i}`);
-        }
-
         it('should remove / drop all remaining values after the number of values exceeds this limit', () => {
-          const { attributes } = logRecord;
+          const { logRecord } = setup({ attributeCountLimit: 100 });
+          for (let i = 0; i < 150; i++) {
+            let attributeValue;
+            switch (i % 3) {
+              case 0: {
+                attributeValue = `bar${i}`;
+                break;
+              }
+              case 1: {
+                attributeValue = [`bar${i}`];
+                break;
+              }
+              case 2: {
+                attributeValue = {
+                  bar: `bar${i}`,
+                };
+                break;
+              }
+              default: {
+                attributeValue = `bar${i}`;
+              }
+            }
+            logRecord.setAttribute(`foo${i}`, attributeValue);
+          }
+          const { attributes, droppedAttributesCount } = logRecord;
           assert.strictEqual(Object.keys(attributes).length, 100);
           assert.strictEqual(attributes.foo0, 'bar0');
-          assert.strictEqual(attributes.foo99, 'bar99');
+          assert.deepStrictEqual(attributes.foo98, { bar: 'bar98' });
+          assert.strictEqual(attributes.foo147, undefined);
+          assert.strictEqual(attributes.foo148, undefined);
           assert.strictEqual(attributes.foo149, undefined);
+          assert.strictEqual(droppedAttributesCount, 50);
+        });
+
+        it('should not print message when there are no dropped attributes', () => {
+          const warnStub = sinon.spy(diag, 'warn');
+          const { logRecord } = setup({ attributeCountLimit: 10 });
+          for (let i = 0; i < 7; i++) {
+            logRecord.setAttribute(`foo${i}`, `bar${i}`);
+          }
+          sinon.assert.callCount(warnStub, 0);
+          warnStub.restore();
+        });
+
+        it('should print message only once when attribute(s) are dropped', () => {
+          const warnStub = sinon.spy(diag, 'warn');
+          const { logRecord } = setup({ attributeCountLimit: 5 });
+          for (let i = 0; i < 7; i++) {
+            logRecord.setAttribute(`foo${i}`, `bar${i}`);
+          }
+          sinon.assert.callCount(warnStub, 1);
+          warnStub.restore();
         });
       });
 

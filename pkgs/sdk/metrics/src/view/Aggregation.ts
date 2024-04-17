@@ -130,8 +130,10 @@ export class ExplicitBucketHistogramAggregation extends Aggregation {
     private readonly _recordMinMax = true
   ) {
     super();
-    if (boundaries === undefined || boundaries.length === 0) {
-      throw new Error('HistogramAggregator should be created with boundaries.');
+    if (boundaries == null) {
+      throw new Error(
+        'ExplicitBucketHistogramAggregation should be created with explicit boundaries, if a single bucket histogram is required, please pass an empty array'
+      );
     }
     // Copy the boundaries array for modification.
     boundaries = boundaries.concat();
@@ -180,6 +182,7 @@ export class DefaultAggregation extends Aggregation {
       case InstrumentType.OBSERVABLE_UP_DOWN_COUNTER: {
         return SUM_AGGREGATION;
       }
+      case InstrumentType.GAUGE:
       case InstrumentType.OBSERVABLE_GAUGE: {
         return LAST_VALUE_AGGREGATION;
       }

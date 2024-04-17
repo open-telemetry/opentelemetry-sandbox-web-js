@@ -21,6 +21,8 @@ import {
   InstrumentType,
   PushMetricExporter,
   ResourceMetrics,
+  Aggregation,
+  AggregationSelector,
 } from '@opentelemetry/sandbox-sdk-metrics';
 import {
   AggregationTemporalityPreference,
@@ -39,6 +41,7 @@ export const DeltaTemporalitySelector: AggregationTemporalitySelector = (
   switch (instrumentType) {
     case InstrumentType.COUNTER:
     case InstrumentType.OBSERVABLE_COUNTER:
+    case InstrumentType.GAUGE:
     case InstrumentType.HISTOGRAM:
     case InstrumentType.OBSERVABLE_GAUGE:
       return AggregationTemporality.DELTA;
@@ -55,6 +58,7 @@ export const LowMemoryTemporalitySelector: AggregationTemporalitySelector = (
     case InstrumentType.COUNTER:
     case InstrumentType.HISTOGRAM:
       return AggregationTemporality.DELTA;
+    case InstrumentType.GAUGE:
     case InstrumentType.UP_DOWN_COUNTER:
     case InstrumentType.OBSERVABLE_UP_DOWN_COUNTER:
     case InstrumentType.OBSERVABLE_COUNTER:
@@ -104,6 +108,16 @@ function chooseTemporalitySelector(
   return chooseTemporalitySelectorFromEnvironment();
 }
 
+function chooseAggregationSelector(
+  config: OTLPMetricExporterOptions | undefined
+) {
+  if (config?.aggregationPreference) {
+    return config.aggregationPreference;
+  } else {
+    return (_instrumentType: any) => Aggregation.Default();
+  }
+}
+
 export class OTLPMetricExporterBase<
   T extends OTLPExporterBase<
     OTLPMetricExporterOptions,
@@ -114,9 +128,11 @@ export class OTLPMetricExporterBase<
 {
   public _otlpExporter: T;
   private _aggregationTemporalitySelector: AggregationTemporalitySelector;
+  private _aggregationSelector: AggregationSelector;
 
   constructor(exporter: T, config?: OTLPMetricExporterOptions) {
     this._otlpExporter = exporter;
+    this._aggregationSelector = chooseAggregationSelector(config);
     this._aggregationTemporalitySelector = chooseTemporalitySelector(
       config?.temporalityPreference
     );
@@ -135,6 +151,10 @@ export class OTLPMetricExporterBase<
 
   forceFlush(): Promise<void> {
     return Promise.resolve();
+  }
+
+  selectAggregation(instrumentType: InstrumentType): Aggregation {
+    return this._aggregationSelector(instrumentType);
   }
 
   selectAggregationTemporality(

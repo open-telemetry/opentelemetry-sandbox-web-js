@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-import {
-  context,
-  SpanAttributes,
-  SpanStatusCode,
-  trace,
-} from '@opentelemetry/api';
+import { context, Attributes, SpanStatusCode, trace } from '@opentelemetry/api';
 import { getRPCMetadata, RPCType } from '@opentelemetry/core';
 import {
   InstrumentationBase,
   InstrumentationNodeModuleDefinition,
   safeExecuteInTheMiddle,
 } from '@opentelemetry/instrumentation';
-import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
+import { SEMATTRS_HTTP_ROUTE } from '@opentelemetry/semantic-conventions';
 import type {
   HookHandlerDoneFunction,
   FastifyInstance,
   FastifyRequest,
   FastifyReply,
 } from 'fastify';
-import { applicationHookNames } from './constants';
+import { hooksNamesToWrap } from './constants';
 import {
   AttributeNames,
   FastifyNames,
@@ -96,8 +91,9 @@ export class FastifyInstrumentation extends InstrumentationBase {
       const anyRequest = request as any;
 
       const rpcMetadata = getRPCMetadata(context.active());
-      const routeName =
-        anyRequest.routeOptions?.config?.url || request.routerPath;
+      const routeName = anyRequest.routeOptions
+        ? anyRequest.routeOptions.url // since fastify@4.10.0
+        : request.routerPath;
       if (routeName && rpcMetadata?.type === RPCType.HTTP) {
         rpcMetadata.route = routeName;
       }
@@ -178,8 +174,8 @@ export class FastifyInstrumentation extends InstrumentationBase {
         const name = args[0] as string;
         const handler = args[1] as HandlerOriginal;
         const pluginName = this.pluginName;
-        if (applicationHookNames.includes(name)) {
-          return original.apply(this, [name, handler] as never);
+        if (!hooksNamesToWrap.has(name)) {
+          return original.apply(this, args);
         }
 
         const syncFunctionWithDone =
@@ -265,18 +261,21 @@ export class FastifyInstrumentation extends InstrumentationBase {
       const anyRequest = request as any;
 
       const handler =
-        anyRequest.routeOptions?.handler || anyRequest.context?.handler || {};
+        anyRequest.routeOptions?.handler || anyRequest.context?.handler;
 
-      const handlerName = handler?.name.substr(6);
+      const handlerName = handler?.name.startsWith('bound ')
+        ? handler.name.substr(6)
+        : handler?.name;
       const spanName = `${FastifyNames.REQUEST_HANDLER} - ${
         handlerName || this.pluginName || ANONYMOUS_NAME
       }`;
 
-      const spanAttributes: SpanAttributes = {
+      const spanAttributes: Attributes = {
         [AttributeNames.PLUGIN_NAME]: this.pluginName,
         [AttributeNames.FASTIFY_TYPE]: FastifyTypes.REQUEST_HANDLER,
-        [SemanticAttributes.HTTP_ROUTE]:
-          anyRequest.routeOptions?.config?.url || request.routerPath,
+        [SEMATTRS_HTTP_ROUTE]: anyRequest.routeOptions
+          ? anyRequest.routeOptions.url // since fastify@4.10.0
+          : request.routerPath,
       };
       if (handlerName) {
         spanAttributes[AttributeNames.FASTIFY_NAME] = handlerName;
