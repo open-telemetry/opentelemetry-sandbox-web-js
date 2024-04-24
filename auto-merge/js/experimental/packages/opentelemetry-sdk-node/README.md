@@ -47,10 +47,10 @@ const {
 } = require("@opentelemetry/auto-instrumentations-node");
 
 const jaegerExporter = new JaegerExporter();
-const prometheusExporter = new PrometheusExporter({ startServer: true });
+const prometheusExporter = new PrometheusExporter();
 
 const sdk = new opentelemetry.NodeSDK({
-  // Optional - if omitted, the tracing SDK will not be initialized
+  // Optional - if omitted, the tracing SDK will be initialized from environment variables
   traceExporter: jaegerExporter,
   // Optional - If omitted, the metrics SDK will not be initialized
   metricReader: prometheusExporter,
@@ -115,8 +115,25 @@ Configure a resource. Resources may also be detected by using the `autoDetectRes
 
 ### resourceDetectors
 
-Configure resource detectors. By default, the resource detectors are [envDetector, processDetector].
+Configure resource detectors. By default, the resource detectors are [envDetector, processDetector, hostDetector].
 NOTE: In order to enable the detection, the parameter `autoDetectResources` has to be `true`.
+
+If `resourceDetectors` was not set, you can also use the environment variable `OTEL_NODE_RESOURCE_DETECTORS` to enable only certain detectors, or completely disable them:
+
+- `env`
+- `host`
+- `os`
+- `process`
+- `serviceinstance` (experimental)
+- `all` - enable all resource detectors above
+  - **NOTE:** future versions of `@opentelemetry/sdk-node` may include additional detectors that will be covered by this scope.
+- `none` - disable resource detection
+
+For example, to enable only the `env`, `host` detectors:
+
+```shell
+export OTEL_NODE_RESOURCE_DETECTORS="env,host"
+```
 
 ### sampler
 
@@ -124,9 +141,15 @@ Configure a custom sampler. By default, all traces will be sampled.
 
 ### spanProcessor
 
+Deprecated, please use [spanProcessors](#spanprocessors) instead.
+
+### spanProcessors
+
+An array of span processors to register to the tracer provider.
+
 ### traceExporter
 
-Configure a trace exporter. If an exporter is configured, it will be used with a [BatchSpanProcessor](../../../packages/opentelemetry-sdk-trace-base/src/platform/node/export/BatchSpanProcessor.ts). If an exporter OR span processor is not configured programatically, this package will auto setup the default `otlp` exporter  with `http/protobuf` protocol with a `BatchSpanProcessor`.
+Configure a trace exporter. If an exporter is configured, it will be used with a [BatchSpanProcessor](../../../packages/opentelemetry-sdk-trace-base/src/platform/node/export/BatchSpanProcessor.ts). If an exporter OR span processor is not configured programmatically, this package will auto setup the default `otlp` exporter  with `http/protobuf` protocol with a `BatchSpanProcessor`.
 
 ### spanLimits
 

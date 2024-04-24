@@ -16,7 +16,10 @@
 
 import { ReadableSpan, SpanExporter } from '@opentelemetry/sandbox-sdk-trace-base';
 import { getEnv, baggageUtils } from '@opentelemetry/sandbox-core';
-import { OTLPExporterNodeBase } from '@opentelemetry/sandbox-otlp-exporter-base';
+import {
+  OTLPExporterNodeBase,
+  parseHeaders,
+} from '@opentelemetry/sandbox-otlp-exporter-base';
 import {
   OTLPExporterNodeConfigBase,
   appendResourcePathToUrl,
@@ -49,11 +52,15 @@ export class OTLPTraceExporter
       ...baggageUtils.parseKeyPairsIntoRecord(
         getEnv().OTEL_EXPORTER_OTLP_TRACES_HEADERS
       ),
+      ...parseHeaders(config?.headers),
     };
   }
 
   convert(spans: ReadableSpan[]): IExportTraceServiceRequest {
-    return createExportTraceServiceRequest(spans, true);
+    return createExportTraceServiceRequest(spans, {
+      useHex: true,
+      useLongBits: false,
+    });
   }
 
   getDefaultUrl(config: OTLPExporterNodeConfigBase): string {

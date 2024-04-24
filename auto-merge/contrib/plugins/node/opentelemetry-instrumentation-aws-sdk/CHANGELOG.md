@@ -1,5 +1,132 @@
 # Changelog
 
+## [0.40.0](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-aws-sdk-v0.39.1...instrumentation-aws-sdk-v0.40.0) (2024-04-03)
+
+
+### Features
+
+* **deps:** update otel-js to 1.23.0/0.50.0 ([#2076](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/2076)) ([d5f079b](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/d5f079b3992395dcfb3b791c9fdaeefd6d6526f8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @opentelemetry/propagation-utils bumped from ^0.30.7 to ^0.30.8
+  * devDependencies
+    * @opentelemetry/contrib-test-utils bumped from ^0.37.0 to ^0.38.0
+
+## [0.39.1](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-aws-sdk-v0.39.0...instrumentation-aws-sdk-v0.39.1) (2024-03-11)
+
+
+### Bug Fixes
+
+* **instr-aws-sdk:** ensure that instrumentation does not crash on bogus SQS.sendMessageBatch input ([#1999](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1999)) ([fa7e2f5](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/fa7e2f52d3869f8349895bcd3abb8cc428946cd1))
+
+## [0.39.0](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-aws-sdk-v0.38.1...instrumentation-aws-sdk-v0.39.0) (2024-03-06)
+
+
+### Features
+
+* **deps:** update otel-js to 1.22.0/0.49.1 ([edc426b](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/edc426b348bc5f45ff6816bcd5ea7473251a05df))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @opentelemetry/propagation-utils bumped from ^0.30.6 to ^0.30.7
+  * devDependencies
+    * @opentelemetry/contrib-test-utils bumped from ^0.36.0 to ^0.37.0
+
+## [0.38.1](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-aws-sdk-v0.38.0...instrumentation-aws-sdk-v0.38.1) (2024-02-06)
+
+
+### Bug Fixes
+
+* **instr-aws-sdk:** @smithy/middleware-stack@2.1.0 change broke aws-sdk-v3 instrumentation ([#1913](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1913)) ([7895306](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/78953064f8bd957649b8052b03debb200784b351))
+
+## [0.38.0](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-aws-sdk-v0.37.2...instrumentation-aws-sdk-v0.38.0) (2024-01-29)
+
+
+### Features
+
+* **deps:** update otel-js to 1.21.0/0.48.0 ([9624486](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/96244869d0fe22e6006fa6ef5e54839e06afb99d))
+
+
+### Bug Fixes
+
+* **instrumentation-aws-sdk:** make empty context when SQS message has no propagation fields ([#1889](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1889)) ([577a291](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/577a291cd527606b331d6732ba0eccc75422a0fc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @opentelemetry/propagation-utils bumped from ^0.30.5 to ^0.30.6
+  * devDependencies
+    * @opentelemetry/contrib-test-utils bumped from ^0.35.1 to ^0.36.0
+
+## [0.37.2](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-aws-sdk-v0.37.1...instrumentation-aws-sdk-v0.37.2) (2024-01-04)
+
+
+### Bug Fixes
+
+* **deps:** update otel core experimental ([#1866](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1866)) ([9366543](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/9366543f5572e1e976ce176ddeb0b438f6c16c45))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @opentelemetry/propagation-utils bumped from ^0.30.4 to ^0.30.5
+  * devDependencies
+    * @opentelemetry/contrib-test-utils bumped from ^0.35.0 to ^0.35.1
+
+## [0.37.1](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-aws-sdk-v0.37.0...instrumentation-aws-sdk-v0.37.1) (2023-12-07)
+
+
+### Bug Fixes
+
+* **instrumentation-aws-sdk:** remove un-sanitised db.statement span attribute from DynamoDB spans ([#1748](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1748)) ([cdbb29f](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/cdbb29f034218ca14d45d60ab77f33546a37dbaa))
+
+## [0.37.0](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-aws-sdk-v0.36.2...instrumentation-aws-sdk-v0.37.0) (2023-11-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* **instrumentation-aws-sdk:** Capture full ARN for span attribute messaging.destination.name for SNS topics ([#1727](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1727))
+
+### Features
+
+* **instrumentation-aws-sdk:** Capture full ARN for span attribute messaging.destination.name for SNS topics ([#1727](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1727)) ([28ea3b6](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/28ea3b6d9d4ddb3b6d635a7d7b26b0721cf448db))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @opentelemetry/propagation-utils bumped from ^0.30.3 to ^0.30.4
+  * devDependencies
+    * @opentelemetry/contrib-test-utils bumped from ^0.34.3 to ^0.35.0
+
+## [0.36.2](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-aws-sdk-v0.36.1...instrumentation-aws-sdk-v0.36.2) (2023-11-13)
+
+
+### Bug Fixes
+
+* **deps:** update otel core experimental to v0.45.0 ([#1779](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1779)) ([7348635](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/734863562c25cd0497aa3f51eccb2bf8bbd5e711))
+* **deps:** update otel core experimental to v0.45.1 ([#1781](https://github.com/open-telemetry/opentelemetry-js-contrib/issues/1781)) ([7f420e2](https://github.com/open-telemetry/opentelemetry-js-contrib/commit/7f420e25a8d396c83fd38101088434210705e365))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @opentelemetry/propagation-utils bumped from ^0.30.2 to ^0.30.3
+  * devDependencies
+    * @opentelemetry/contrib-test-utils bumped from ^0.34.2 to ^0.34.3
+
 ## [0.36.1](https://github.com/open-telemetry/opentelemetry-js-contrib/compare/instrumentation-aws-sdk-v0.36.0...instrumentation-aws-sdk-v0.36.1) (2023-10-10)
 
 

@@ -22,19 +22,24 @@ import {
   IResourceLogs,
 } from './types';
 import { IResource } from '@opentelemetry/sandbox-resources';
-import { hrTimeToFixed64Nanos } from '../common';
-import { toAnyValue, toAttributes, toKeyValue } from '../common/internal';
-import { hexToBase64 } from '@opentelemetry/sandbox-core';
+import { Encoder, getOtlpEncoder } from '../common';
+import {
+  createInstrumentationScope,
+  toAnyValue,
+  toKeyValue,
+} from '../common/internal';
 import { SeverityNumber } from '@opentelemetry/sandbox-api-logs';
-import { IKeyValue } from '../common/types';
+import { OtlpEncodingOptions, IKeyValue } from '../common/types';
 import { LogAttributes } from '@opentelemetry/sandbox-api-logs';
+import { createResource } from '../resource/internal';
 
 export function createExportLogsServiceRequest(
   logRecords: ReadableLogRecord[],
-  useHex?: boolean
+  options?: OtlpEncodingOptions
 ): IExportLogsServiceRequest {
+  const encoder = getOtlpEncoder(options);
   return {
-    resourceLogs: logRecordsToResourceLogs(logRecords, useHex),
+    resourceLogs: logRecordsToResourceLogs(logRecords, encoder),
   };
 }
 
@@ -71,44 +76,34 @@ function createResourceMap(
 
 function logRecordsToResourceLogs(
   logRecords: ReadableLogRecord[],
-  useHex?: boolean
+  encoder: Encoder
 ): IResourceLogs[] {
   const resourceMap = createResourceMap(logRecords);
   return Array.from(resourceMap, ([resource, ismMap]) => ({
-    resource: {
-      attributes: toAttributes(resource.attributes),
-      droppedAttributesCount: 0,
-    },
+    resource: createResource(resource),
     scopeLogs: Array.from(ismMap, ([, scopeLogs]) => {
-      const {
-        instrumentationScope: { name, version, schemaUrl },
-      } = scopeLogs[0];
       return {
-        scope: { name, version },
-        logRecords: scopeLogs.map(log => toLogRecord(log, useHex)),
-        schemaUrl,
+        scope: createInstrumentationScope(scopeLogs[0].instrumentationScope),
+        logRecords: scopeLogs.map(log => toLogRecord(log, encoder)),
+        schemaUrl: scopeLogs[0].instrumentationScope.schemaUrl,
       };
     }),
     schemaUrl: undefined,
   }));
 }
 
-function toLogRecord(log: ReadableLogRecord, useHex?: boolean): ILogRecord {
+function toLogRecord(log: ReadableLogRecord, encoder: Encoder): ILogRecord {
   return {
-    timeUnixNano: hrTimeToFixed64Nanos(log.hrTime),
-    observedTimeUnixNano: hrTimeToFixed64Nanos(log.hrTimeObserved),
+    timeUnixNano: encoder.encodeHrTime(log.hrTime),
+    observedTimeUnixNano: encoder.encodeHrTime(log.hrTimeObserved),
     severityNumber: toSeverityNumber(log.severityNumber),
     severityText: log.severityText,
     body: toAnyValue(log.body),
     attributes: toLogAttributes(log.attributes),
-    droppedAttributesCount: 0,
+    droppedAttributesCount: log.droppedAttributesCount,
     flags: log.spanContext?.traceFlags,
-    traceId: useHex
-      ? log.spanContext?.traceId
-      : optionalHexToBase64(log.spanContext?.traceId),
-    spanId: useHex
-      ? log.spanContext?.spanId
-      : optionalHexToBase64(log.spanContext?.spanId),
+    traceId: encoder.encodeOptionalSpanContext(log.spanContext?.traceId),
+    spanId: encoder.encodeOptionalSpanContext(log.spanContext?.spanId),
   };
 }
 
@@ -116,11 +111,6 @@ function toSeverityNumber(
   severityNumber: SeverityNumber | undefined
 ): ESeverityNumber | undefined {
   return severityNumber as number | undefined as ESeverityNumber | undefined;
-}
-
-function optionalHexToBase64(str: string | undefined): string | undefined {
-  if (str === undefined) return undefined;
-  return hexToBase64(str);
 }
 
 export function toLogAttributes(attributes: LogAttributes): IKeyValue[] {

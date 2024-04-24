@@ -21,10 +21,18 @@ import type {
 import type { OTLPExporterNodeConfigBase } from '@opentelemetry/sandbox-otlp-exporter-base';
 import type { IExportLogsServiceRequest } from '@opentelemetry/sandbox-otlp-transformer';
 import { getEnv, baggageUtils } from '@opentelemetry/sandbox-core';
-import { OTLPExporterNodeBase } from '@opentelemetry/sandbox-otlp-exporter-base';
+import {
+  OTLPExporterNodeBase,
+  parseHeaders,
+} from '@opentelemetry/sandbox-otlp-exporter-base';
 import { createExportLogsServiceRequest } from '@opentelemetry/sandbox-otlp-transformer';
 
 import { getDefaultUrl } from '../config';
+import { VERSION } from '../../version';
+
+const USER_AGENT = {
+  'User-Agent': `OTel-OTLP-Exporter-JavaScript/${VERSION}`,
+};
 
 /**
  * Collector Logs Exporter for Node
@@ -41,14 +49,19 @@ export class OTLPLogExporter
     });
     this.headers = {
       ...this.headers,
+      ...USER_AGENT,
       ...baggageUtils.parseKeyPairsIntoRecord(
         getEnv().OTEL_EXPORTER_OTLP_LOGS_HEADERS
       ),
+      ...parseHeaders(config?.headers),
     };
   }
 
   convert(logRecords: ReadableLogRecord[]): IExportLogsServiceRequest {
-    return createExportLogsServiceRequest(logRecords, true);
+    return createExportLogsServiceRequest(logRecords, {
+      useHex: true,
+      useLongBits: false,
+    });
   }
 
   getDefaultUrl(config: OTLPExporterNodeConfigBase): string {

@@ -160,7 +160,7 @@ export class ExponentialHistogramAccumulation implements Accumulation {
   }
 
   /**
-   * @returns {Number} The scale used by thie accumulation
+   * @returns {Number} The scale used by this accumulation
    */
   get scale(): number {
     if (this._count === this._zeroCount) {
@@ -171,7 +171,7 @@ export class ExponentialHistogramAccumulation implements Accumulation {
   }
 
   /**
-   * positive holds the postive values
+   * positive holds the positive values
    * @returns {Buckets}
    */
   get positive(): Buckets {
@@ -187,12 +187,18 @@ export class ExponentialHistogramAccumulation implements Accumulation {
   }
 
   /**
-   * uppdateByIncr supports updating a histogram with a non-negative
+   * updateByIncr supports updating a histogram with a non-negative
    * increment.
    * @param value
    * @param increment
    */
   updateByIncrement(value: number, increment: number) {
+    // NaN does not fall into any bucket, is not zero and should not be counted,
+    // NaN is never greater than max nor less than min, therefore return as there's nothing for us to do.
+    if (Number.isNaN(value)) {
+      return;
+    }
+
     if (value > this._max) {
       this._max = value;
     }
@@ -247,7 +253,7 @@ export class ExponentialHistogramAccumulation implements Accumulation {
   }
 
   /**
-   * diff substracts other from self
+   * diff subtracts other from self
    * @param {ExponentialHistogramAccumulation} other
    */
   diff(other: ExponentialHistogramAccumulation) {
@@ -342,6 +348,10 @@ export class ExponentialHistogramAccumulation implements Accumulation {
     if (increment === 0) {
       // nothing to do for a zero increment, can happen during a merge operation
       return;
+    }
+
+    if (buckets.length === 0) {
+      buckets.indexStart = buckets.indexEnd = buckets.indexBase = index;
     }
 
     if (index < buckets.indexStart) {
@@ -502,7 +512,7 @@ export class ExponentialHistogramAccumulation implements Accumulation {
 }
 
 /**
- * Aggregator for ExponentialHistogramAccumlations
+ * Aggregator for ExponentialHistogramAccumulations
  */
 export class ExponentialHistogramAggregator
   implements Aggregator<ExponentialHistogramAccumulation>
@@ -570,6 +580,7 @@ export class ExponentialHistogramAggregator
 
         // determine if instrument allows negative values.
         const allowsNegativeValues =
+          descriptor.type === InstrumentType.GAUGE ||
           descriptor.type === InstrumentType.UP_DOWN_COUNTER ||
           descriptor.type === InstrumentType.OBSERVABLE_GAUGE ||
           descriptor.type === InstrumentType.OBSERVABLE_UP_DOWN_COUNTER;

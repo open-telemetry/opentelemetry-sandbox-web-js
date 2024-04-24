@@ -307,6 +307,15 @@ describe('OTLPMetricExporter - node (getDefaultUrl)', () => {
 });
 
 describe('when configuring via environment', () => {
+  afterEach(function () {
+    // Ensure we don't pollute other tests if assertions fail
+    delete envSource.OTEL_EXPORTER_OTLP_ENDPOINT;
+    delete envSource.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT;
+    delete envSource.OTEL_EXPORTER_OTLP_HEADERS;
+    delete envSource.OTEL_EXPORTER_OTLP_METRICS_HEADERS;
+    sinon.restore();
+  });
+
   const envSource = process.env;
   it('should use url defined in env', () => {
     envSource.OTEL_EXPORTER_OTLP_ENDPOINT = 'http://foo.bar';
@@ -322,23 +331,32 @@ describe('when configuring via environment', () => {
     envSource.OTEL_EXPORTER_OTLP_ENDPOINT = '';
     envSource.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT = '';
   });
+  it('should use override url defined in env with url defined in constructor', () => {
+    envSource.OTEL_EXPORTER_OTLP_ENDPOINT = 'http://foo.bar/v1/metrics';
+    const constructorDefinedEndpoint = 'http://constructor/v1/metrics';
+    const collectorExporter = new OTLPMetricExporter({
+      url: constructorDefinedEndpoint,
+    });
+    assert.strictEqual(collectorExporter._otlpExporter.url, 'constructor');
+    envSource.OTEL_EXPORTER_OTLP_ENDPOINT = '';
+  });
   it('should use headers defined via env', () => {
     envSource.OTEL_EXPORTER_OTLP_HEADERS = 'foo=bar';
     const collectorExporter = new OTLPMetricExporter();
-    assert.deepStrictEqual(
-      collectorExporter._otlpExporter.metadata?.get('foo'),
-      ['bar']
-    );
+    const actualMetadata =
+      collectorExporter._otlpExporter['_transport']['_parameters'].metadata();
+    assert.deepStrictEqual(actualMetadata.get('foo'), ['bar']);
     envSource.OTEL_EXPORTER_OTLP_HEADERS = '';
   });
   it('should include user agent in header', () => {
     const collectorExporter = new OTLPMetricExporter();
-    assert.deepStrictEqual(
-      collectorExporter._otlpExporter.metadata?.get('User-Agent'),
-      [`OTel-OTLP-Exporter-JavaScript/${VERSION}`]
-    );
+    const actualMetadata =
+      collectorExporter._otlpExporter['_transport']['_parameters'].metadata();
+    assert.deepStrictEqual(actualMetadata.get('User-Agent'), [
+      `OTel-OTLP-Exporter-JavaScript/${VERSION}`,
+    ]);
   });
-  it('should override global headers config with signal headers defined via env', () => {
+  it('should not override hard-coded headers config with headers defined via env', () => {
     const metadata = new grpc.Metadata();
     metadata.set('foo', 'bar');
     metadata.set('goo', 'lol');
@@ -348,19 +366,27 @@ describe('when configuring via environment', () => {
       metadata,
       temporalityPreference: AggregationTemporalityPreference.CUMULATIVE,
     });
-    assert.deepStrictEqual(
-      collectorExporter._otlpExporter.metadata?.get('foo'),
-      ['boo']
-    );
-    assert.deepStrictEqual(
-      collectorExporter._otlpExporter.metadata?.get('bar'),
-      ['foo']
-    );
-    assert.deepStrictEqual(
-      collectorExporter._otlpExporter.metadata?.get('goo'),
-      ['lol']
-    );
+    const actualMetadata =
+      collectorExporter._otlpExporter['_transport']['_parameters'].metadata();
+    assert.deepStrictEqual(actualMetadata.get('foo'), ['bar']);
+    assert.deepStrictEqual(actualMetadata.get('bar'), ['foo']);
+    assert.deepStrictEqual(actualMetadata.get('goo'), ['lol']);
     envSource.OTEL_EXPORTER_OTLP_METRICS_HEADERS = '';
+    envSource.OTEL_EXPORTER_OTLP_HEADERS = '';
+  });
+
+  it('should override headers defined via env with headers defined in constructor', () => {
+    envSource.OTEL_EXPORTER_OTLP_HEADERS = 'foo=bar,bar=foo';
+    const collectorExporter = new OTLPMetricExporter({
+      headers: {
+        foo: 'constructor',
+      },
+    });
+
+    const actualMetadata =
+      collectorExporter._otlpExporter['_transport']['_parameters'].metadata();
+    assert.deepStrictEqual(actualMetadata.get('foo'), ['constructor']);
+    assert.deepStrictEqual(actualMetadata.get('bar'), ['foo']);
     envSource.OTEL_EXPORTER_OTLP_HEADERS = '';
   });
 });
