@@ -13,12 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  hostDetector,
-  hostDetectorSync,
-  osDetector,
-  osDetectorSync,
-  processDetector,
-  processDetectorSync,
-  serviceInstanceIdDetectorSync,
-} from './node';
+export * from './platform';
