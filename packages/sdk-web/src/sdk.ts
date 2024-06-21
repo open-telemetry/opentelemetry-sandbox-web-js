@@ -42,6 +42,7 @@ import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { WebSDKConfiguration } from './types';
 import { BatchLogRecordProcessor, LogRecordProcessor, LoggerProvider } from '@opentelemetry/sdk-logs';
 import { EventLoggerProvider } from '@opentelemetry/sdk-events';
+import { SessionLogRecordProcessor, SessionManager, SessionSpanProcessor, SessionStorageSessionManager } from '@opentelemetry/web-common';
 
 /** This class represents everything needed to register a fully configured OpenTelemetry Web SDK */
 export class WebSDK {
@@ -66,6 +67,7 @@ export class WebSDK {
   private _tracerProvider?: WebTracerProvider;
   private _loggerProvider?: LoggerProvider;
   private _serviceName?: string;
+  private _sessionManager: SessionManager
 
   /**
    * Create a new NodeJS SDK instance
@@ -121,6 +123,8 @@ export class WebSDK {
       instrumentations = configuration.instrumentations;
     }
     this._instrumentations = instrumentations;
+
+    this._sessionManager = new SessionStorageSessionManager();
   }
 
   /**
@@ -155,6 +159,8 @@ export class WebSDK {
         resource: this._resource,
       });
 
+      tracerProvider.addSpanProcessor(new SessionSpanProcessor(this._sessionManager));
+
       this._tracerProvider = tracerProvider;
       for (const spanProcessor of this._tracerProviderConfig.spanProcessors) {
         tracerProvider.addSpanProcessor(spanProcessor);
@@ -171,6 +177,8 @@ export class WebSDK {
         resource: this._resource
       });
       
+      loggerProvider.addLogRecordProcessor(new SessionLogRecordProcessor(this._sessionManager));
+
       this._loggerProvider = loggerProvider;
       for (const logRecordProcessor of this._loggerProviderConfig.logRecordProcessors) {
         loggerProvider.addLogRecordProcessor(logRecordProcessor);

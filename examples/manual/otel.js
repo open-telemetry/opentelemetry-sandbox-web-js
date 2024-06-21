@@ -11,6 +11,11 @@ const {
 const { registerInstrumentations } = require('@opentelemetry/instrumentation');
 const { WebTracerProvider } = require('@opentelemetry/sdk-trace-web');
 const { ConsoleSpanExporter, SimpleSpanProcessor } = require('@opentelemetry/sdk-trace-base');
+const {
+  SessionSpanProcessor,
+  SessionLogRecordProcessor,
+  SessionStorageSessionManager
+} = require('@opentelemetry/web-common');
 const { browserDetector } = require('@opentelemetry/opentelemetry-browser-detector');
 const { SEMRESATTRS_SERVICE_NAME } = require('@opentelemetry/semantic-conventions');
 const {
@@ -41,6 +46,11 @@ loggerProvider.addLogRecordProcessor(
 );
 const eventLoggerProvider = new EventLoggerProvider(loggerProvider);
 events.setGlobalEventLoggerProvider(eventLoggerProvider);
+
+// configure sessions
+const sessionManager = new SessionStorageSessionManager();
+tracerProvider.addSpanProcessor(new SessionSpanProcessor(sessionManager));
+loggerProvider.addLogRecordProcessor(new SessionLogRecordProcessor(sessionManager));
 
 registerInstrumentations({
   instrumentations: [
