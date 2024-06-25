@@ -1,0 +1,52 @@
+{
+  "name": "@opentelemetry/instrumentation-page-view",
+  "version": "0.0.1",
+  "description": "OpenTelemetry Page View Event instrumentation package.",
+  "main": "build/src/index.js",
+  "module": "build/esm/index.js",
+  "types": "build/src/index.d.ts",
+  "repository": "open-telemetry/opentelemetry-js-contrib",
+  "scripts": {
+    "compile": "tsc --build tsconfig.json",
+    "clean": "tsc --build --clean tsconfig.json",
+    "watch": "tsc --build --watch tsconfig.json"
+  },
+  "keywords": [
+    "opentelemetry",
+    "document-load",
+    "web",
+    "Logs",
+    "profiling",
+    "plugin"
+  ],
+  "author": "OpenTelemetry Authors",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=14"
+  },
+  "files": [
+    "build/esm/**/*.js",
+    "build/esm/**/*.map",
+    "build/esm/**/*.d.ts",
+    "build/src/**/*.js",
+    "build/src/**/*.map",
+    "build/src/**/*.d.ts",
+    "doc",
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@opentelemetry/api": "1.9.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@opentelemetry/instrumentation": "0.52.0",
+    "@opentelemetry/api-events": "0.52.0"
+  },
+  "homepage": "https://github.com/open-telemetry/opentelemetry-js-contrib/tree/main/plugins/web/opentelemetry-instrumentation-page-view#readme"
+}

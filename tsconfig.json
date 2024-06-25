@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/api-events"
+    },
+    {
+      "path": "./packages/instrumentation-web-page-view"
+    },
+    {
+      "path": "./packages/sdk-web"
+    }
+  ]
+}
