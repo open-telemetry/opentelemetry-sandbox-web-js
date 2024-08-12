@@ -7,6 +7,8 @@ All notable changes to experimental packages in this project will be documented 
 
 ### :boom: Breaking Change
 
+* fix(instrumentation)!:remove unused description property from interface [#4847](https://github.com/open-telemetry/opentelemetry-js/pull/4847) @blumamir
+
 ### :rocket: (Enhancement)
 
 ### :bug: (Bug Fix)
@@ -14,6 +16,8 @@ All notable changes to experimental packages in this project will be documented 
 ### :books: (Refine Doc)
 
 ### :house: (Internal)
+
+* refactor: Simplify the code for the `getEnv` function [#4799](https://github.com/open-telemetry/opentelemetry-js/pull/4799) @danstarns
 
 ## 0.52.1
 
