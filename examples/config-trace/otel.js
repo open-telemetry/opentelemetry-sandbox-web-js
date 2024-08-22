@@ -1,4 +1,3 @@
-// import { PageViewEventInstrumentation } from '@opentelemetry/instrumentation-page-view';
 import { XMLHttpRequestInstrumentation } from '@opentelemetry/instrumentation-xml-http-request';
 import { ConsoleSpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { configureTraceSDK } from '@opentelemetry/web-configuration';
@@ -9,7 +8,6 @@ const shutdown = configureTraceSDK(
     spanProcessors: [new SimpleSpanProcessor(new ConsoleSpanExporter())],
   },
   [
-    // new PageViewEventInstrumentation(),
     new XMLHttpRequestInstrumentation()
   ]
 );
