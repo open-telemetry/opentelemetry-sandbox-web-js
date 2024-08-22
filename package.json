@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "clean": "tsc --build --clean tsconfig.json",
-    "compile": "tsc --build tsconfig.json --verbose",
-    "start": "webpack serve --progress --color --port 8090 --config webpack.dev.config.js --hot --host 0.0.0.0 --compress"
+    "compile": "tsc --build tsconfig.json tsconfig.esm.json --verbose",
+    "start": "webpack serve --progress --color --port 8090 --config webpack.dev.config.js --hot --host 0.0.0.0 --compress",
+    "build": "webpack --config webpack.prod.config.js"
   },
   "author": "",
   "license": "ISC",

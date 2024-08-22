@@ -19,7 +19,6 @@ import {
   isWrapped,
 } from '@opentelemetry/instrumentation';
 import { Event, events, EventLogger } from '@opentelemetry/api-events';
-import { VERSION } from './version';
 import {
   ApplyCustomEventDataFunction,
   PageViewInstrumentationConfig,
@@ -28,6 +27,8 @@ import { PageTypes } from './enums/PageTypes';
 /**
  * This class represents a page view instrumentation plugin
  */
+
+const VERSION = '0.1.0';
 
 export class PageViewEventInstrumentation extends InstrumentationBase<PageViewInstrumentationConfig> {
   static readonly instrumentationName =

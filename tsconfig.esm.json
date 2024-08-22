@@ -1,5 +1,9 @@
 {
   "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ES6",
+    "moduleResolution": "node"
+  },
   "files": [],
   "references": [
     {
@@ -10,9 +14,6 @@
     },
     {
       "path": "./packages/sdk-web"
-    },
-    {
-      "path": "./packages/web-common"
     },
     {
       "path": "./packages/web-configuration"

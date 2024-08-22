@@ -4,8 +4,8 @@ const path = require('path');
 
 const directory = path.resolve(__dirname);
 
-const common = {
-  mode: 'development',
+module.exports = {
+  mode: 'production',
   entry: {
     'web-sdk': 'examples/web-sdk/index.js',
     'manual': 'examples/manual/index.js',
@@ -19,6 +19,14 @@ const common = {
     sourceMapFilename: '[file].map',
   },
   target: 'web',
+  optimization: {
+    usedExports: true, // This is necessary for tree shaking
+    // minimize: true,
+    // minimizer: [new TerserPlugin()],
+  },
+  resolve: {
+    mainFields: ['module', 'main'], // Prioritizes `module` field over `main`
+  },
   module: {
     rules: [
       {
@@ -44,22 +52,4 @@ const common = {
     ],
     extensions: ['.ts', '.js', '.jsx', '.json'],
   },
-  optimization: {
-    minimize: false,
-  },
 };
-
-module.exports = webpackMerge.merge(common, {
-  devtool: 'eval-source-map',
-  devServer: {
-    static: {
-      directory: path.resolve(__dirname, 'examples'),
-    },
-    compress: true,
-  },
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('development'),
-    }),
-  ],
-});
