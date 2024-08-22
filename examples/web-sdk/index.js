@@ -14,7 +14,7 @@ function makeXhrCall() {
   const req = new XMLHttpRequest();
   req.addEventListener("load", function() {
   });
-  // req.open("GET", "https://httpbin.org/get");
-  req.open("GET", "http://localhost:3000");
+  req.open("GET", "https://httpbin.org/get");
+  // req.open("GET", "http://localhost:3000");
   req.send();
 }
