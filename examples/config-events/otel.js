@@ -1,5 +1,4 @@
 import { PageViewEventInstrumentation } from '@opentelemetry/instrumentation-page-view';
-// import { XMLHttpRequestInstrumentation } from '@opentelemetry/instrumentation-xml-http-request';
 import { ConsoleLogRecordExporter, SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { configureEventsSDK } from '@opentelemetry/web-configuration';
 
@@ -9,8 +8,7 @@ const shutdown = configureEventsSDK(
     logRecordProcessors: [new SimpleLogRecordProcessor(new ConsoleLogRecordExporter())],
   },
   [
-    new PageViewEventInstrumentation(),
-    // new XMLHttpRequestInstrumentation()
+    new PageViewEventInstrumentation()
   ]
 );
 

@@ -24,6 +24,7 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
+    "@opentelemetry/instrumentation-xml-http-request": "^0.52.1",
     "@opentelemetry/opentelemetry-browser-detector": "^0.52.0",
     "@opentelemetry/resources": "^1.25.0",
     "@opentelemetry/sdk-events": "^0.52.0",
