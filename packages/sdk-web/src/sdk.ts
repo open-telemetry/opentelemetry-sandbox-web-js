@@ -42,7 +42,7 @@ import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { WebSDKConfiguration } from './types';
 import { BatchLogRecordProcessor, LogRecordProcessor, LoggerProvider } from '@opentelemetry/sdk-logs';
 import { EventLoggerProvider } from '@opentelemetry/sdk-events';
-import { SessionLogRecordProcessor, SessionManager, SessionSpanProcessor, SessionStorageSessionManager } from '@opentelemetry/web-common';
+import { SessionLogRecordProcessor, SessionManager, SessionSpanProcessor } from '@opentelemetry/web-common';
 
 /** This class represents everything needed to register a fully configured OpenTelemetry Web SDK */
 export class WebSDK {
@@ -67,7 +67,7 @@ export class WebSDK {
   private _tracerProvider?: WebTracerProvider;
   private _loggerProvider?: LoggerProvider;
   private _serviceName?: string;
-  private _sessionManager: SessionManager
+  private _sessionManager?: SessionManager
 
   /**
    * Create a new NodeJS SDK instance
@@ -124,7 +124,9 @@ export class WebSDK {
     }
     this._instrumentations = instrumentations;
 
-    this._sessionManager = new SessionStorageSessionManager();
+    if (configuration.sessionManager) {
+      this._sessionManager = configuration.sessionManager;
+    }
   }
 
   /**
@@ -159,7 +161,9 @@ export class WebSDK {
         resource: this._resource,
       });
 
-      tracerProvider.addSpanProcessor(new SessionSpanProcessor(this._sessionManager));
+      if (this._sessionManager) {
+        tracerProvider.addSpanProcessor(new SessionSpanProcessor(this._sessionManager));
+      }
 
       this._tracerProvider = tracerProvider;
       for (const spanProcessor of this._tracerProviderConfig.spanProcessors) {
@@ -177,7 +181,9 @@ export class WebSDK {
         resource: this._resource
       });
       
-      loggerProvider.addLogRecordProcessor(new SessionLogRecordProcessor(this._sessionManager));
+      if (this._sessionManager) {
+        loggerProvider.addLogRecordProcessor(new SessionLogRecordProcessor(this._sessionManager));
+      }
 
       this._loggerProvider = loggerProvider;
       for (const logRecordProcessor of this._loggerProviderConfig.logRecordProcessors) {

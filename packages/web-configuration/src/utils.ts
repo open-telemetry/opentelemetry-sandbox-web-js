@@ -23,6 +23,7 @@ import { BatchLogRecordProcessor, LoggerProvider, LoggerProviderConfig, LogRecor
 import { BatchSpanProcessor, SpanExporter, SpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { WebTracerConfig, WebTracerProvider } from "@opentelemetry/sdk-trace-web";
 import { SEMRESATTRS_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
+import { SessionLogRecordProcessor, SessionManager, SessionSpanProcessor } from "@opentelemetry/web-common";
 
 export interface ResourceConfiguration {
   serviceName?: string;
@@ -36,16 +37,20 @@ export interface TraceSDKConfiguration {
   textMapPropagator?: TextMapPropagator;
   spanProcessors?: SpanProcessor[];
   spanExporter?: SpanExporter;
+  sessionManager?: SessionManager;
 }
 
 export interface EventSDKConfiguration {
   loggerProviderConfig?: LoggerProviderConfig
   logRecordProcessors?: LogRecordProcessor[];
   logRecordExporter?: LogRecordExporter;
+  sessionManager?: SessionManager;
 }
 
+export type WebSDKConfiguration = ResourceConfiguration & TraceSDKConfiguration & EventSDKConfiguration;
+
 export function configureWebSDK(
-  config: ResourceConfiguration & TraceSDKConfiguration & EventSDKConfiguration,
+  config: WebSDKConfiguration,
   instrumentations: Instrumentation[]
 ) {
   registerInstrumentations({
@@ -96,6 +101,7 @@ export function configureTraceSDK(
     return () => { return Promise.resolve(); }
   }
 
+
   if (instrumentations) {
     registerInstrumentations({
       instrumentations: instrumentations,
@@ -109,6 +115,10 @@ export function configureTraceSDK(
   const processors = config.spanProcessors ?? [
     new BatchSpanProcessor(config.spanExporter!),
   ];
+
+  if (config.sessionManager) {
+    tracerProvider.addSpanProcessor(new SessionSpanProcessor(config.sessionManager));
+  }
 
   for (const processor of processors) {
     tracerProvider.addSpanProcessor(processor);
@@ -141,6 +151,10 @@ export function configureEventsSDK(
   const loggerProvider = new LoggerProvider({
     ...config?.loggerProviderConfig
   });
+
+  if (config.sessionManager) {
+    loggerProvider.addLogRecordProcessor(new SessionLogRecordProcessor(config.sessionManager));
+  }
   
   const processors = config.logRecordProcessors ?? [
     new BatchLogRecordProcessor(config.logRecordExporter!),

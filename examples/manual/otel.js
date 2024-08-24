@@ -1,5 +1,5 @@
 const { PageViewEventInstrumentation } = require('@opentelemetry/instrumentation-page-view');
-// const { XMLHttpRequestInstrumentation } = require('@opentelemetry/instrumentation-xml-http-request');
+const { XMLHttpRequestInstrumentation } = require('@opentelemetry/instrumentation-xml-http-request');
 const { events } = require('@opentelemetry/api-events');
 const { trace } = require('@opentelemetry/api');
 const { EventLoggerProvider } = require('@opentelemetry/sdk-events');
@@ -34,6 +34,7 @@ resource = resource.merge(new Resource({
 
 // configure global TracerProvider
 const tracerProvider = new WebTracerProvider({ resource });
+// tracerProvider.addSpanProcessor(new SessionSpanProcessor(sessionManager));
 tracerProvider.addSpanProcessor(
   new SimpleSpanProcessor(new ConsoleSpanExporter())
 );
@@ -41,6 +42,7 @@ trace.setGlobalTracerProvider(tracerProvider);
 
 // configure global EventLoggerProvider
 const loggerProvider = new LoggerProvider({ resource });
+loggerProvider.addLogRecordProcessor(new SessionLogRecordProcessor(new SessionStorageSessionManager()));
 loggerProvider.addLogRecordProcessor(
   new SimpleLogRecordProcessor(new ConsoleLogRecordExporter())
 );
@@ -55,6 +57,6 @@ loggerProvider.addLogRecordProcessor(new SessionLogRecordProcessor(sessionManage
 registerInstrumentations({
   instrumentations: [
     new PageViewEventInstrumentation(),
-    // new XMLHttpRequestInstrumentation(),
+    new XMLHttpRequestInstrumentation(),
   ],
 });

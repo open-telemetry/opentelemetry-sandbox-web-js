@@ -6,6 +6,7 @@ const shutdown = configureTraceSDK(
   {
     serviceName: 'My app',
     spanProcessors: [new SimpleSpanProcessor(new ConsoleSpanExporter())],
+    sessionManager: new SessionStorageSessionManager()
   },
   [
     new XMLHttpRequestInstrumentation()

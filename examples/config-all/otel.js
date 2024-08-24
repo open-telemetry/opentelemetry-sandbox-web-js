@@ -2,6 +2,7 @@ import { PageViewEventInstrumentation } from '@opentelemetry/instrumentation-pag
 import { XMLHttpRequestInstrumentation } from '@opentelemetry/instrumentation-xml-http-request';
 import { ConsoleLogRecordExporter, SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { ConsoleSpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { SessionStorageSessionManager } from '@opentelemetry/web-common';
 import { configureWebSDK } from '@opentelemetry/web-configuration';
 
 const shutdown = configureWebSDK(
@@ -9,6 +10,7 @@ const shutdown = configureWebSDK(
     serviceName: 'My app',
     logRecordProcessors: [new SimpleLogRecordProcessor(new ConsoleLogRecordExporter())],
     spanProcessors: [new SimpleSpanProcessor(new ConsoleSpanExporter())],
+    sessionManager: new SessionStorageSessionManager()
   },
   [
     new PageViewEventInstrumentation(),

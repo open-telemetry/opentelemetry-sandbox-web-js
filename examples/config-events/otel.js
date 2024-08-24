@@ -6,6 +6,7 @@ const shutdown = configureEventsSDK(
   {
     serviceName: 'My app',
     logRecordProcessors: [new SimpleLogRecordProcessor(new ConsoleLogRecordExporter())],
+    sessionManager: new SessionStorageSessionManager()
   },
   [
     new PageViewEventInstrumentation()

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Web utils",
   "main": "build/src/index.js",
-  "module": "build/esm/src/index.js",
+  "module": "build/esm/index.js",
   "types": "build/src/index.d.ts",
   "repository": "open-telemetry/opentelemetry-js",
   "sideEffects": false,
@@ -53,7 +53,8 @@
     "@opentelemetry/sdk-logs": "^0.52.0",
     "@opentelemetry/sdk-trace-base": "1.25.0",
     "@opentelemetry/sdk-trace-web": "1.25.0",
-    "@opentelemetry/semantic-conventions": "1.25.0"
+    "@opentelemetry/semantic-conventions": "1.25.0",
+    "@opentelemetry/web-common": "^0.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
