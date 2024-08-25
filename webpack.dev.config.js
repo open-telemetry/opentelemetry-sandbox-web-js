@@ -11,7 +11,8 @@ const common = {
     'manual': 'examples/manual/index.js',
     'config-all': 'examples/config-all/index.js',
     'config-trace': 'examples/config-trace/index.js',
-    'config-events': 'examples/config-events/index.js'
+    'config-events': 'examples/config-events/index.js',
+    'session': 'examples/session/index.js'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
