@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-export { SessionSpanProcessor } from './SessionSpanProcessor';
-export { SessionLogRecordProcessor } from './SessionLogRecordProcessor';
-export { Session } from './types/Session';
-export { SessionIdGenerator } from './types/SessionIdGenerator';
-export { SessionIdProvider } from './types/SessionIdProvider';
-export { SessionObserver } from './types/SessionObserver';
-export { SessionStorage } from './types/SessionStorage';
-export { SessionManager } from './SessionManager';
-export { WebSessionStorage } from './WebSessionStorage';
-export { DefaultIdGenerator } from './DefaultIdGenerator';
+export interface SessionIdGenerator {
+  generateSessionId(): string;
+}

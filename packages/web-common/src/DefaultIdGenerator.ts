@@ -1,4 +1,3 @@
-
 /*
  * Copyright The OpenTelemetry Authors
  *
@@ -15,30 +14,10 @@
  * limitations under the License.
  */
 
-import { SessionManager } from "./types/SessionManager";
+import { SessionIdGenerator } from "./types/SessionIdGenerator";
 
-const SESSION_STORAGE_KEY = 'opentelemetry-session-id';
-
-export class SessionStorageSessionManager implements SessionManager {
-  private _sessionId: string;
-
-  constructor() {
-    this._sessionId = this._getOrCreateSessionId();
-  }
-
-  getSessionId(): string {
-    return this._sessionId;
-  }
-
-  private _getOrCreateSessionId(): string {
-    let sessionId = sessionStorage.getItem(SESSION_STORAGE_KEY);
-    if (sessionId === null) {
-      const generateSessionId = getIdGenerator(16);
-      sessionId = generateSessionId();
-      sessionStorage.setItem(SESSION_STORAGE_KEY, sessionId);
-    }
-    return sessionId;
-  }
+export class DefaultIdGenerator implements SessionIdGenerator {
+  generateSessionId = getIdGenerator(16);
 }
 
 const SHARED_CHAR_CODES_ARRAY = Array(32);

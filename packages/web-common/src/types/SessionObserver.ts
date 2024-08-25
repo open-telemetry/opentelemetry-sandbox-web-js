@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
-export interface SessionManager {
-  getSessionId(): string
+import { Session } from "./Session";
+
+export interface SessionObserver {
+  onSessionStarted(session: Session): void;
+  onSessionEnded(session: Session): void;
 }

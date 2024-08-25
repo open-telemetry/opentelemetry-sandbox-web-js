@@ -1,3 +1,4 @@
+
 /*
  * Copyright The OpenTelemetry Authors
  *
@@ -14,13 +15,21 @@
  * limitations under the License.
  */
 
-export { SessionSpanProcessor } from './SessionSpanProcessor';
-export { SessionLogRecordProcessor } from './SessionLogRecordProcessor';
-export { Session } from './types/Session';
-export { SessionIdGenerator } from './types/SessionIdGenerator';
-export { SessionIdProvider } from './types/SessionIdProvider';
-export { SessionObserver } from './types/SessionObserver';
-export { SessionStorage } from './types/SessionStorage';
-export { SessionManager } from './SessionManager';
-export { WebSessionStorage } from './WebSessionStorage';
-export { DefaultIdGenerator } from './DefaultIdGenerator';
+import { Session } from "./types/Session";
+import { SessionStorage } from "./types/SessionStorage";
+
+const SESSION_STORAGE_KEY = 'opentelemetry-session';
+
+export class WebSessionStorage implements SessionStorage {
+  save(session: Session): void {
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+  }
+
+  get(): Session | null {
+    const sessionData = sessionStorage.getItem(SESSION_STORAGE_KEY);
+    if (sessionData) {
+        return JSON.parse(sessionData) as Session;
+    }
+    return null;
+  }
+}
