@@ -23,4 +23,5 @@ export { SessionObserver } from './types/SessionObserver';
 export { SessionStorage } from './types/SessionStorage';
 export { SessionManager } from './SessionManager';
 export { WebSessionStorage } from './WebSessionStorage';
+export { WebLocalStorage } from './WebLocalStorage';
 export { DefaultIdGenerator } from './DefaultIdGenerator';

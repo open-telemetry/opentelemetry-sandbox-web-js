@@ -72,8 +72,8 @@ export class SessionManager implements SessionIdProvider {
     if (this._inactivityTimeout) {
       if (Date.now() - this._lastActivityTimestamp > this._inactivityResetDelay) {
         this.resetIdleTimer();
+        this._lastActivityTimestamp = Date.now();
       }
-      this._lastActivityTimestamp = Date.now();
     }
 
     return this._session.id;
@@ -143,12 +143,18 @@ export class SessionManager implements SessionIdProvider {
   }
 
   private resetMaxDurationTimer() {
+    if (!this._maxDuration || !this._session) {
+      return
+    }
+
     if (this._maxDurationTimeoutId) {
       clearTimeout(this._maxDurationTimeoutId);
     }
+    
+    const timeoutIn = this._maxDuration - (Date.now() - this._session?.startTimestamp);
 
     this._maxDurationTimeoutId = setTimeout(() => {
       this.resetSession();
-    }, this._maxDuration);
+    }, timeoutIn);
   }
 }
