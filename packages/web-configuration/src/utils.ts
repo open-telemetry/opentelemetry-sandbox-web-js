@@ -17,13 +17,21 @@
 import { ContextManager, TextMapPropagator } from "@opentelemetry/api";
 import { events } from "@opentelemetry/api-events";
 import { Instrumentation, registerInstrumentations } from "@opentelemetry/instrumentation";
-import { DetectorSync, detectResourcesSync, IResource, Resource, ResourceDetectionConfig } from "@opentelemetry/resources";
+import { 
+  DetectorSync,
+  detectResourcesSync,
+  IResource,
+  Resource,
+  ResourceDetectionConfig,
+  browserDetector as processRuntimeBrowserDetector
+} from "@opentelemetry/resources";
 import { EventLoggerProvider } from "@opentelemetry/sdk-events";
 import { BatchLogRecordProcessor, LoggerProvider, LoggerProviderConfig, LogRecordExporter, LogRecordProcessor } from "@opentelemetry/sdk-logs";
 import { BatchSpanProcessor, SpanExporter, SpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { WebTracerConfig, WebTracerProvider } from "@opentelemetry/sdk-trace-web";
 import { SEMRESATTRS_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
-import { SessionLogRecordProcessor, SessionManager, SessionSpanProcessor } from "@opentelemetry/web-common";
+import { DefaultIdGenerator, SessionIdGenerator, SessionIdProvider, SessionLogRecordProcessor, SessionManager, SessionObserver, SessionSpanProcessor, SessionStorage, WebSessionStorage } from "@opentelemetry/web-common";
+import { browserDetector } from '@opentelemetry/opentelemetry-browser-detector';
 
 export interface ResourceConfiguration {
   serviceName?: string;
@@ -31,35 +39,39 @@ export interface ResourceConfiguration {
   detectors?: DetectorSync[];
 }
 
+export interface SessionConfiguration {
+  sessionIdGenerator?: SessionIdGenerator;
+  sessionStorage?: SessionStorage;
+  maxDuration?: number;
+  idleTimeout?: number;
+  sessionObserver: SessionObserver
+}
+
 export interface TraceSDKConfiguration {
-  tracerConfig?: WebTracerConfig
+  tracerConfig?: WebTracerConfig;
   contextManager?: ContextManager;
   textMapPropagator?: TextMapPropagator;
   spanProcessors?: SpanProcessor[];
   spanExporter?: SpanExporter;
-  sessionManager?: SessionManager;
+  resource?: Resource;
+  sessionIdProvider?: SessionIdProvider;
 }
 
 export interface EventSDKConfiguration {
-  loggerProviderConfig?: LoggerProviderConfig
+  loggerProviderConfig?: LoggerProviderConfig;
   logRecordProcessors?: LogRecordProcessor[];
   logRecordExporter?: LogRecordExporter;
-  sessionManager?: SessionManager;
+  resource?: Resource;
+  sessionIdProvider?: SessionIdProvider;
 }
 
-export type WebSDKConfiguration = ResourceConfiguration & TraceSDKConfiguration & EventSDKConfiguration;
-
 export function configureWebSDK(
-  config: WebSDKConfiguration,
+  config: TraceSDKConfiguration & EventSDKConfiguration,
   instrumentations: Instrumentation[]
 ) {
   registerInstrumentations({
     instrumentations: instrumentations,
   });
-
-  if (!config.resource) {
-    config.resource = getResource(config);
-  }
 
   const traceSdkShutdown = configureTraceSDK(config);
   const eventSdkShutdown = configureEventsSDK(config);
@@ -69,12 +81,16 @@ export function configureWebSDK(
   }
 }
 
-export function getResource(config: ResourceConfiguration): Resource {
-  let resource = config.resource ?? new Resource({});
+export function getResource(config?: ResourceConfiguration): Resource {
+  let resource = config?.resource ?? new Resource({});
+  const detectors = config?.detectors ?? [
+    processRuntimeBrowserDetector,
+    browserDetector,
+  ];
 
-  if (config.detectors) {
+  if (detectors) {
     const internalConfig: ResourceDetectionConfig = {
-      detectors: config.detectors,
+      detectors: detectors,
     };
     resource = resource.merge(
       detectResourcesSync(internalConfig)
@@ -82,7 +98,7 @@ export function getResource(config: ResourceConfiguration): Resource {
   }
 
   resource =
-    config.serviceName === undefined
+    config?.serviceName === undefined
       ? resource
       : resource.merge(
           new Resource({
@@ -93,14 +109,31 @@ export function getResource(config: ResourceConfiguration): Resource {
   return resource;
 }
 
+export function getSessionManager(config?: SessionConfiguration): SessionManager {
+  const idGenerator = config?.sessionIdGenerator || new DefaultIdGenerator();
+  const storage = config?.sessionStorage || new WebSessionStorage();
+
+  const sessionManager = new SessionManager({
+    sessionIdGenerator: idGenerator,
+    sessionStorage: storage,
+    maxDuration: config?.maxDuration,
+    idleTimeout: config?.idleTimeout
+  });
+
+  if (config?.sessionObserver) {
+    sessionManager.addObserver(config.sessionObserver);
+  }
+
+  return sessionManager;
+}
+
 export function configureTraceSDK(
-  config?: ResourceConfiguration & TraceSDKConfiguration,
+  config?: TraceSDKConfiguration,
   instrumentations?: Instrumentation[]
 ) {
   if (!config || (!config.spanProcessors && !config?.spanExporter)) {
     return () => { return Promise.resolve(); }
   }
-
 
   if (instrumentations) {
     registerInstrumentations({
@@ -108,16 +141,20 @@ export function configureTraceSDK(
     });
   }
 
-  const tracerProvider = new WebTracerProvider({
-    ...config?.tracerConfig,
-  });
+  const tracerConfig = {
+    ...config?.tracerConfig
+  };
+  if (!tracerConfig.resource && config.resource) {
+    tracerConfig.resource = config.resource
+  };
+  const tracerProvider = new WebTracerProvider(tracerConfig);
 
   const processors = config.spanProcessors ?? [
     new BatchSpanProcessor(config.spanExporter!),
   ];
 
-  if (config.sessionManager) {
-    tracerProvider.addSpanProcessor(new SessionSpanProcessor(config.sessionManager));
+  if (config.sessionIdProvider) {
+    tracerProvider.addSpanProcessor(new SessionSpanProcessor(config.sessionIdProvider));
   }
 
   for (const processor of processors) {
@@ -148,12 +185,16 @@ export function configureEventsSDK(
     });
   }
 
-  const loggerProvider = new LoggerProvider({
+  const loggerProviderConfig = {
     ...config?.loggerProviderConfig
-  });
+  };
+  if (!loggerProviderConfig.resource && config.resource) {
+    loggerProviderConfig.resource = config.resource
+  };
+  const loggerProvider = new LoggerProvider(loggerProviderConfig);
 
-  if (config.sessionManager) {
-    loggerProvider.addLogRecordProcessor(new SessionLogRecordProcessor(config.sessionManager));
+  if (config.sessionIdProvider) {
+    loggerProvider.addLogRecordProcessor(new SessionLogRecordProcessor(config.sessionIdProvider));
   }
   
   const processors = config.logRecordProcessors ?? [

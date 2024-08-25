@@ -1,12 +1,14 @@
 import { PageViewEventInstrumentation } from '@opentelemetry/instrumentation-page-view';
 import { ConsoleLogRecordExporter, SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
-import { configureEventsSDK } from '@opentelemetry/web-configuration';
+import { configureEventsSDK, getResource, getSessionManager } from '@opentelemetry/web-configuration';
 
 const shutdown = configureEventsSDK(
   {
-    serviceName: 'My app',
+    resource: getResource({
+      serviceName: 'My app'
+    }),
+    sessionIdProvider: getSessionManager(),
     logRecordProcessors: [new SimpleLogRecordProcessor(new ConsoleLogRecordExporter())],
-    sessionManager: new SessionStorageSessionManager()
   },
   [
     new PageViewEventInstrumentation()

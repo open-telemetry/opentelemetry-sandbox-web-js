@@ -3,14 +3,16 @@ import { XMLHttpRequestInstrumentation } from '@opentelemetry/instrumentation-xm
 import { ConsoleLogRecordExporter, SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { ConsoleSpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { SessionStorageSessionManager } from '@opentelemetry/web-common';
-import { configureWebSDK } from '@opentelemetry/web-configuration';
+import { configureWebSDK, getResource, getSessionManager } from '@opentelemetry/web-configuration';
 
 const shutdown = configureWebSDK(
   {
-    serviceName: 'My app',
     logRecordProcessors: [new SimpleLogRecordProcessor(new ConsoleLogRecordExporter())],
     spanProcessors: [new SimpleSpanProcessor(new ConsoleSpanExporter())],
-    sessionManager: new SessionStorageSessionManager()
+    resource: getResource({
+      serviceName: 'My app',
+    }),
+    sessionIdProvider: getSessionManager()
   },
   [
     new PageViewEventInstrumentation(),

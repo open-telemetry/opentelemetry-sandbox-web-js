@@ -14,7 +14,10 @@ const { ConsoleSpanExporter, SimpleSpanProcessor } = require('@opentelemetry/sdk
 const {
   SessionSpanProcessor,
   SessionLogRecordProcessor,
-  SessionStorageSessionManager
+  WebSessionStorage,
+  SessionManager,
+  DefaultIdGenerator,
+  SessionObserver
 } = require('@opentelemetry/web-common');
 const { browserDetector } = require('@opentelemetry/opentelemetry-browser-detector');
 const { SEMRESATTRS_SERVICE_NAME } = require('@opentelemetry/semantic-conventions');
@@ -34,7 +37,6 @@ resource = resource.merge(new Resource({
 
 // configure global TracerProvider
 const tracerProvider = new WebTracerProvider({ resource });
-// tracerProvider.addSpanProcessor(new SessionSpanProcessor(sessionManager));
 tracerProvider.addSpanProcessor(
   new SimpleSpanProcessor(new ConsoleSpanExporter())
 );
@@ -42,7 +44,6 @@ trace.setGlobalTracerProvider(tracerProvider);
 
 // configure global EventLoggerProvider
 const loggerProvider = new LoggerProvider({ resource });
-loggerProvider.addLogRecordProcessor(new SessionLogRecordProcessor(new SessionStorageSessionManager()));
 loggerProvider.addLogRecordProcessor(
   new SimpleLogRecordProcessor(new ConsoleLogRecordExporter())
 );
@@ -50,7 +51,18 @@ const eventLoggerProvider = new EventLoggerProvider(loggerProvider);
 events.setGlobalEventLoggerProvider(eventLoggerProvider);
 
 // configure sessions
-const sessionManager = new SessionStorageSessionManager();
+const sessionObserver = {
+  onSessionStarted: (session) => { console.log('session started', session) },
+  onSessionEnded: (session) => { console.log('session ended', session) }
+}
+
+const sessionManager = new SessionManager({
+  sessionIdGenerator: new DefaultIdGenerator,
+  sessionStorage: new WebSessionStorage(),
+  idleTimeout: 10000,
+});
+sessionManager.addObserver(sessionObserver);
+
 tracerProvider.addSpanProcessor(new SessionSpanProcessor(sessionManager));
 loggerProvider.addLogRecordProcessor(new SessionLogRecordProcessor(sessionManager));
 

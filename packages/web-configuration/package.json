@@ -47,7 +47,7 @@
     "@opentelemetry/api-events": "^0.52.0",
     "@opentelemetry/core": "1.25.0",
     "@opentelemetry/instrumentation": "0.52.0",
-    "@opentelemetry/opentelemetry-browser-detector": "0.52.0",
+    "@opentelemetry/opentelemetry-browser-detector": "^0.52.0",
     "@opentelemetry/resources": "1.25.0",
     "@opentelemetry/sdk-events": "^0.52.0",
     "@opentelemetry/sdk-logs": "^0.52.0",

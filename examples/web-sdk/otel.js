@@ -3,7 +3,6 @@ const { PageViewEventInstrumentation } = require('@opentelemetry/instrumentation
 const { XMLHttpRequestInstrumentation } = require('@opentelemetry/instrumentation-xml-http-request');
 const { ConsoleLogRecordExporter, SimpleLogRecordProcessor } = require('@opentelemetry/sdk-logs');
 const { ConsoleSpanExporter, SimpleSpanProcessor } = require('@opentelemetry/sdk-trace-base');
-const { SessionStorageSessionManager } = require('@opentelemetry/web-common');
 
 const sdk = new WebSDK({
   logRecordProcessors: [new SimpleLogRecordProcessor(new ConsoleLogRecordExporter())],
@@ -11,8 +10,7 @@ const sdk = new WebSDK({
   instrumentations: [
     new PageViewEventInstrumentation(),
     new XMLHttpRequestInstrumentation()
-  ],
-  sessionManager: new SessionStorageSessionManager()
+  ]
 });
 
 sdk.start();

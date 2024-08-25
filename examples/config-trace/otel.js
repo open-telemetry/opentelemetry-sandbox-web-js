@@ -1,12 +1,13 @@
 import { XMLHttpRequestInstrumentation } from '@opentelemetry/instrumentation-xml-http-request';
 import { ConsoleSpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
-import { configureTraceSDK } from '@opentelemetry/web-configuration';
+import { configureTraceSDK, getResource } from '@opentelemetry/web-configuration';
 
 const shutdown = configureTraceSDK(
   {
-    serviceName: 'My app',
+    resource: getResource({
+      serviceName: 'My app'
+    }),
     spanProcessors: [new SimpleSpanProcessor(new ConsoleSpanExporter())],
-    sessionManager: new SessionStorageSessionManager()
   },
   [
     new XMLHttpRequestInstrumentation()
