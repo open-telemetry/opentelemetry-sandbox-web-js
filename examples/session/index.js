@@ -1,4 +1,5 @@
-require('./otel');
+import './otel';
+
 const { events } = require('@opentelemetry/api-events');
 
 const eventLogger = events.getEventLogger('my-logger', '123');

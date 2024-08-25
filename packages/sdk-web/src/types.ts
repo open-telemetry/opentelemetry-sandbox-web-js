@@ -26,6 +26,7 @@ import {
   IdGenerator,
 } from '@opentelemetry/sdk-trace-base';
 import { LogRecordProcessor, LogRecordExporter } from '@opentelemetry/sdk-logs'; 
+import { SessionIdProvider } from '@opentelemetry/web-common';
 
 export interface WebSDKConfiguration {
   autoDetectResources: boolean;
@@ -42,4 +43,5 @@ export interface WebSDKConfiguration {
   idGenerator: IdGenerator;
   logRecordProcessors?: LogRecordProcessor[];
   logRecordExporter?: LogRecordExporter;
+  sessionIdProvider?: SessionIdProvider;
 }

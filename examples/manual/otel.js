@@ -1,5 +1,5 @@
 const { PageViewEventInstrumentation } = require('@opentelemetry/instrumentation-page-view');
-// const { XMLHttpRequestInstrumentation } = require('@opentelemetry/instrumentation-xml-http-request');
+const { XMLHttpRequestInstrumentation } = require('@opentelemetry/instrumentation-xml-http-request');
 const { events } = require('@opentelemetry/api-events');
 const { trace } = require('@opentelemetry/api');
 const { EventLoggerProvider } = require('@opentelemetry/sdk-events');
@@ -11,6 +11,14 @@ const {
 const { registerInstrumentations } = require('@opentelemetry/instrumentation');
 const { WebTracerProvider } = require('@opentelemetry/sdk-trace-web');
 const { ConsoleSpanExporter, SimpleSpanProcessor } = require('@opentelemetry/sdk-trace-base');
+const {
+  SessionSpanProcessor,
+  SessionLogRecordProcessor,
+  WebSessionStorage,
+  SessionManager,
+  DefaultIdGenerator,
+  SessionObserver
+} = require('@opentelemetry/web-common');
 const { browserDetector } = require('@opentelemetry/opentelemetry-browser-detector');
 const { SEMRESATTRS_SERVICE_NAME } = require('@opentelemetry/semantic-conventions');
 const {
@@ -42,9 +50,25 @@ loggerProvider.addLogRecordProcessor(
 const eventLoggerProvider = new EventLoggerProvider(loggerProvider);
 events.setGlobalEventLoggerProvider(eventLoggerProvider);
 
+// configure sessions
+const sessionObserver = {
+  onSessionStarted: (session) => { console.log('session started', session) },
+  onSessionEnded: (session) => { console.log('session ended', session) }
+}
+
+const sessionManager = new SessionManager({
+  sessionIdGenerator: new DefaultIdGenerator,
+  sessionStorage: new WebSessionStorage(),
+  idleTimeout: 10000,
+});
+sessionManager.addObserver(sessionObserver);
+
+tracerProvider.addSpanProcessor(new SessionSpanProcessor(sessionManager));
+loggerProvider.addLogRecordProcessor(new SessionLogRecordProcessor(sessionManager));
+
 registerInstrumentations({
   instrumentations: [
     new PageViewEventInstrumentation(),
-    // new XMLHttpRequestInstrumentation(),
+    new XMLHttpRequestInstrumentation(),
   ],
 });

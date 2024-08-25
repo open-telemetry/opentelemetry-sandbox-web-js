@@ -42,6 +42,7 @@ import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { WebSDKConfiguration } from './types';
 import { BatchLogRecordProcessor, LogRecordProcessor, LoggerProvider } from '@opentelemetry/sdk-logs';
 import { EventLoggerProvider } from '@opentelemetry/sdk-events';
+import { DefaultIdGenerator, SessionIdProvider, SessionLogRecordProcessor, SessionManager, SessionSpanProcessor, WebSessionStorage } from '@opentelemetry/web-common';
 
 /** This class represents everything needed to register a fully configured OpenTelemetry Web SDK */
 export class WebSDK {
@@ -66,6 +67,7 @@ export class WebSDK {
   private _tracerProvider?: WebTracerProvider;
   private _loggerProvider?: LoggerProvider;
   private _serviceName?: string;
+  private _sessionIdProvider: SessionIdProvider
 
   /**
    * Create a new NodeJS SDK instance
@@ -121,6 +123,15 @@ export class WebSDK {
       instrumentations = configuration.instrumentations;
     }
     this._instrumentations = instrumentations;
+
+    if (configuration.sessionIdProvider) {
+      this._sessionIdProvider = configuration.sessionIdProvider;
+    } else {
+      this._sessionIdProvider = new SessionManager({
+        sessionIdGenerator: new DefaultIdGenerator(),
+        sessionStorage: new WebSessionStorage()
+      });
+    }
   }
 
   /**
@@ -155,6 +166,8 @@ export class WebSDK {
         resource: this._resource,
       });
 
+      tracerProvider.addSpanProcessor(new SessionSpanProcessor(this._sessionIdProvider));
+
       this._tracerProvider = tracerProvider;
       for (const spanProcessor of this._tracerProviderConfig.spanProcessors) {
         tracerProvider.addSpanProcessor(spanProcessor);
@@ -171,6 +184,8 @@ export class WebSDK {
         resource: this._resource
       });
       
+      loggerProvider.addLogRecordProcessor(new SessionLogRecordProcessor(this._sessionIdProvider));
+
       this._loggerProvider = loggerProvider;
       for (const logRecordProcessor of this._loggerProviderConfig.logRecordProcessors) {
         loggerProvider.addLogRecordProcessor(logRecordProcessor);

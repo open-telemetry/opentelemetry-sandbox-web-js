@@ -12,6 +12,9 @@
       "path": "./packages/sdk-web"
     },
     {
+      "path": "./packages/web-common"
+    },
+    {
       "path": "./packages/web-configuration"
     }
   ]
