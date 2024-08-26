@@ -11,5 +11,8 @@
     "test/**/*.ts"
   ],
   "references": [
+    {
+      "path": "../web-common"
+    }
   ]
 }
