@@ -20,12 +20,12 @@ import { SessionProvider } from "./types/SessionProvider";
 import { SessionObserver } from "./types/SessionObserver";
 import { SessionStorage } from "./types/SessionStorage";
 import { SessionPublisher } from "./types/SessionPublisher";
+import { SessionLifecycle } from "./types/SessionLifecycle";
 
 export interface SessionManagerConfig {
   sessionIdGenerator: SessionIdGenerator;
   sessionStorage: SessionStorage;
-  maxDuration?: number;
-  idleTimeout?: number;
+  sessionLifecycle: SessionLifecycle
 }
 
 export class SessionManager implements SessionProvider, SessionPublisher {
@@ -33,28 +33,23 @@ export class SessionManager implements SessionProvider, SessionPublisher {
   private _idGenerator: SessionIdGenerator;
   private _storage: SessionStorage;
   private _observers: SessionObserver[];
-
-  private _maxDuration?: number;
-  private _maxDurationTimeoutId?: ReturnType<typeof setTimeout>;
-
-  private _inactivityTimeout?: number;
-  private _inactivityTimeoutId?: ReturnType<typeof setTimeout>;
-  private _lastActivityTimestamp: number = 0;
-  private _inactivityResetDelay: number = 5000; // minimum time between activities before timer is reset
+  private _lifecycle: SessionLifecycle;
 
   constructor(config: SessionManagerConfig) {
     this._idGenerator = config.sessionIdGenerator;
     this._storage = config.sessionStorage;
-    this._maxDuration = config.maxDuration;
-    this._inactivityTimeout = config.idleTimeout;
-
     this._observers = [];
+
+    this._lifecycle =  config.sessionLifecycle;
+    this._lifecycle.onSessionEnded(() => {
+      this.resetSession();
+    });
 
     this._session = this._storage.get();
     if (!this._session) {
       this._session = this.startSession();
     }
-    this.resetTimers();
+    this._lifecycle.start(this._session);
   }
 
   addObserver(observer: SessionObserver): void {
@@ -66,16 +61,7 @@ export class SessionManager implements SessionProvider, SessionPublisher {
       return null;
     }
 
-    if (this._maxDuration && (Date.now() - this._session.startTimestamp) > this._maxDuration) {
-      this.resetSession();
-    }
-
-    if (this._inactivityTimeout) {
-      if (Date.now() - this._lastActivityTimestamp > this._inactivityResetDelay) {
-        this.resetIdleTimer();
-        this._lastActivityTimestamp = Date.now();
-      }
-    }
+    this._lifecycle.bumpSessionActive();
 
     return this._session.id;
   }
@@ -113,50 +99,12 @@ export class SessionManager implements SessionProvider, SessionPublisher {
     }
 
     this._session = undefined;
-    if (this._inactivityTimeoutId) {
-      clearTimeout(this._inactivityTimeoutId);
-      this._inactivityTimeoutId = undefined;
-    }
+    this._lifecycle.clear();
   }
 
   private resetSession(): void {
     this.endSession();
     this.startSession();
-    this.resetTimers();
-  }
-
-  private resetTimers() {
-    if (this._inactivityTimeout) {
-      this.resetIdleTimer();
-    }
-    if (this._maxDuration) {
-      this.resetMaxDurationTimer();
-    }
-  }
-
-  private resetIdleTimer() {
-    if (this._inactivityTimeoutId) {
-      clearTimeout(this._inactivityTimeoutId);
-    }
-
-    this._inactivityTimeoutId = setTimeout(() => {
-      this.resetSession();
-    }, this._inactivityTimeout);
-  }
-
-  private resetMaxDurationTimer() {
-    if (!this._maxDuration || !this._session) {
-      return
-    }
-
-    if (this._maxDurationTimeoutId) {
-      clearTimeout(this._maxDurationTimeoutId);
-    }
-    
-    const timeoutIn = this._maxDuration - (Date.now() - this._session?.startTimestamp);
-
-    this._maxDurationTimeoutId = setTimeout(() => {
-      this.resetSession();
-    }, timeoutIn);
+    this._lifecycle.start(this._session!);
   }
 }

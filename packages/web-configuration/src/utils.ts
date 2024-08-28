@@ -30,7 +30,7 @@ import { BatchLogRecordProcessor, LoggerProvider, LoggerProviderConfig, LogRecor
 import { BatchSpanProcessor, SpanExporter, SpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { WebTracerConfig, WebTracerProvider } from "@opentelemetry/sdk-trace-web";
 import { SEMRESATTRS_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
-import { DefaultIdGenerator, SessionIdGenerator, SessionIdProvider, SessionLogRecordProcessor, SessionManager, SessionObserver, SessionSpanProcessor, SessionStorage, WebSessionStorage } from "@opentelemetry/web-common";
+import { DefaultIdGenerator, DefaultSessionLifecycle, SessionIdGenerator, SessionIdProvider, SessionLifecycle, SessionLogRecordProcessor, SessionManager, SessionObserver, SessionSpanProcessor, SessionStorage, WebSessionStorage } from "@opentelemetry/web-common";
 import { browserDetector } from '@opentelemetry/opentelemetry-browser-detector';
 
 export interface ResourceConfiguration {
@@ -42,9 +42,8 @@ export interface ResourceConfiguration {
 export interface SessionConfiguration {
   sessionIdGenerator?: SessionIdGenerator;
   sessionStorage?: SessionStorage;
-  maxDuration?: number;
-  idleTimeout?: number;
-  sessionObserver: SessionObserver
+  sessionObserver: SessionObserver;
+  sessionLifecycle: SessionLifecycle
 }
 
 export interface TraceSDKConfiguration {
@@ -112,12 +111,12 @@ export function getResource(config?: ResourceConfiguration): Resource {
 export function getSessionManager(config?: SessionConfiguration): SessionManager {
   const idGenerator = config?.sessionIdGenerator || new DefaultIdGenerator();
   const storage = config?.sessionStorage || new WebSessionStorage();
+  const lifecycle = config?.sessionLifecycle || new DefaultSessionLifecycle();
 
   const sessionManager = new SessionManager({
     sessionIdGenerator: idGenerator,
     sessionStorage: storage,
-    maxDuration: config?.maxDuration,
-    idleTimeout: config?.idleTimeout
+    sessionLifecycle: lifecycle
   });
 
   if (config?.sessionObserver) {

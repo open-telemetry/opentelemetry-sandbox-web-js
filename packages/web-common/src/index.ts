@@ -26,3 +26,5 @@ export { SessionManager } from './SessionManager';
 export { WebSessionStorage } from './WebSessionStorage';
 export { WebLocalStorage } from './WebLocalStorage';
 export { DefaultIdGenerator } from './DefaultIdGenerator';
+export { SessionLifecycle } from './types/SessionLifecycle';
+export { DefaultSessionLifecycle } from './DefaultSessionLifecycle';

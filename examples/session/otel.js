@@ -3,7 +3,7 @@ import { XMLHttpRequestInstrumentation } from '@opentelemetry/instrumentation-xm
 import { ConsoleLogRecordExporter, SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { ConsoleSpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { configureWebSDK, getResource, getSessionManager } from '@opentelemetry/web-configuration';
-import { WebLocalStorage } from '@opentelemetry/web-common';
+import { DefaultSessionLifecycle, WebLocalStorage } from '@opentelemetry/web-common';
 
 const sessionObserver = {
   onSessionStarted: (session) => {
@@ -21,6 +21,8 @@ const customIdGenerator = {
   }
 }
 
+const sessionLifecycle = new DefaultSessionLifecycle();
+
 configureWebSDK(
   {
     logRecordProcessors: [new SimpleLogRecordProcessor(new ConsoleLogRecordExporter())],
@@ -29,11 +31,10 @@ configureWebSDK(
       serviceName: 'My app',
     }),
     sessionIdProvider: getSessionManager({
-      maxDuration: 20000,
-      idleTimeout: 10000,
       sessionStorage: new WebLocalStorage(),
       sessionIdGenerator: customIdGenerator,
-      sessionObserver: sessionObserver
+      sessionObserver: sessionObserver,
+      sessionLifecycle: new DefaultSessionLifecycle(20000, 10000)
     })
   },
   [
