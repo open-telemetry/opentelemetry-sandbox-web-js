@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-import { Session } from "./Session";
+import { SessionObserver } from "./SessionObserver";
 
-export interface SessionObserver {
-  onSessionStarted(newSession: Session, previousSession?: Session): void;
-  onSessionEnded(session: Session): void;
+export interface SessionPublisher {
+  addObserver(observer: SessionObserver): void;
 }

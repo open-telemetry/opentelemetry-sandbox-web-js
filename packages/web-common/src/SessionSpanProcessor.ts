@@ -20,15 +20,15 @@ import {
   Span,
   ReadableSpan,
 } from '@opentelemetry/sdk-trace-base';
-import { SessionIdProvider } from './types/SessionIdProvider';
+import { SessionProvider } from './types/SessionProvider';
 
 /**
  * BaggageSpanProcessor is a {@link SpanProcessor} that reads entries stored in {@link Baggage}
  */
 export class SessionSpanProcessor implements SpanProcessor {
-  private _sessionIdProvider: SessionIdProvider;
+  private _sessionIdProvider: SessionProvider;
 
-  constructor(sessionIdProvider: SessionIdProvider) {
+  constructor(sessionIdProvider: SessionProvider) {
     this._sessionIdProvider = sessionIdProvider;
   }
 
