@@ -51,10 +51,9 @@ export class SessionManager implements SessionProvider, SessionPublisher {
     this._observers = [];
 
     this._session = this._storage.get();
-    if (!this._session) {
-      this._session = this.startSession();
+    if (this._session) {
+      this.resetTimers();
     }
-    this.resetTimers();
   }
 
   addObserver(observer: SessionObserver): void {
@@ -63,7 +62,8 @@ export class SessionManager implements SessionProvider, SessionPublisher {
 
   getSessionId(): string | null {
     if (!this._session) {
-      return null;
+      this._session = this.startSession();
+      this.resetTimers();
     }
 
     if (this._maxDuration && (Date.now() - this._session.startTimestamp) > this._maxDuration) {

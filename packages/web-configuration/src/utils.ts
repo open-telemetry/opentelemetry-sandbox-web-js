@@ -124,6 +124,9 @@ export function getSessionManager(config?: SessionConfiguration): SessionManager
     sessionManager.addObserver(config.sessionObserver);
   }
 
+  // force creation of a new session
+  sessionManager.getSessionId();
+
   return sessionManager;
 }
 
