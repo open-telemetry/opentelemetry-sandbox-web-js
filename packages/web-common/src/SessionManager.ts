@@ -16,9 +16,10 @@
 
 import { SessionIdGenerator } from "./types/SessionIdGenerator";
 import { Session } from "./types/Session";
-import { SessionIdProvider } from "./types/SessionIdProvider";
+import { SessionProvider } from "./types/SessionProvider";
 import { SessionObserver } from "./types/SessionObserver";
 import { SessionStorage } from "./types/SessionStorage";
+import { SessionPublisher } from "./types/SessionPublisher";
 
 export interface SessionManagerConfig {
   sessionIdGenerator: SessionIdGenerator;
@@ -27,8 +28,8 @@ export interface SessionManagerConfig {
   idleTimeout?: number;
 }
 
-export class SessionManager implements SessionIdProvider {
-  private _session: Session | null;
+export class SessionManager implements SessionProvider, SessionPublisher {
+  private _session: Session | null | undefined;
   private _idGenerator: SessionIdGenerator;
   private _storage: SessionStorage;
   private _observers: SessionObserver[];
@@ -79,7 +80,7 @@ export class SessionManager implements SessionIdProvider {
     return this._session.id;
   }
 
-  getSession(): Session | null {
+  getSession(): Session | null | undefined {
     return this._session;
   }
 
@@ -92,11 +93,12 @@ export class SessionManager implements SessionIdProvider {
     }
 
     this._storage.save(session);
-    this._session = session;
-
+    
     for (let observer of this._observers) {
-      observer.onSessionStarted(session);
+      observer.onSessionStarted(session, this._session ?? undefined);
     }
+
+    this._session = session;
 
     return session;
   }
@@ -110,7 +112,7 @@ export class SessionManager implements SessionIdProvider {
       observer.onSessionEnded(this._session);
     }
 
-    this._session = null;
+    this._session = undefined;
     if (this._inactivityTimeoutId) {
       clearTimeout(this._inactivityTimeoutId);
       this._inactivityTimeoutId = undefined;

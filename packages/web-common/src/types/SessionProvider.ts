@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 
-export interface SessionIdProvider {
+export interface SessionProvider {
   getSessionId(): string | null;
 }

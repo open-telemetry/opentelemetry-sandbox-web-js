@@ -16,15 +16,15 @@
 
 import { Context } from '@opentelemetry/api';
 import { LogRecord, LogRecordProcessor } from '@opentelemetry/sdk-logs';
-import { SessionIdProvider } from './types/SessionIdProvider';
+import { SessionProvider } from './types/SessionProvider';
 
 /**
  * BaggageSpanProcessor is a {@link SpanProcessor} that reads entries stored in {@link Baggage}
  */
 export class SessionLogRecordProcessor implements LogRecordProcessor {
-  private _sessionIdProvider: SessionIdProvider;
+  private _sessionIdProvider: SessionProvider;
 
-  constructor(sessionIdProvider: SessionIdProvider) {
+  constructor(sessionIdProvider: SessionProvider) {
     this._sessionIdProvider = sessionIdProvider;
   }
 
