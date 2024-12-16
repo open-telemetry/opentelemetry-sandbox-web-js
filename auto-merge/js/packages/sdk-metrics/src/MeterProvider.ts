@@ -36,6 +36,27 @@ export interface MeterProviderOptions {
   resource?: IResource;
   views?: View[];
   readers?: MetricReader[];
+  /**
+   * Merge resource with {@link Resource.default()}?
+   * Default: {@code true}
+   */
+  mergeResourceWithDefaults?: boolean;
+}
+
+/**
+ * @param mergeWithDefaults
+ * @param providedResource
+ */
+function prepareResource(
+  mergeWithDefaults: boolean,
+  providedResource: Resource | undefined
+) {
+  const resource = providedResource ?? Resource.empty();
+
+  if (mergeWithDefaults) {
+    return Resource.default().merge(resource);
+  }
+  return resource;
 }
 
 /**
@@ -46,10 +67,12 @@ export class MeterProvider implements IMeterProvider {
   private _shutdown = false;
 
   constructor(options?: MeterProviderOptions) {
-    const resource = Resource.default().merge(
-      options?.resource ?? Resource.empty()
+    this._sharedState = new MeterProviderSharedState(
+      prepareResource(
+        options?.mergeResourceWithDefaults ?? true,
+        options?.resource
+      )
     );
-    this._sharedState = new MeterProviderSharedState(resource);
     if (options?.views != null && options.views.length > 0) {
       for (const view of options.views) {
         this._sharedState.viewRegistry.addView(view);
@@ -99,7 +122,7 @@ export class MeterProvider implements IMeterProvider {
   }
 
   /**
-   * Flush all buffered data and shut down the MeterProvider and all registered
+   * Shut down the MeterProvider and all registered
    * MetricReaders.
    *
    * Returns a promise which is resolved when all flushes are complete.
