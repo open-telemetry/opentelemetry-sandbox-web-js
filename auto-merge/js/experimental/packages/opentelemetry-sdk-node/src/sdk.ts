@@ -55,7 +55,7 @@ import { PrometheusExporter as PrometheusMetricExporter } from '@opentelemetry/e
 import {
   MeterProvider,
   MetricReader,
-  View,
+  ViewOptions,
   ConsoleMetricExporter,
   PeriodicExportingMetricReader,
 } from '@opentelemetry/sdk-metrics';
@@ -67,7 +67,7 @@ import {
   NodeTracerConfig,
   NodeTracerProvider,
 } from '@opentelemetry/sdk-trace-node';
-import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
+import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { NodeSDKConfiguration } from './types';
 import { getEnv, getEnvWithoutDefaults } from '@opentelemetry/core';
 import {
@@ -84,9 +84,9 @@ export type MeterProviderConfig = {
    */
   reader?: MetricReader;
   /**
-   * List of {@link View}s that should be passed to the MeterProvider
+   * List of {@link ViewOptions}s that should be passed to the MeterProvider
    */
-  views?: View[];
+  views?: ViewOptions[];
 };
 
 export type LoggerProviderConfig = {
@@ -210,7 +210,6 @@ export class NodeSDK {
 
   private _resource: IResource;
   private _resourceDetectors: Array<Detector | DetectorSync>;
-  private _mergeResourceWithDefaults: boolean;
 
   private _autoDetectResources: boolean;
 
@@ -245,9 +244,7 @@ export class NodeSDK {
 
     this._configuration = configuration;
 
-    this._resource = configuration.resource ?? new Resource({});
-    this._mergeResourceWithDefaults =
-      configuration.mergeResourceWithDefaults ?? true;
+    this._resource = configuration.resource ?? Resource.default();
     this._autoDetectResources = configuration.autoDetectResources ?? true;
     if (!this._autoDetectResources) {
       this._resourceDetectors = [];
@@ -358,7 +355,7 @@ export class NodeSDK {
         ? this._resource
         : this._resource.merge(
             new Resource({
-              [SEMRESATTRS_SERVICE_NAME]: this._serviceName,
+              [ATTR_SERVICE_NAME]: this._serviceName,
             })
           );
 
@@ -370,7 +367,6 @@ export class NodeSDK {
     this._tracerProvider = new NodeTracerProvider({
       ...this._configuration,
       resource: this._resource,
-      mergeResourceWithDefaults: this._mergeResourceWithDefaults,
       spanProcessors,
     });
 
@@ -388,7 +384,6 @@ export class NodeSDK {
     if (this._loggerProviderConfig) {
       const loggerProvider = new LoggerProvider({
         resource: this._resource,
-        mergeResourceWithDefaults: this._mergeResourceWithDefaults,
       });
 
       for (const logRecordProcessor of this._loggerProviderConfig
@@ -417,7 +412,6 @@ export class NodeSDK {
         resource: this._resource,
         views: this._meterProviderConfig?.views ?? [],
         readers: readers,
-        mergeResourceWithDefaults: this._mergeResourceWithDefaults,
       });
 
       this._meterProvider = meterProvider;
