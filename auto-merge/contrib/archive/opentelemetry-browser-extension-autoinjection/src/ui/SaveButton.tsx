@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-import { Button } from '@material-ui/core';
-import * as React from 'react';
-import { SaveButtonProps } from '../types';
+/*
+ * This file contains a copy of unstable semantic convention definitions
+ * used by this package.
+ * @see https://github.com/open-telemetry/opentelemetry-js/tree/main/semantic-conventions#unstable-semconv
+ */
 
-export class SaveButton extends React.Component<SaveButtonProps> {
-  override render() {
-    return (
-      <Button
-        variant="contained"
-        color="primary"
-        size="small"
-        onClick={this.props.onClick}
-      >
-        {this.props.label}
-      </Button>
-    );
-  }
-}
+/**
+ * A boolean that is true if the serverless function is executed for the first time (aka cold-start).
+ *
+ * @experimental This attribute is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+ */
+export const ATTR_FAAS_COLDSTART = 'faas.coldstart';
