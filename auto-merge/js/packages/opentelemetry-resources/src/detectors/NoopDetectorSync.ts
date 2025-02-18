@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const testsContext = require.context('../browser', true, /test$/);
+testsContext.keys().forEach(testsContext);
 
-import { Resource } from '../Resource';
-import { DetectorSync } from '../types';
-import { IResource } from '../IResource';
+const testsContextCommon = require.context('../common', true, /test$/);
+testsContextCommon.keys().forEach(testsContextCommon);
 
-export class NoopDetectorSync implements DetectorSync {
-  detect(): IResource {
-    return new Resource({});
-  }
-}
-
-export const noopDetectorSync = new NoopDetectorSync();
+const srcContext = require.context('.', true, /src$/);
+srcContext.keys().forEach(srcContext);
