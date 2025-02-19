@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node_version: [ 14, 16, 18 ]
+        node_version: [ 16, 18, 20 ]
     runs-on: ubuntu-latest
     env:
       NPM_CONFIG_UNSAFE_PERM: true
@@ -22,17 +22,15 @@ jobs:
         with:
           node-version: ${{ matrix.node_version }}
 
-      - run: npm install -g npm@latest
-        if: ${{ matrix.node_version == '18' || matrix.node_version == '20' }}
+      - run: npm install -g npm@9.9.4
 
-      # npm@10.0.0 drops support for Node.js v14 and v16
-      - run: npm install -g npm@"<10.0.0"
-        if: ${{ matrix.node_version == '14' || matrix.node_version == '16' }}
-
+      - name: Update rush shrinkwrap dependencies (for different node versions - node 20 change the hash algorithm)
+        run: node common/scripts/install-run-rush.js update --full --recheck
+      - run: npm install rollup -g
       - name: Bootstrap
-        run: |
-          npm install
-          node common/scripts/install-run-rush.js update
+        run: npm install
+      # - run: node common/scripts/install-run-rush.js check
+      - run: node common/scripts/install-run-rush.js update --full --recheck
 
       - name: Build 🔧
         run: |
@@ -52,7 +50,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node_version: [ 18 ]
+        node_version: [ 18, 20 ]
 
     env:
       NPM_CONFIG_UNSAFE_PERM: true
@@ -64,13 +62,15 @@ jobs:
         with:
           node-version: ${{ matrix.node_version }}
 
-      # npm@10.0.0 drops support for Node.js v14 and v16
-      - run: npm install -g npm@latest
-
+      - run: npm install -g npm@9.9.4
+  
+      - name: Update rush shrinkwrap dependencies (for different node versions - node 20 change the hash algorithm)
+        run: node common/scripts/install-run-rush.js update --full --recheck
+      - run: npm install rollup -g
       - name: Bootstrap
-        run: |
-          npm install
-          node common/scripts/install-run-rush.js update
+        run: npm install
+      # - run: node common/scripts/install-run-rush.js check
+      - run: node common/scripts/install-run-rush.js update --full --recheck
 
       - name: Build 🔧
         run: |
