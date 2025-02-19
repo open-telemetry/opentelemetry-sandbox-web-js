@@ -97,6 +97,7 @@ temp
 common/temp/**
 package-deps.json
 package-lock.json
+rush-logs/
 
 
 # AutoMerge working folders

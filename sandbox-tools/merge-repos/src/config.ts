@@ -275,7 +275,7 @@ export let cleanupScripts = {
  * Add these dev dependencies to the root package.json
  */
 export let initDevDependencyVersions = {
-    "@microsoft/rush": "5.93.1",
+    "@microsoft/rush": "5.149.1",
     "markdownlint-cli": "^0.31.1",
     "typedoc": "^0.23.26",
     "codecov": "^3.8.3",

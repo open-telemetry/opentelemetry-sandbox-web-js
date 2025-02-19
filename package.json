@@ -29,7 +29,7 @@
   "repository": "open-telemetry/opentelemetry-sandbox-web-js",
   "homepage": "https://github.com/open-telemetry/opentelemetry-sandbox-web-js#readme",
   "devDependencies": {
-    "@microsoft/rush": "^5.93.2",
+    "@microsoft/rush": "5.149.1",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-replace": "^5.0.2",
