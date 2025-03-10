@@ -42,8 +42,6 @@ export { parseKeyPairsIntoRecord } from './baggage/utils';
 export {
   SDK_INFO,
   _globalThis,
-  getEnv,
-  getEnvWithoutDefaults,
   getStringFromEnv,
   getBooleanFromEnv,
   getNumberFromEnv,
@@ -74,16 +72,6 @@ export {
   unsuppressTracing,
 } from './trace/suppress-tracing';
 export { TraceState } from './trace/TraceState';
-export {
-  DEFAULT_ATTRIBUTE_COUNT_LIMIT,
-  DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT,
-  DEFAULT_ENVIRONMENT,
-  DEFAULT_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT,
-  DEFAULT_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT,
-  ENVIRONMENT,
-  RAW_ENVIRONMENT,
-  parseEnvironment,
-} from './utils/environment';
 export { merge } from './utils/merge';
 export { TimeoutError, callWithTimeout } from './utils/timeout';
 export { isUrlIgnored, urlMatches } from './utils/url';

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 For API changes, see the [API CHANGELOG](api/CHANGELOG.md).
 For experimental package changes, see the [experimental CHANGELOG](experimental/CHANGELOG.md).
 For semantic convention package changes, see the [semconv CHANGELOG](packages/semantic-conventions/CHANGELOG.md).
+For notes on migrating to 2.x / 0.200.x see [the upgrade guide](doc/upgrade-to-2.x.md).
 
 ## Unreleased
 
@@ -52,7 +53,7 @@ For semantic convention package changes, see the [semconv CHANGELOG](packages/se
 * feat(core)!: remove deprecated samplers [#5316](https://github.com/open-telemetry/opentelemetry-js/pull/5316) @pichlermarc
   * (user-facing): deprecated `AlwaysOnSampler` has moved to `@opentelemetry/sdk-trace-base`
   * (user-facing): deprecated `AlwaysOffSampler` has moved to `@opentelemetry/sdk-trace-base`
-  * (user-facing): deprecated `TraceIdRatioSampler` has moved to `@opentelemetry/sdk-trace-base`
+  * (user-facing): deprecated `ParentBasedSampler` has moved to `@opentelemetry/sdk-trace-base`
   * (user-facing): deprecated `TraceIdRatioSampler` has moved to  `@opentelemetry/sdk-trace-base`
 * feat(resource): Merge sync and async resource interfaces into a single interface [#5350](https://github.com/open-telemetry/opentelemetry-js/pull/5350) @dyladan
   * Resource constructor now takes a single argument which contains an optional `attributes` object
@@ -105,11 +106,36 @@ For semantic convention package changes, see the [semconv CHANGELOG](packages/se
   * Renames `Resource` class to `ResourceImpl` and makes it package-private
   * Renames `IResource` interface to `Resource`
   * Export function `resourceFromAttributes` to create a `Resource` from a `DetectedAttributes` object
+  * Export function `defaultResource` to create a default resource [#5467](https://github.com/open-telemetry/opentelemetry-js/pull/5467) @pichlermarc
+  * Export function `emptyResource` to create an empty resource [#5467](https://github.com/open-telemetry/opentelemetry-js/pull/5467) @pichlermarc
   * Only export types and functions. This aids in cross-version compatibility and makes it more easily extensible in the future.
 * feat(resources)!: do not read environment variables from window in browsers [#5466](https://github.com/open-telemetry/opentelemetry-js/pull/5466) @pichlermarc
   * (user-facing): all configuration previously possible via `window.OTEL_*` is now not supported anymore
     * If you have been using the `envDetector` in browser environments, please migrate to manually creating a resource.
     * Note: Node.js environment variable configuration continues to work as-is.
+* fix(sdk-trace-base)!: use `ParentBasedAlwaysOnSampler` over `AlwaysOnSampler` when bogus data is supplied to `OTEL_TRACES_SAMPLER`
+  * this aligns the SDK implementation with the specification
+* feat(core)!: drop `getEnv()`, `getEnvWithoutDefaults()` [#5481](https://github.com/open-telemetry/opentelemetry-js/pull/5481) @pichlermarc
+  * (user-facing): `getEnv()` has been replaced by `getStringFromEnv()`, `getNumberFromEnv()`, `getBooleanFromEnv()`, `getStringListFromEnv()`
+    * these new functions do not include defaults, please inline any defaults if necessary (example: `getStringFromEnv("OTEL_FOO") ?? "my-default"`)
+    * to find the previously used defaults, please see [here](https://github.com/open-telemetry/opentelemetry-js/blob/e9d3c71918635d490b6a9ac9f8259265b38394d0/packages/opentelemetry-core/src/utils/environment.ts#L154-L239)
+  * (user-facing): `getEnvWithoutDefaults()` has been replaced by `getStringFromEnv()`, `getNumberFromEnv()`, `getBooleanFromEnv()`, `getStringListFromEnv()`
+  * (user-facing): `DEFAULT_ENVIRONMENT` has been removed, please inline any defaults from now on
+    * to find the previously used defaults, please see [here](https://github.com/open-telemetry/opentelemetry-js/blob/e9d3c71918635d490b6a9ac9f8259265b38394d0/packages/opentelemetry-core/src/utils/environment.ts#L154-L239)
+  * (user-facing): `ENVIRONMENT` has been removed without replacement
+  * (user-facing): `RAW_ENVIRONMENT` has been removed without replacement
+  * (user-facing): `parseEnvironment` has been removed without replacement
+* feat(sdk-trace-base): remove `BasicTracerProvider#register()` to improve tree-shaking [#5503](https://github.com/open-telemetry/opentelemetry-js/pull/5503) @pichlermarc
+  * (user-facing): `BasicTracerProvider#register()` has been removed
+    * to register a global propagator, please use `propagation.setGlobalPropagator()` from `@opentelemetry/api`
+    * to register a global context manager, please use `context.setGlobalContextManager()` from `@opentelemetry/api`
+* feat!: set compilation target to ES2022 for all packages except `@opentelemetry/api`, `@opentelemetry/api-logs`, `@opentelemetry/api-events`, and `@opentelemetry/semantic-conventions` [#5456](https://github.com/open-telemetry/opentelemetry-js/pull/5456) @david-luna
+  * (user-facing): drops browser runtimes which do not support ES2022 features
+* feat(core)! drop unused constants [#5504](https://github.com/open-telemetry/opentelemetry-js/pull/5504) @pichlermarc
+  * (user-facing): `DEFAULT_ATTRIBUTE_VALUE_LENTGHT_LIMIT` has been removed, please use `Infinity` instead
+  * (user-facing): `DEFAULT_ATTRIBUTE_VALUE_COUNT_LIMIT` has been removed, please use `128` instead
+  * (user-facing): `DEFAULT_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT` has been removed, please use `128` instead
+  * (user-facing): `DEFAULT_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT` has been removed, please use `128` instead
 
 ### :rocket: (Enhancement)
 
@@ -125,6 +151,7 @@ For semantic convention package changes, see the [semconv CHANGELOG](packages/se
 * fix(exporter-zipkin): remove usages of deprecated `url.parse` from `node:url` [#5390](https://github.com/open-telemetry/opentelemetry-js/pull/5390) @chancancode
 * fix(sdk-metrics): do not export from `PeriodicExportingMetricReader` when there are no metrics to export. [#5288](https://github.com/open-telemetry/opentelemetry-js/pull/5288) @jacksonweber
 * fix(sdk-trace-base): always wait on pending export in SimpleSpanProcessor. [#5303](https://github.com/open-telemetry/opentelemetry-js/pull/5303) @anuraaga
+* fix(core): avoid using util in configuration.ts for browser compatibility [#5524](https://github.com/open-telemetry/opentelemetry-js/pull/5524) @sriraamas
 
 ### :books: (Refine Doc)
 
