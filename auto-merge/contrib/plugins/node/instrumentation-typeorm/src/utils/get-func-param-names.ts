@@ -1,5 +1,5 @@
 /*
- * Copyright The OpenTelemetry Authors
+ * Copyright The OpenTelemetry Authors, Aspecto
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
+const ARGUMENT_NAMES = /([^\s,]+)/g;
 
-import * as assert from 'assert';
-
-interface ErrorLikeConstructor {
-  new (): Error;
-}
-
-/**
- * Node.js v8.x and browser compatible `assert.rejects`.
- */
-export async function assertRejects(
-  actual: any,
-  expected: RegExp | ErrorLikeConstructor
-) {
-  let rejected;
-  try {
-    if (typeof actual === 'function') {
-      await actual();
-    } else {
-      await actual;
-    }
-  } catch (err) {
-    rejected = true;
-    assert.throws(() => {
-      throw err;
-    }, expected);
-  }
-  assert.ok(rejected, 'Promise not rejected');
+export function getParamNames(func: Function) {
+  const fnStr = func.toString().replace(STRIP_COMMENTS, '');
+  return fnStr
+    .slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')'))
+    .match(ARGUMENT_NAMES);
 }

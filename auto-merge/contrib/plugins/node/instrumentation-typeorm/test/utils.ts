@@ -1,5 +1,5 @@
 /*
- * Copyright The OpenTelemetry Authors
+ * Copyright The OpenTelemetry Authors, Aspecto
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as typeorm from 'typeorm';
 
-import * as assert from 'assert';
+@typeorm.Entity()
+export class User {
+  @typeorm.PrimaryColumn()
+  id: number;
 
-interface ErrorLikeConstructor {
-  new (): Error;
-}
+  @typeorm.Column()
+  firstName: string;
 
-/**
- * Node.js v8.x and browser compatible `assert.rejects`.
- */
-export async function assertRejects(
-  actual: any,
-  expected: RegExp | ErrorLikeConstructor
-) {
-  let rejected;
-  try {
-    if (typeof actual === 'function') {
-      await actual();
-    } else {
-      await actual;
-    }
-  } catch (err) {
-    rejected = true;
-    assert.throws(() => {
-      throw err;
-    }, expected);
+  @typeorm.Column()
+  lastName: string;
+
+  constructor(id: number, firstName: string, lastName: string) {
+    this.id = id;
+    this.firstName = firstName;
+    this.lastName = lastName;
   }
-  assert.ok(rejected, 'Promise not rejected');
 }
+
+export const defaultOptions: any = {
+  type: 'sqlite',
+  database: ':memory:',
+  dropSchema: true,
+  synchronize: true,
+  entities: [User],
+};
