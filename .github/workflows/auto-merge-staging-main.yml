@@ -5,6 +5,9 @@ name: '[Auto Merge] repo-staging branch to main'
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   action:
     runs-on: ubuntu-latest

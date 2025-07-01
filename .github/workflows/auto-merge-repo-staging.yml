@@ -5,6 +5,9 @@ name: '[Auto Merge] OTel JS/Contrib to merge-staging'
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   action:
     runs-on: ubuntu-latest
